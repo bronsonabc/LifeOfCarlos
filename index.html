@@ -80,7 +80,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 @media (max-width:860px){
   .layout{grid-template-columns:minmax(0,1fr)}
   .rail,.main{display:contents}
-  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-actions{order:5}.o-cup{order:6}.o-shop{order:7}.o-skills{order:8}.o-log{order:9}.o-reset{order:10}
+  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-actions{order:5}.o-cup{order:6}.o-shop{order:7}.o-skills{order:8}.o-log{order:9}.o-hall{order:10}.o-reset{order:11}
 }
 
 /* carlos */
@@ -223,6 +223,21 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 .over-stats dd{margin:2px 0 0;font:800 1.15rem var(--f-display);font-variant-numeric:tabular-nums}
 .over-line{color:var(--ink-2)}
 
+/* leaderboard */
+.lb-list{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.lb-list li{display:grid;grid-template-columns:2.2rem minmax(0,1fr) auto auto;gap:10px;align-items:baseline;padding:6px 0;border-top:1px dashed var(--rule)}
+.lb-list li:first-child{border-top:0}
+.lb-list li.mine{background:var(--hl);margin:0 -6px;padding-inline:6px;border-radius:4px}
+.lb-rank{font:500 12px var(--f-mono);color:var(--ink-2)}
+.lb-name{font-weight:700;overflow-wrap:anywhere}
+.lb-score{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
+.lb-days{font:400 12px var(--f-mono);color:var(--ink-2);white-space:nowrap}
+.lb-post{display:grid;gap:6px}
+.lb-row{display:flex;gap:10px;flex-wrap:wrap}
+.lb-row input{flex:1 1 160px;min-width:0;font:600 15px var(--f-body);color:var(--ink);background:var(--card-2);border:2px solid var(--edge);border-radius:6px;padding:9px 12px}
+.lb-row input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.lb-empty{color:var(--ink-2);font-size:13px}
+
 /* avatar */
 .sk{fill:var(--skin)}.hr{fill:var(--hair)}.sh{fill:var(--shirt)}.ew{fill:#fff}.pu{fill:var(--hair)}.bd{fill:var(--band)}.mo{fill:var(--hair)}
 .arm{stroke:var(--skin);stroke-linecap:round}
@@ -321,6 +336,11 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
         <div class="sec-head"><h2 id="h-log">Diary</h2></div>
         <ol id="log" aria-live="polite"></ol>
       </section>
+
+      <section class="card o-hall" id="hall" hidden aria-labelledby="h-hall">
+        <div class="sec-head"><h2 id="h-hall">Hall of Fame</h2><span class="hint">Top 10 Carlos runs, everyone's combined</span></div>
+        <ol class="lb-list" id="lbHall"></ol>
+      </section>
     </main>
   </div>
   <p class="foot">Progress saves in this browser.</p>
@@ -333,6 +353,12 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
     <p id="overMsg"></p>
     <dl class="over-stats" id="overStats"></dl>
     <p class="over-line" id="overLine"></p>
+    <div class="lb-post" id="lbPost" hidden>
+      <label class="hint" for="lbName">Post this run to the Hall of Fame</label>
+      <div class="lb-row"><input id="lbName" maxlength="16" placeholder="Your name" autocomplete="nickname"><button class="btn" id="lbSend" type="button">Post score</button></div>
+      <p class="hint" id="lbStatus" aria-live="polite"></p>
+    </div>
+    <ol class="lb-list" id="lbOver" hidden></ol>
     <button class="btn primary" id="again" type="button">Start a new Carlos</button>
   </div>
 </div>
@@ -1287,6 +1313,84 @@ const Engine = (() => {
     return txt(pool[h % pool.length]);
   }
 
+  /* ---------- leaderboard (Supabase). Leave both empty to turn it off. ---------- */
+  const LB = { url: 'https://tigpfzpmjspwqukqmqbd.supabase.co', key: 'sb_publishable_LFwGQCzKCV0pCFU8BjrXnQ_CpgZ3il2' };
+  const lbOn = !!(LB.url && LB.key);
+  const NAME_KEY = 'carlos.name';
+  const BAD = ['fuck', 'shit', 'bitch', 'cunt', 'nigg', 'fag', 'rape', 'nazi', 'dick', 'cock', 'pussy', 'whore', 'slut'];
+  let posted = false, lastRows = [], mineId = null;
+  const lbHeaders = extra => Object.assign({ apikey: LB.key }, extra || {});
+  async function lbTop() {
+    const r = await fetch(`${LB.url}/rest/v1/scores?select=id,name,score,days&order=score.desc,created_at.asc&limit=10`, { headers: lbHeaders() });
+    if (!r.ok) throw new Error('top ' + r.status);
+    return r.json();
+  }
+  async function lbPostRow(row) {
+    const r = await fetch(`${LB.url}/rest/v1/scores`, {
+      method: 'POST', headers: lbHeaders({ 'Content-Type': 'application/json', Prefer: 'return=minimal' }), body: JSON.stringify(row)
+    });
+    if (!r.ok) throw new Error('post ' + r.status);
+  }
+  function lbDraw(ol, rows, mine) {
+    ol.innerHTML = '';
+    if (!rows.length) {
+      const li = document.createElement('li');
+      li.innerHTML = '<span></span><span class="lb-empty">No scores yet. Be the first.</span><span></span><span></span>';
+      ol.appendChild(li);
+      return;
+    }
+    rows.forEach((r, i) => {
+      const li = document.createElement('li');
+      if (mine != null && r.id === mine) li.className = 'mine';
+      const a = document.createElement('span'); a.className = 'lb-rank'; a.textContent = '#' + (i + 1);
+      const b = document.createElement('span'); b.className = 'lb-name'; b.textContent = r.name;
+      const c = document.createElement('span'); c.className = 'lb-score'; c.textContent = r.score + ' pts';
+      const d = document.createElement('span'); d.className = 'lb-days'; d.textContent = r.days + (r.days === 1 ? ' day' : ' days');
+      li.append(a, b, c, d);
+      ol.appendChild(li);
+    });
+  }
+  async function lbRefresh() {
+    if (!lbOn) return;
+    try {
+      lastRows = await lbTop();
+      $('hall').hidden = false;
+      lbDraw($('lbHall'), lastRows, mineId);
+      if (S && S.over) { $('lbOver').hidden = false; lbDraw($('lbOver'), lastRows, mineId); }
+    } catch (e) { /* leaderboard is optional; stay quiet */ }
+  }
+  function lbSetup() {
+    if (!lbOn) return;
+    $('lbPost').hidden = posted;
+    $('lbStatus').textContent = '';
+    $('lbSend').disabled = false;
+    try { $('lbName').value = localStorage.getItem(NAME_KEY) || ''; } catch (e) {}
+    lbRefresh();
+  }
+  async function lbSubmit() {
+    if (!lbOn || !S || !S.over || posted) return;
+    const name = $('lbName').value.replace(/\s+/g, ' ').trim();
+    const st = $('lbStatus');
+    if (name.length < 2) { st.textContent = 'Pick a name with at least 2 characters.'; return; }
+    const flat = name.toLowerCase().replace(/[^a-z]/g, '');
+    if (BAD.some(w => flat.includes(w))) { st.textContent = 'Please pick a friendlier name.'; return; }
+    $('lbSend').disabled = true;
+    st.textContent = 'Posting...';
+    try {
+      try { localStorage.setItem(NAME_KEY, name); } catch (e) {}
+      await lbPostRow({ name, score: E.score(S), days: S.over.day - 1, title: E.titleOf(S) });
+      posted = true;
+      st.textContent = 'Posted. See where you landed below.';
+      $('lbPost').hidden = true;
+      const before = await lbTop();
+      mineId = (before.find(r => r.name === name && r.score === E.score(S)) || {}).id;
+      await lbRefresh();
+    } catch (e) {
+      st.textContent = 'Could not reach the Hall of Fame. Try again in a moment.';
+      $('lbSend').disabled = false;
+    }
+  }
+
   let S = null, lastAct = null, evKey = '', wasOver = false;
   const R = { meters: {}, skills: {}, acts: {}, shop: {}, cash: null };
   const timers = {};
@@ -1589,7 +1693,7 @@ const Engine = (() => {
     ];
     $('overStats').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
     $('overLine').textContent = `Final title: ${E.titleOf(S)}.`;
-    if (!wasOver) { o.hidden = false; wasOver = true; $('again').focus(); }
+    if (!wasOver) { o.hidden = false; wasOver = true; lbSetup(); (lbOn && !posted ? $('lbName') : $('again')).focus(); }
   }
   function render() {
     renderClock(); renderMeters(); renderCash(); renderSkills(); renderBlocks(); renderActions(); renderCup(); renderShop(); renderEvent(); renderLog(); renderOver();
@@ -1655,7 +1759,8 @@ const Engine = (() => {
   }
   function newRun() {
     S = E.newState();
-    lastAct = null; evKey = ''; wasOver = false;
+    lastAct = null; evKey = ''; wasOver = false; posted = false; mineId = null;
+    $('lbOver').hidden = true;
     writeJSON(SAVE, S);
     $('how').open = true;
     render();
@@ -1670,6 +1775,8 @@ const Engine = (() => {
     if (a) doAct(a.id);
   });
   $('again').addEventListener('click', newRun);
+  $('lbSend').addEventListener('click', lbSubmit);
+  $('lbName').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') lbSubmit(); });
   let armed = false, armTimer = null;
   $('reset').addEventListener('click', () => {
     const b = $('reset');
@@ -1690,6 +1797,7 @@ const Engine = (() => {
     S = isState(saved) && !saved.over ? saved : E.newState();
     $('how').open = S.day === 1 && S.log.length === 0;
     render();
+    lbRefresh();
   }
   try { if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => S); } catch (e) {}
   const hot = window.claude && window.claude.hot;

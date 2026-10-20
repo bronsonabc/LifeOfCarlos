@@ -1,0 +1,1697 @@
+<title>The Life of Carlos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Mono:wght@400;500&family=Figtree:wght@400..800&display=swap">
+<style>
+/* Layout concept: a day planner on graph paper.
+   Left rail: Carlos, his four needs, his cash and rent, his skills.
+   Right: the day as twelve two-hour blocks, then the action list, the last tournament bracket, the shop and the diary. */
+:root{
+  --paper:#EEF2F7; --grid:#D9E1EE; --card:#FFFFFF; --card-2:#F4F7FB;
+  --ink:#151A33; --ink-2:#4A5273; --edge:#151A33; --shadow:#151A33; --rule:#BAC5DA;
+  --hl:#FFE066; --night:#D3DBEE; --night-ink:#2F3760; --floor:#DCE4F1;
+  --food:#F26B2B; --water:#2C8DF5; --energy:#F5C31E; --social:#19B3C4; --money:#12A66B;
+  --fit:#E8457D; --smash:#7B4FF0; --stank:#4DA92C;
+  --on-energy:#151A33; --bad:#C62828; --good:#1B7F45; --focus:#1D6FE0;
+  --skin:#C98B5E; --hair:#1D1A22; --shirt:#2DB3A6; --band:#E8457D;
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'DM Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10142A; --grid:#1B2245; --card:#1A2040; --card-2:#141936;
+    --ink:#EDF0FB; --ink-2:#A9B2D6; --edge:#7C88C4; --shadow:#04060F; --rule:#323C6B;
+    --hl:rgba(255,210,63,.34); --night:#0C1024; --night-ink:#9FA9D6; --floor:#222A52;
+    --food:#FF8349; --water:#4DA3FF; --energy:#FFD23F; --social:#4CD6EE; --money:#3DDC97;
+    --fit:#FF6A9B; --smash:#9A78FF; --stank:#6CCB45;
+    --on-energy:#151A33; --bad:#FF7A70; --good:#5CD58B; --focus:#8CB8FF;
+    --skin:#D49A6B; --hair:#0F0D14; --shirt:#35C2B4; --band:#FF6A9B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10142A; --grid:#1B2245; --card:#1A2040; --card-2:#141936;
+  --ink:#EDF0FB; --ink-2:#A9B2D6; --edge:#7C88C4; --shadow:#04060F; --rule:#323C6B;
+  --hl:rgba(255,210,63,.34); --night:#0C1024; --night-ink:#9FA9D6; --floor:#222A52;
+  --food:#FF8349; --water:#4DA3FF; --energy:#FFD23F; --social:#4CD6EE; --money:#3DDC97;
+  --fit:#FF6A9B; --smash:#9A78FF; --stank:#6CCB45;
+  --on-energy:#151A33; --bad:#FF7A70; --good:#5CD58B; --focus:#8CB8FF;
+  --skin:#D49A6B; --hair:#0F0D14; --shirt:#35C2B4; --band:#FF6A9B;
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:15px;
+  line-height:1.45;
+  padding-block:20px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:20px}
+h1,h2,h3,p{margin:0}
+h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between}
+.title{font-family:var(--f-display);font-weight:800;font-size:clamp(2.1rem,6.5vw,3.7rem);line-height:1;letter-spacing:-.025em;text-wrap:balance}
+.hl{background:linear-gradient(transparent 58%,var(--hl) 58% 92%,transparent 92%);padding:0 .08em;margin:0 -.08em}
+.tag{margin-top:8px;color:var(--ink-2);max-width:46ch}
+.card{background:var(--card);border:2px solid var(--edge);border-radius:8px;box-shadow:4px 4px 0 var(--shadow);padding:16px;min-width:0}
+.clock{display:grid;gap:3px;min-width:min(100%,260px);padding:10px 14px}
+.clock-main{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.clock-day{font:800 1.7rem/1 var(--f-display);letter-spacing:-.02em}
+.clock-time{font:500 1.1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.clock-sub{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;color:var(--ink-2);font-size:13px}
+.clock-best{font:400 12px var(--f-mono);color:var(--ink-2)}
+.pill{font:500 11px var(--f-mono);letter-spacing:.04em;border:1.5px solid var(--edge);border-radius:99px;padding:0 8px;background:color-mix(in srgb,var(--energy) 35%,var(--card));color:var(--ink)}
+.pill.sad{background:color-mix(in srgb,var(--bad) 22%,var(--card))}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:20px;align-items:start}
+.rail,.main{display:grid;gap:20px;min-width:0;align-content:start}
+@media (max-width:860px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .rail,.main{display:contents}
+  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-actions{order:5}.o-cup{order:6}.o-shop{order:7}.o-skills{order:8}.o-log{order:9}.o-reset{order:10}
+}
+
+/* carlos */
+.carlos-head{display:grid;gap:10px}
+.portrait{border:2px solid var(--edge);border-radius:6px;background:linear-gradient(to top,var(--floor) 0 14%,var(--card-2) 14%);display:grid;place-items:center;padding:8px 0 0;overflow:hidden}
+.portrait svg{width:min(100%,210px);height:auto;display:block}
+.mood{font-weight:600;min-width:0}
+@media (max-width:860px){
+  .carlos-head{grid-template-columns:128px minmax(0,1fr);align-items:center;gap:14px}
+}
+.meters{display:grid;gap:11px;margin-top:14px}
+.meter-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px}
+.meter-name{font-weight:700}
+.meter-right{display:flex;align-items:baseline;gap:8px}
+.meter-val{font:500 14px var(--f-mono);min-width:2.6ch;text-align:right;font-variant-numeric:tabular-nums}
+.meter-delta{font:500 12px var(--f-mono);opacity:0;transition:opacity .5s}
+.meter-delta.show{opacity:1}
+.meter-delta.up{color:var(--good)}
+.meter-delta.down{color:var(--bad)}
+.warn{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--bad)}
+.bar{position:relative;height:16px;border:2px solid var(--edge);border-radius:4px;background:var(--card-2);overflow:hidden}
+.bar>i{position:absolute;left:0;top:0;bottom:0;width:0;background-color:var(--c);transition:width .35s ease}
+.bar>i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.28) 0 5px,transparent 5px 10px)}
+.meter.low .bar{outline:2px dashed var(--bad);outline-offset:1px}
+.meter.crit .bar{outline:2px solid var(--bad);outline-offset:1px}
+.drain{margin-top:12px;font:400 12px/1.5 var(--f-mono);color:var(--ink-2)}
+.cash{margin-top:14px;padding-top:12px;border-top:1px dashed var(--rule)}
+.rent-note{margin-top:6px;font:400 12px/1.5 var(--f-mono);color:var(--ink-2)}
+.rent-note.alert{color:var(--bad);font-weight:500}
+.rent-note.ok{color:var(--good)}
+.skills{display:grid;gap:14px;margin-top:10px}
+.skill-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px}
+.skill-name{font-weight:700}
+.skill-lv{font:500 13px var(--f-mono)}
+.bar.slim{height:10px}
+.skill-note{font-size:12.5px;color:var(--ink-2);margin-top:4px}
+.ignored{margin-top:14px;padding-top:10px;border-top:1px dashed var(--rule);font:400 12px/1.5 var(--f-mono);color:var(--ink-2)}
+
+/* how it works */
+.how{padding:12px 16px}
+.how summary{cursor:pointer;font:800 1.05rem var(--f-display);list-style-position:inside}
+.how summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.how ul{margin:10px 0 0;padding-left:1.1em;display:grid;gap:5px;color:var(--ink-2);max-width:72ch}
+
+/* blocks */
+.sec-head{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.hint{font:400 12px/1.4 var(--f-mono);color:var(--ink-2)}
+.blocks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+.block{border:2px dashed var(--rule);border-radius:6px;background:var(--card-2);min-height:66px;padding:6px 3px;display:grid;grid-template-rows:auto 1fr;gap:4px;text-align:center;min-width:0}
+.b-time{font:500 11px var(--f-mono);color:var(--ink-2)}
+.b-what{font:700 12px var(--f-body);align-self:center;overflow-wrap:anywhere}
+.block.night{background:var(--night);color:var(--night-ink)}
+.block.night .b-time{color:inherit}
+.block.done{border-style:solid;border-color:var(--edge);background:color-mix(in srgb,var(--c) 30%,var(--card));color:var(--ink)}
+.block.done .b-time{color:var(--ink-2)}
+.block.now{border-style:solid;border-color:var(--edge);background:var(--hl);color:var(--ink);box-shadow:3px 3px 0 var(--shadow)}
+.block.now .b-time{color:var(--ink)}
+@media (max-width:620px){.blocks{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+/* actions */
+.group{margin-bottom:18px}
+.group:last-child{margin-bottom:0}
+.group-title{font:500 12px var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2);margin-bottom:8px}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.act{position:relative;display:grid;gap:6px;align-content:start;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--edge);border-radius:8px;padding:12px;cursor:pointer;box-shadow:3px 3px 0 var(--shadow);transition:transform .08s ease,box-shadow .08s ease;min-width:0}
+.act:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--shadow)}
+.act:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.act:disabled{cursor:not-allowed;opacity:.55;box-shadow:none;border-style:dashed}
+.act:focus-visible,.btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.act.fatal:not(:disabled){border-color:var(--bad)}
+.act-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.act-name{font:800 1.05rem/1.2 var(--f-display);min-width:0}
+.act-cost{font:500 11px var(--f-mono);color:var(--ink-2);white-space:nowrap}
+.act-flavor{font-size:13px;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{display:inline-flex;gap:5px;align-items:baseline;font:500 11.5px var(--f-mono);padding:2px 6px;border-radius:4px;background:color-mix(in srgb,var(--c) 24%,var(--card));border:1px solid color-mix(in srgb,var(--c) 65%,var(--edge));font-variant-numeric:tabular-nums}
+.chip b{font-weight:500}
+.fatal-chip{--c:var(--bad);color:var(--bad)}
+.lock-note{font:500 11.5px var(--f-mono);color:var(--ink-2)}
+.key{font:500 10.5px var(--f-mono);border:1px solid var(--ink-2);border-radius:3px;padding:0 4px;color:var(--ink-2);margin-right:7px;vertical-align:1px}
+@media (hover:none){.key,.hint-keys{display:none}}
+.night-note{margin-bottom:12px;font:500 12px var(--f-mono);color:var(--night-ink);background:var(--night);border-radius:4px;padding:6px 10px}
+
+/* event */
+.event{background:color-mix(in srgb,var(--hl) 45%,var(--card))}
+.event.bad{background:color-mix(in srgb,var(--bad) 14%,var(--card))}
+.ev-kicker{font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-bottom:4px}
+.ev-title{font:800 1.35rem/1.2 var(--f-display);margin-bottom:6px;text-wrap:balance}
+.ev-text{max-width:60ch}
+.ev-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:14px}
+
+/* tournament bracket */
+.bracket{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.match{border:2px solid var(--edge);border-radius:6px;padding:8px 10px;background:var(--card-2);display:grid;gap:2px;min-width:0}
+.match.win{background:color-mix(in srgb,var(--money) 24%,var(--card))}
+.match.loss{background:color-mix(in srgb,var(--bad) 18%,var(--card))}
+.match.skip{border-style:dashed;opacity:.6}
+.m-round{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2)}
+.m-opp{font-weight:700;overflow-wrap:anywhere}
+.m-score{font:500 13px var(--f-mono)}
+.cup-result{margin-top:10px;font-weight:600}
+@media (max-width:620px){.bracket{grid-template-columns:minmax(0,1fr)}}
+
+/* shop */
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:12px}
+.shop-item{display:grid;gap:6px;align-content:start;border:2px solid var(--edge);border-radius:8px;padding:12px;background:var(--card);box-shadow:3px 3px 0 var(--shadow);min-width:0}
+.shop-item.maxed{background:color-mix(in srgb,var(--money) 14%,var(--card))}
+.pips{display:inline-flex;gap:4px}
+.pips i{width:10px;height:10px;border:2px solid var(--edge);border-radius:2px;background:var(--card-2)}
+.pips i.on{background:var(--money)}
+.shop-note{font:400 11.5px/1.45 var(--f-mono);color:var(--ink-2)}
+.shop-note.alert{color:var(--bad)}
+.buy{justify-self:start}
+.buy:disabled{opacity:.55;cursor:not-allowed;box-shadow:none;transform:none}
+
+/* log */
+.log ol{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:8px 0;border-top:1px dashed var(--rule)}
+.log li:first-child{border-top:0;padding-top:0;font-weight:600}
+.lg-t{font:500 11.5px var(--f-mono);color:var(--ink-2);white-space:nowrap;padding-top:2px;font-variant-numeric:tabular-nums}
+
+/* buttons */
+.btn{font:700 14px var(--f-body);color:var(--ink);background:var(--card);border:2px solid var(--edge);border-radius:6px;padding:9px 14px;cursor:pointer;box-shadow:3px 3px 0 var(--shadow)}
+.btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--shadow)}
+.btn:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.btn.primary{background:var(--energy);color:var(--on-energy)}
+.o-reset{justify-self:start}
+.foot{font:400 12px var(--f-mono);color:var(--ink-2)}
+
+/* game over */
+.over{position:fixed;inset:0;z-index:50;display:grid;place-items:center;overflow:auto;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:color-mix(in srgb,var(--paper) 84%,transparent)}
+.over-card{width:min(560px,100%);display:grid;gap:12px;padding:22px}
+.over-kicker{font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--bad)}
+.over-title{font:800 clamp(1.6rem,5vw,2.2rem)/1.1 var(--f-display);letter-spacing:-.02em;text-wrap:balance}
+.over-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0}
+.over-stats div{border:2px solid var(--edge);border-radius:6px;padding:8px 10px;background:var(--card-2)}
+.over-stats dt{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2)}
+.over-stats dd{margin:2px 0 0;font:800 1.15rem var(--f-display);font-variant-numeric:tabular-nums}
+.over-line{color:var(--ink-2)}
+
+/* avatar */
+.sk{fill:var(--skin)}.hr{fill:var(--hair)}.sh{fill:var(--shirt)}.ew{fill:#fff}.pu{fill:var(--hair)}.bd{fill:var(--band)}.mo{fill:var(--hair)}
+.arm{stroke:var(--skin);stroke-linecap:round}
+.ln{stroke:var(--hair);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ln.thin{stroke-width:2;opacity:.55}
+.drop{fill:var(--water)}
+.wisp{stroke:var(--stank);stroke-width:3;fill:none;stroke-linecap:round;animation:bob 2.4s ease-in-out infinite}
+.flies circle{fill:var(--hair)}
+.flies{animation:orbit 2.8s linear infinite;transform-origin:80px 74px}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.95}50%{transform:translateY(-4px);opacity:.6}}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .wisp,.flies{animation:none}
+  .bar>i,.meter-delta,.act,.btn{transition:none}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 class="title">The Life of <span class="hl">Carlos</span></h1>
+      <p class="tag">Twelve blocks a day. Eat, drink, sleep, see the boys, and make rent on Sunday night.</p>
+    </div>
+    <div class="card clock">
+      <div class="clock-main"><span class="clock-day" id="clockDay">Day 1</span><span class="clock-time" id="clockTime">6:00 AM</span></div>
+      <div class="clock-sub"><span id="clockSub">Week 1, sunrise</span><span class="pill" id="restedPill" hidden>Rested: +25% XP</span><span class="pill sad" id="lonelyPill" hidden>Lonely: -30% XP</span></div>
+      <div class="clock-best" id="best">Best run: none yet</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail">
+      <section class="card o-carlos" aria-label="Carlos">
+        <div class="carlos-head">
+          <div class="portrait" id="portrait"></div>
+          <p class="mood" id="mood"></p>
+        </div>
+        <div class="meters" id="meters"></div>
+        <p class="drain" id="drain"></p>
+        <div class="cash" id="cash" style="--c:var(--money)"></div>
+      </section>
+      <section class="card o-skills" aria-label="Skills">
+        <h2>Skills</h2>
+        <div class="skills" id="skills"></div>
+        <p class="ignored" id="ignored" hidden></p>
+      </section>
+      <button class="btn o-reset" id="reset" type="button">Start over</button>
+    </aside>
+
+    <main class="main">
+      <details class="card how o-how" id="how">
+        <summary>How a week works</summary>
+        <ul>
+          <li>Every action uses 1 or 2 of the day's 12 blocks. A block is two hours.</li>
+          <li>Food, Water, Energy and Social fall every block. If any of them hits 0, Carlos is done.</li>
+          <li>Rent comes out at the end of every 7th day. If Carlos cannot cover it, he is evicted. Watch the rent bar under his meters.</li>
+          <li>The theater pays cash for a two-block shift. Shifts start between 12p and 8p, and the pay rises as he gets promoted.</li>
+          <li>Chilling on Discord with the boys fills Social. Low Social cuts training XP, and a high Stank makes Social drain faster.</li>
+          <li>The shop sells upgrades for meals, water, sleep, Discord, Smash, shifts and training. Buying is instant and permanent for this Carlos.</li>
+          <li>Tournaments run a real bracket against three opponents. Win all three for the big cash prize. Skill and a fight stick raise the odds.</li>
+          <li>Random events can be good, bad, or his friends. Bad luck is real, but Stank makes it less likely.</li>
+          <li>Night runs from 10p to 6a. Sleep restores more then, and everything else costs extra energy. Two or more night sleeps give +25% training XP the next day.</li>
+        </ul>
+      </details>
+
+      <section class="card o-blocks" aria-labelledby="h-day">
+        <div class="sec-head"><h2 id="h-day">Today's blocks</h2><span class="hint" id="blocksLeft"></span></div>
+        <ol class="blocks" id="blocks"></ol>
+      </section>
+
+      <section class="card event o-event" id="event" hidden aria-live="assertive">
+        <p class="ev-kicker" id="evKicker">Something happened</p>
+        <h3 class="ev-title" id="evTitle"></h3>
+        <p class="ev-text" id="evText"></p>
+        <div class="ev-choices" id="evChoices"></div>
+      </section>
+
+      <section class="card o-actions" aria-labelledby="h-act">
+        <div class="sec-head"><h2 id="h-act">What does Carlos do now?</h2><span class="hint hint-keys">Number keys pick an action</span></div>
+        <div class="night-note" id="nightNote" hidden>It is night. Sleep restores more energy now, and everything else costs extra.</div>
+        <div id="actions"></div>
+      </section>
+
+      <section class="card o-cup" id="cup" hidden aria-labelledby="h-cup">
+        <div class="sec-head"><h2 id="h-cup">Last tournament</h2><span class="hint" id="cupWhen"></span></div>
+        <div class="bracket" id="bracket"></div>
+        <p class="cup-result" id="cupResult"></p>
+      </section>
+
+      <section class="card o-shop" aria-labelledby="h-shop">
+        <div class="sec-head"><h2 id="h-shop">Shop</h2><span class="hint">Buying takes no time. Upgrades last for this Carlos.</span></div>
+        <div class="shop" id="shop"></div>
+      </section>
+
+      <section class="card log o-log" aria-labelledby="h-log">
+        <div class="sec-head"><h2 id="h-log">Diary</h2></div>
+        <ol id="log" aria-live="polite"></ol>
+      </section>
+    </main>
+  </div>
+  <p class="foot">Progress saves in this browser.</p>
+</div>
+
+<div class="over" id="over" hidden role="dialog" aria-modal="true" aria-labelledby="overTitle">
+  <div class="card over-card">
+    <p class="over-kicker">Carlos is gone</p>
+    <h2 class="over-title" id="overTitle"></h2>
+    <p id="overMsg"></p>
+    <dl class="over-stats" id="overStats"></dl>
+    <p class="over-line" id="overLine"></p>
+    <button class="btn primary" id="again" type="button">Start a new Carlos</button>
+  </div>
+</div>
+
+<script>
+// ==ENGINE START==
+const Engine = (() => {
+  const SLOTS = 12;
+  const XP_STEPS = [0, 10, 25, 45, 70, 100, 140, 190, 250, 320, 400];
+  const MAX_LV = XP_STEPS.length - 1;
+  const SKILL_KEYS = ['fit', 'smash', 'stank'];
+  const SKILL_NAMES = { fit: 'Fitness', smash: 'Smash', stank: 'Stank' };
+  const NEEDS = ['food', 'water', 'energy', 'social'];
+  const FRIENDS = ['Baker', 'Monty', 'Luke', 'Tim'];
+  const START_CASH = 60, RENT_BASE = 120, RENT_STEP = 10;
+  const EVENT_CHANCE = 0.28;
+  const PRIZE = { champ: 120, final: 25 };
+  const RANKS = [
+    { at: 0, name: 'Usher', pay: 44 },
+    { at: 5, name: 'Concessions', pay: 50 },
+    { at: 15, name: 'Projectionist', pay: 58 },
+    { at: 30, name: 'Shift lead', pay: 68 }
+  ];
+  const ITEMS = [
+    { id: 'fridge', levels: [
+      { name: 'Better fridge', cost: 90, text: 'Meals restore 30% more Food.' },
+      { name: 'Meal-prep station', cost: 180, text: 'Meals restore 60% more Food.' }] },
+    { id: 'filter', levels: [
+      { name: 'Water filter', cost: 70, text: 'Drinking restores 30% more Water.' },
+      { name: 'Office water cooler', cost: 150, text: 'Drinking restores 60% more Water.' }] },
+    { id: 'bed', levels: [
+      { name: 'Better bed', cost: 110, text: 'Sleep restores 35% more Energy.' },
+      { name: 'Memory-foam mattress', cost: 220, text: 'Sleep restores 70% more Energy.' }] },
+    { id: 'headset', levels: [
+      { name: 'Better headset', cost: 80, text: 'Discord gives 30% more Social.' },
+      { name: 'Studio mic', cost: 160, text: 'Discord gives 60% more Social.' }] },
+    { id: 'stick', levels: [
+      { name: 'Fight stick', cost: 100, text: 'Better odds in rival matches, bets and tournaments.' },
+      { name: 'Pro fight stick', cost: 200, text: 'Much better odds in rival matches, bets and tournaments.' }] },
+    { id: 'shoes', levels: [
+      { name: 'Comfy shoes', cost: 60, text: 'Theater shifts cost 20% less Energy.' },
+      { name: 'Cushioned insoles', cost: 120, text: 'Theater shifts cost 40% less Energy.' }] },
+    { id: 'gym', levels: [
+      { name: 'Home gym kit', cost: 120, text: 'Workouts cost 15% less Energy and give 20% more XP.' },
+      { name: 'Squat rack', cost: 240, text: 'Workouts cost 30% less Energy and give 40% more XP.' }] },
+    { id: 'monitor', levels: [
+      { name: 'Second monitor', cost: 90, text: 'Rotmax gives 25% more Stank XP.' },
+      { name: 'Triple monitor setup', cost: 180, text: 'Rotmax gives 50% more Stank XP.' }] }
+  ];
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const pick = (arr, rng) => arr[Math.min(arr.length - 1, Math.floor(rng() * arr.length))];
+
+  const levelOf = xp => { let l = 0; for (let i = 1; i < XP_STEPS.length; i++) if (xp >= XP_STEPS[i]) l = i; return l; };
+  const progress = xp => {
+    const lv = levelOf(xp);
+    if (lv >= MAX_LV) return { lv, frac: 1, cur: xp - XP_STEPS[lv], need: 0 };
+    const a = XP_STEPS[lv], b = XP_STEPS[lv + 1];
+    return { lv, frac: (xp - a) / (b - a), cur: xp - a, need: b - a };
+  };
+  const newState = () => ({
+    v: 3, day: 1, slot: 0, food: 80, water: 80, energy: 90, social: 70, money: START_CASH,
+    xp: { fit: 0, smash: 0, stank: 0 }, trophies: 0, shifts: 0, ignored: 0, steps: 0, rested: false, nightSleeps: 0,
+    items: { fridge: 0, filter: 0, bed: 0, headset: 0, stick: 0, shoes: 0, gym: 0, monitor: 0 },
+    lastCup: null, plan: [], log: [], event: null, lastEvent: null, over: null
+  });
+  const lvl = (s, k) => levelOf(s.xp[k]);
+  const gearLv = (s, id) => (s.items && s.items[id]) || 0;
+  const isNight = slot => slot >= 8;
+  const effMult = s => 1 - Math.min(0.4, 0.04 * lvl(s, 'fit'));
+  const dayMult = s => Math.min(2.4, 1 + 0.035 * (s.day - 1));
+  const stankSocial = s => 1 + Math.min(0.6, 0.06 * lvl(s, 'stank'));
+  const negScale = s => Math.max(0.2, 1 - 0.1 * lvl(s, 'stank'));
+  const eventChance = () => EVENT_CHANCE;
+  const rivalWin = s => clamp(0.3 + 0.08 * lvl(s, 'smash') + 0.08 * gearLv(s, 'stick'), 0, 0.92);
+  const totalLevels = s => SKILL_KEYS.reduce((n, k) => n + lvl(s, k), 0);
+  const lonely = s => s.social < 25;
+
+  const weekOf = day => Math.ceil(day / 7);
+  const rentFor = week => RENT_BASE + RENT_STEP * (week - 1);
+  const rentInfo = s => {
+    const week = weekOf(s.day), rent = rentFor(week), dueDay = week * 7;
+    return { week, rent, dueDay, daysLeft: dueDay - s.day, short: Math.max(0, rent - s.money) };
+  };
+  const rankOf = s => { let r = RANKS[0]; for (const x of RANKS) if (s.shifts >= x.at) r = x; return r; };
+
+  const drain = (s, asleep) => {
+    const m = effMult(s) * dayMult(s);
+    const sm = stankSocial(s);
+    return asleep ? { food: 3 * m, water: 4 * m, energy: 0, social: 0.5 * sm } : { food: 7 * m, water: 9 * m, energy: 4 * m, social: 2 * sm };
+  };
+  const drainPreview = s => {
+    const d = drain(s, false);
+    return { food: Math.round(d.food), water: Math.round(d.water), energy: Math.round(d.energy), social: Math.round(d.social) };
+  };
+
+  /* tournaments */
+  const OPP_NAMES = ['Cheeseburger', 'Lil Dash', 'xX_Ledge_Xx', 'Grandma Mae', 'Dave from Accounting', 'Pocket Rocket', 'Coach Pat', 'DJ Spacie', 'Mr. Shield', 'Ramen', 'A Literal Child', 'Jolene', 'Sir Taps-a-Lot', 'The Mailman', 'Big Tony', 'Kevin (Not That One)'];
+  const ROUND_NAMES = ['Quarterfinal', 'Semifinal', 'Final'];
+  const cupPower = s => 30 + 9 * lvl(s, 'smash') + 8 * gearLv(s, 'stick') + 1.5 * lvl(s, 'stank') - (s.energy < 30 ? 12 : 0);
+  const oppBase = (s, r) => 28 + 6 * lvl(s, 'smash') + 8 * r;
+  const gameProb = (c, o) => 1 / (1 + Math.exp(-(c - o) / 14));
+  const matchProb = g => g * g * (3 - 2 * g);
+  const cupOdds = s => { let p = 1; for (let r = 0; r < 3; r++) p *= matchProb(gameProb(cupPower(s), oppBase(s, r))); return p; };
+  const runCup = (s, rng) => {
+    const names = OPP_NAMES.slice();
+    const opps = [0, 1, 2].map(() => names.splice(Math.min(names.length - 1, Math.floor(rng() * names.length)), 1)[0]);
+    const c = cupPower(s);
+    const rounds = [];
+    for (let r = 0; r < 3; r++) {
+      const o = oppBase(s, r) + (rng() * 16 - 8);
+      const g = gameProb(c, o);
+      let a = 0, b = 0;
+      while (a < 2 && b < 2) { if (rng() < g) a++; else b++; }
+      const win = a === 2;
+      rounds.push({ round: ROUND_NAMES[r], opp: opps[r], score: `${a}-${b}`, win });
+      if (!win) break;
+    }
+    const won = rounds.filter(x => x.win).length;
+    const place = won === 3 ? 'Champion' : won === 2 ? 'Runner-up' : won === 1 ? 'Semifinalist' : 'Out in round one';
+    const prize = won === 3 ? PRIZE.champ : won === 2 ? PRIZE.final : 0;
+    return { rounds, won, place, prize };
+  };
+
+  const ACTIONS = [
+    { id: 'eat', name: 'Cook a meal', code: 'Eat', cat: 'survive', tint: 'food', slots: 1,
+      flavor: 'Something hot. Mostly pasta.', fx: { food: 36, energy: -2 },
+      gear: [{ item: 'fridge', kind: 'gain', stat: 'food', per: 0.3 }],
+      msgs: ['Pasta. Again. No regrets.', 'Three eggs and a toast that fought back.', 'Leftover rice, reheated with optimism.'] },
+    { id: 'drink', name: 'Drink water', code: 'Drink', cat: 'survive', tint: 'water', slots: 1,
+      flavor: 'Plain, cold, underrated.', fx: { water: 42 },
+      gear: [{ item: 'filter', kind: 'gain', stat: 'water', per: 0.3 }],
+      msgs: ['A tall glass. Carlos felt like a houseplant.', 'He drank straight from the tap like a hero.', 'A full bottle, gone. Hydration achieved.'] },
+    { id: 'sleep', name: 'Sleep', code: 'Sleep', cat: 'survive', tint: 'energy', slots: 1, asleep: true,
+      flavor: 'Best at night. Naps work, but less.', fx: { energy: 24 }, nightFx: { energy: 40 },
+      gear: [{ item: 'bed', kind: 'gain', stat: 'energy', per: 0.35 }],
+      msgs: ['A short nap. Drool was involved.', 'He fell asleep on the couch, controller in hand.', 'Power nap. No dreams.'],
+      nightMsgs: ['Out cold. He dreamed about a perfect combo.', 'Real sleep, in a real bed.', 'Slept like a log. A very tired log.'] },
+    { id: 'discord', name: 'Chill on Discord', code: 'Boys', cat: 'life', tint: 'social', slots: 1,
+      flavor: 'Voice chat with the boys. Nothing gets done.', fx: { social: 34, energy: -2 },
+      gear: [{ item: 'headset', kind: 'gain', stat: 'social', per: 0.3 }],
+      msgs: ['Baker, Monty, Luke and Tim argued for two hours about nothing. It was perfect.', 'Luke played a soundboard at the worst possible moment. Carlos cried laughing.', 'Tim and Monty bet on a coin flip. Baker lost somehow.'] },
+    { id: 'work', name: 'Theater shift', code: 'Work', cat: 'life', tint: 'money', slots: 2, special: 'work',
+      flavor: 'Tear tickets, sweep popcorn, get paid.', fx: { energy: -12, water: -4, food: -3, social: 4 },
+      gear: [{ item: 'shoes', kind: 'cost', stat: 'energy', per: 0.2 }],
+      pay: s => rankOf(s).pay, when: s => s.slot >= 3 && s.slot <= 7, whenNote: 'Shifts start between 12p and 8p.',
+      msgs: ['Tore tickets and swept popcorn. Smelled like butter for hours.', 'Someone dropped a large soda. Carlos mopped with dignity.', 'Tim slipped him free nachos on break. Best part of the shift.', 'He watched the same trailer forty times.'] },
+    { id: 'lift', name: 'Workout', code: 'Lift', cat: 'train', tint: 'fit', slots: 1,
+      flavor: 'Lift things. Put them down.', fx: { energy: -14, water: -5 }, xp: { fit: 10 },
+      gear: [{ item: 'gym', kind: 'cost', stat: 'energy', per: 0.15 }, { item: 'gym', kind: 'xp', stat: 'fit', per: 0.2 }],
+      msgs: ['Pushups until the floor won.', 'Curls with a bag of rice. Gains.', 'Lifted things and put them back down.'] },
+    { id: 'smash', name: 'Play Smash Bros', code: 'Smash', cat: 'train', tint: 'smash', slots: 1,
+      flavor: 'Light on energy. Heavy on snacks.', fx: { energy: -6, food: -3 }, xp: { smash: 10 },
+      msgs: ['Three stocks, zero chill.', 'Perfected a combo, mostly by accident.', 'Got dunked on by a stranger online. Learned something.'] },
+    { id: 'rot', name: 'Rotmax', code: 'Rot', cat: 'train', tint: 'stank', slots: 1,
+      flavor: 'Dive into the feed. Come out different.', fx: { energy: -5, water: -4, food: -2 }, xp: { stank: 10 },
+      gear: [{ item: 'monitor', kind: 'xp', stat: 'stank', per: 0.25 }],
+      msgs: ['Scrolled until the stank set in.', 'Carlos is now fluent in nonsense.', 'He saw things. The stank deepened.'] },
+    { id: 'run', name: 'Long run', code: 'Run', cat: 'unlock', tint: 'fit', slots: 2, req: { k: 'fit', lv: 3 },
+      flavor: 'Better training per block, but it drains him.', fx: { energy: -26, water: -10, food: -6 }, xp: { fit: 26 },
+      msgs: ['Ran to the end of the street and kept going.', 'Ten kilometres of wind and regret.', 'He ran until the neighborhood changed.'] },
+    { id: 'cup', name: 'Local tournament', code: 'Cup', cat: 'unlock', tint: 'smash', slots: 2, req: { k: 'smash', lv: 3 },
+      flavor: 'Eight players, three rounds. Winner takes the cash.', fx: { energy: -12, food: -4 }, xp: { smash: 14 }, special: 'cup', msgs: [''] },
+    { id: 'marathon', name: 'Rotmax marathon', code: 'Rot+', cat: 'unlock', tint: 'stank', slots: 2, req: { k: 'stank', lv: 3 },
+      flavor: 'Hours deep. Something changes.', fx: { energy: -10, water: -9, food: -5 }, xp: { stank: 30 }, special: 'marathon', msgs: [''] }
+  ];
+  const MARATHON = [
+    'Carlos watched forty clips about a guy who never blinks. He now blinks less.',
+    'He learned a dance that only exists on a phone. His roommate has questions.',
+    'He emerged smelling like a vintage cartridge.',
+    'His thumbs grew a callus in the shape of a heart.'
+  ];
+  const DEATHS = {
+    food: ['Carlos starved. The fridge light was the last thing he saw.', 'Carlos forgot to eat. His stomach filed a final complaint.', 'Carlos ran out of food. He had combos, but no snacks.'],
+    water: ['Carlos dried out. He is now, technically, jerky.', 'Carlos forgot water exists. Water did not forget him.', 'Carlos died of thirst. The tap was twelve feet away.'],
+    energy: ['Carlos collapsed mid-sentence. The couch accepted him.', 'Carlos powered down for the last time. Nobody could find the charger.', 'Carlos ran on fumes until the fumes ran out.'],
+    social: ['Carlos went so long without talking to anyone that he started negotiating with the router.', 'Carlos spoke to no one for days. The group chat moved on without him.', 'Carlos got lonely. Even the pigeon left.'],
+    rent: ['The landlord changed the locks. Carlos still had the Wi-Fi password, but nowhere to use it.', 'Rent was due and Carlos was not ready. The couch went to the curb with him.', 'Carlos came home to a note on the door. It was not a friendly note.']
+  };
+  const CAUSE_TITLE = { food: 'Carlos starved.', water: 'Carlos dried out.', energy: 'Carlos burned out.', social: 'Carlos got lonely.', rent: 'Carlos was evicted.' };
+
+  const unlocked = (s, a) => !a.req || lvl(s, a.req.k) >= a.req.lv;
+  const available = (s, a) => !a.when || a.when(s);
+  const gearSum = (s, a, kind, stat) => (a.gear || []).filter(g => g.kind === kind && g.stat === stat).reduce((n, g) => n + g.per * gearLv(s, g.item), 0);
+  const scaleXp = (s, v) => Math.round(v * (s.rested ? 1.25 : 1) * (lonely(s) ? 0.7 : 1));
+  const xpGain = (s, a) => {
+    const out = { fit: 0, smash: 0, stank: 0 };
+    for (const k in (a.xp || {})) out[k] = Math.round(a.xp[k] * (s.rested ? 1.25 : 1) * (lonely(s) ? 0.7 : 1) * (1 + gearSum(s, a, 'xp', k)));
+    return out;
+  };
+
+  const simulate = (s, a) => {
+    const m = effMult(s) * dayMult(s);
+    const night = isNight(s.slot);
+    const fx = a.asleep && night ? a.nightFx : a.fx;
+    const adj = (v, stat) => v > 0
+      ? v * (1 + gearSum(s, a, 'gain', stat))
+      : v * m * (stat === 'energy' && night && !a.asleep ? 1.4 : 1) * (1 - gearSum(s, a, 'cost', stat));
+    let food = s.food + adj(fx.food || 0, 'food');
+    let water = s.water + adj(fx.water || 0, 'water');
+    let energy = s.energy + adj(fx.energy || 0, 'energy');
+    let social = s.social + adj(fx.social || 0, 'social');
+    for (let i = 0; i < a.slots; i++) {
+      const d = drain(s, !!a.asleep);
+      food -= d.food; water -= d.water; energy -= d.energy; social -= d.social;
+    }
+    const money = s.money + (a.pay ? a.pay(s) : 0);
+    return {
+      food: Math.round(clamp(food, 0, 100)), water: Math.round(clamp(water, 0, 100)),
+      energy: Math.round(clamp(energy, 0, 100)), social: Math.round(clamp(social, 0, 100)), money,
+      raw: { food, water, energy, social }
+    };
+  };
+  const fatalCause = sim => {
+    const dead = NEEDS.filter(k => sim[k] <= 0);
+    if (!dead.length) return null;
+    return dead.sort((a, b) => sim.raw[a] - sim.raw[b])[0];
+  };
+  const preview = (s, a) => {
+    const sim = simulate(s, a);
+    return { food: sim.food - s.food, water: sim.water - s.water, energy: sim.energy - s.energy, social: sim.social - s.social,
+      money: sim.money - s.money, xp: xpGain(s, a), fatal: fatalCause(sim) };
+  };
+
+  const addLog = (s, text, stamp) => {
+    const st = stamp || { d: s.day, slot: s.slot };
+    s.log.unshift({ d: st.d, slot: st.slot, text });
+    if (s.log.length > 40) s.log.length = 40;
+  };
+  const grantXp = (s, gain, stamp) => {
+    const ups = [];
+    for (const k of SKILL_KEYS) {
+      const g = gain[k] || 0;
+      if (!g) continue;
+      const before = levelOf(s.xp[k]);
+      s.xp[k] = Math.min(s.xp[k] + g, XP_STEPS[MAX_LV]);
+      const after = levelOf(s.xp[k]);
+      if (after > before) {
+        ups.push({ k, from: before, to: after });
+        let t = `${SKILL_NAMES[k]} reached level ${after}.`;
+        const un = ACTIONS.filter(a => a.req && a.req.k === k && a.req.lv > before && a.req.lv <= after).map(a => a.name);
+        if (un.length) t += ` Unlocked: ${un.join(', ')}.`;
+        addLog(s, t, stamp);
+      }
+    }
+    return ups;
+  };
+  const checkDeath = (s, rng) => {
+    const dead = [['water', s.water], ['food', s.food], ['energy', s.energy], ['social', s.social]].filter(p => p[1] <= 0);
+    if (!dead.length) return false;
+    const cause = dead[0][0];
+    s.over = { cause, msg: pick(DEATHS[cause], rng), day: s.day, slot: s.slot };
+    addLog(s, s.over.msg);
+    return true;
+  };
+  const rollover = (s, rng) => {
+    const rested = s.nightSleeps >= 2;
+    const week = weekOf(s.day);
+    const weekEnd = s.day % 7 === 0;
+    s.day += 1; s.slot -= SLOTS; s.plan = s.plan.slice(SLOTS);
+    s.rested = rested; s.nightSleeps = 0;
+    addLog(s, rested ? `Day ${s.day} begins. Carlos slept well, so training is 25% faster today.` : `Day ${s.day} begins.`);
+    if (weekEnd) {
+      const rent = rentFor(week);
+      if (s.money >= rent) {
+        s.money -= rent;
+        addLog(s, `Rent paid: $${rent}. Next week it is $${rentFor(week + 1)}.`);
+      } else {
+        s.over = { cause: 'rent', msg: pick(DEATHS.rent, rng), day: s.day, slot: s.slot };
+        addLog(s, s.over.msg);
+      }
+    } else {
+      const info = rentInfo(s);
+      if (info.daysLeft <= 2 && info.short > 0) addLog(s, `Rent is due at the end of Day ${info.dueDay}. Carlos is $${info.short} short.`);
+    }
+  };
+
+  const gf = (win, lose) => (s, rng) => rng() < 0.25 ? win : Object.assign({ ignored: 1 }, lose);
+  /* Event signature: text(s, ev), hint(s, ev), run(s, rng, ev). ev = { id, f, g } where f and g are two different friends. */
+  const EVENTS = [
+    /* everyday life */
+    { id: 'rival', w: 3, title: 'Big Tony is at the door',
+      text: () => 'He brought a controller and a grudge. He says it will only take one match.',
+      choices: [
+        { label: 'Accept the match', hint: s => `${Math.round(rivalWin(s) * 100)}% to win. Smash xp either way.`,
+          run: (s, rng) => rng() < rivalWin(s)
+            ? { msg: 'Carlos beat Big Tony 3-0. Tony left without saying goodbye.', fx: { energy: -4 }, xp: { smash: 14 } }
+            : { msg: 'Big Tony won. Carlos learned something and his thumbs hurt.', fx: { energy: -8 }, xp: { smash: 5 } } },
+        { label: 'Pretend nobody is home', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos turned off the lights and held his breath. Tony eventually left.' }) }
+      ] },
+    { id: 'stank', w: 3, title: 'The stank arrives first',
+      text: s => lvl(s, 'stank') < 2 ? 'A neighbor sniffed the hallway, shrugged, and kept walking.'
+        : lvl(s, 'stank') < 5 ? 'The elevator emptied when Carlos got in. He took it personally.'
+        : 'A raccoon looked at Carlos, nodded once, and left the trash alone.',
+      choices: [
+        { label: 'Embrace it', hint: () => 'Stank xp +8, Energy -2',
+          run: () => ({ msg: 'Carlos leaned into it. The stank deepened.', fx: { energy: -2 }, xp: { stank: 8 } }) },
+        { label: 'Take a shower', hint: () => 'Energy +8, Water -6',
+          run: () => ({ msg: 'A shower. Carlos feels clean and a little empty.', fx: { energy: 8, water: -6 } }) }
+      ] },
+    { id: 'vending', w: 2, title: 'A vending machine malfunctions',
+      text: () => 'It dropped everything and nobody is looking. For once, the universe is on Carlos\'s side.',
+      choices: [
+        { label: 'Grab the snacks', hint: () => 'Food +18',
+          run: () => ({ msg: 'Free snacks from a stuck machine. Carlos did not ask questions.', fx: { food: 18 } }) },
+        { label: 'Grab the soda', hint: () => 'Water +20, Energy +5',
+          run: () => ({ msg: 'A free soda. Fizzy, sweet, suspicious.', fx: { water: 20, energy: 5 } }) }
+      ] },
+    { id: 'pigeon', w: 1.5, title: 'A pigeon bows to Carlos', when: s => lvl(s, 'stank') >= 2,
+      text: () => 'It stopped mid-stride, tilted its head, and lowered itself. It has clearly smelled greatness.',
+      choices: [
+        { label: 'Bow back', hint: () => 'Stank xp +10, Energy -3',
+          run: () => ({ msg: 'Carlos bowed. The pigeon bowed deeper. Something passed between them.', fx: { energy: -3 }, xp: { stank: 10 } }) },
+        { label: 'Walk past', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'The pigeon looked hurt, then looked away.' }) }
+      ] },
+    { id: 'gym', w: 2, title: 'A gym bro offers a spot', when: s => lvl(s, 'fit') >= 1,
+      text: () => 'His forearms look like bridge cables and he is not leaving until Carlos says yes.',
+      choices: [
+        { label: 'Accept the spot', hint: () => 'Fitness xp +12, Energy -10',
+          run: () => ({ msg: 'A stranger yelled "one more" until it worked.', fx: { energy: -10 }, xp: { fit: 12 } }) },
+        { label: 'Say you are leaving', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos said he was just leaving. He was not.' }) }
+      ] },
+    { id: 'leftovers', w: 2, title: 'A mystery container in the fridge',
+      text: () => 'It is labeled "Tuesday". It is not Tuesday. Nobody remembers which Tuesday.',
+      choices: [
+        { label: 'Eat it', hint: () => 'Food +25. Small chance of regret.',
+          run: (s, rng) => rng() < 0.7
+            ? { msg: 'The mystery leftovers were fine. Probably chicken.', fx: { food: 25 } }
+            : { msg: 'The leftovers fought back. Carlos regrets everything.', fx: { food: 10, energy: -18 } } },
+        { label: 'Throw it out', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos threw it out without looking. Wise.' }) }
+      ] },
+    { id: 'meetup', w: 1.5, title: 'A flyer for a Smash meetup', when: s => lvl(s, 'smash') >= 2,
+      text: () => 'Hand-drawn and taped to a lamppost. Free entry, bring your own controller.',
+      choices: [
+        { label: 'Go to the meetup', hint: () => 'Smash xp +12, Social +8, Energy -8, Water -5',
+          run: () => ({ msg: 'A basement meetup. Carlos lost three times and learned a lot.', fx: { energy: -8, water: -5, social: 8 }, xp: { smash: 12 } }) },
+        { label: 'Stay home', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos stayed home. The flyer went on the fridge.' }) }
+      ] },
+    { id: 'night', w: 2.5, title: 'Late-night thoughts', when: s => isNight(s.slot),
+      text: () => 'The ceiling is very interesting right now. So are Carlos\'s opinions about everything.',
+      choices: [
+        { label: 'Stay up thinking', hint: () => 'Every skill +4 xp, Energy -10',
+          run: () => ({ msg: 'Carlos feels smarter and worse.', fx: { energy: -10 }, xp: { fit: 4, smash: 4, stank: 4 } }) },
+        { label: 'Back to bed', hint: () => 'Energy +10',
+          run: () => ({ msg: 'Carlos went to bed like a reasonable man.', fx: { energy: 10 } }) }
+      ] },
+    { id: 'lottery', w: 1, title: 'A scratch ticket on the sidewalk',
+      text: () => 'Slightly bent. Slightly damp. Definitely tempting.',
+      choices: [
+        { label: 'Scratch it', hint: () => '10% chance of $40. Otherwise a lesson.',
+          run: (s, rng) => rng() < 0.1 ? { msg: 'It won. Carlos screamed in a parking lot for a full minute.', fx: { money: 40 } } : { msg: 'It said "thanks for playing". Carlos did not feel thanked.' } },
+        { label: 'Leave it for fate', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos left it. A kid grabbed it and sprinted off. Fate is fast.' }) }
+      ] },
+    { id: 'busker', w: 1.2, title: 'A busker plays Carlos\'s favorite song',
+      text: () => 'Badly. On a bucket. Carlos can feel the song trying its best.',
+      choices: [
+        { label: 'Stay and listen', hint: () => 'Social +6, Energy +4',
+          run: () => ({ msg: 'Carlos stayed for the whole thing and tipped with his eyes. The busker nodded.', fx: { social: 6, energy: 4 } }) },
+        { label: 'Hurry past', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos hurried past. The bucket kept the beat.' }) }
+      ] },
+    { id: 'dog', w: 1.2, title: 'A very friendly dog',
+      text: () => 'It has no owner in sight and a lot of opinions about Carlos\'s shoes.',
+      choices: [
+        { label: 'Pet the dog', hint: () => 'Social +8, Energy +3',
+          run: () => ({ msg: 'Carlos pet the dog for twenty minutes. Both of them are better people.', fx: { social: 8, energy: 3 } }) },
+        { label: 'Share your lunch', hint: () => 'Social +10, Food -8',
+          run: () => ({ msg: 'The dog ate half of Carlos\'s lunch and took him as a friend.', fx: { social: 10, food: -8 } }) }
+      ] },
+
+    /* inherently negative. Stank makes these less likely. */
+    { id: 'fridge', neg: true, w: 1.6, title: 'The fridge is empty',
+      text: () => 'Someone (Carlos) finished the leftovers. All that remains is a jar of mustard and a note that says "buy milk".',
+      choices: [
+        { label: 'Eat dry crackers', hint: () => 'Food +10, Water -8',
+          run: () => ({ msg: 'Crackers. Dry ones. Carlos regrets nothing except the water.', fx: { food: 10, water: -8 } }) },
+        { label: 'Order delivery', cost: 12, hint: () => 'Food +26, Energy -10. Costs $12.',
+          run: () => ({ msg: 'Delivery took an hour. Carlos waited by the door like a loyal dog.', fx: { food: 26, energy: -10 } }) }
+      ] },
+    { id: 'cold', neg: true, w: 1.5, title: 'Carlos is sniffly',
+      text: () => 'Something is going around. It found Carlos.',
+      choices: [
+        { label: 'Power through', hint: () => 'Energy -12',
+          run: () => ({ msg: 'Carlos pushed on with a runny nose and a dream.', fx: { energy: -12 } }) },
+        { label: 'Make hot tea', hint: () => 'Water +10, Energy -4, Food -3',
+          run: () => ({ msg: 'Tea fixed most of it. Carlos feels like a grandparent.', fx: { water: 10, energy: -4, food: -3 } }) }
+      ] },
+    { id: 'heat', neg: true, w: 1.5, title: 'Heat wave',
+      text: () => 'The apartment is an oven and the fan has opinions.',
+      choices: [
+        { label: 'Blast the fan', hint: () => 'Water -6, Energy -4',
+          run: () => ({ msg: 'The fan roared all afternoon. Carlos stayed mostly dry.', fx: { water: -6, energy: -4 } }) },
+        { label: 'Sweat it out', hint: () => 'Water -14, Stank xp +6',
+          run: () => ({ msg: 'Carlos sweated through the day and radiated a new aroma.', fx: { water: -14 }, xp: { stank: 6 } }) }
+      ] },
+    { id: 'wifi', neg: true, w: 1.6, title: 'The Wi-Fi dies',
+      text: () => 'The router blinked three times and gave up. Carlos stared at it like it owed him money.',
+      choices: [
+        { label: 'Wait it out', hint: () => 'Social -8, Energy -3',
+          run: () => ({ msg: 'Carlos refreshed the page four hundred times. The Wi-Fi came back when it felt like it.', fx: { social: -8, energy: -3 } }) },
+        { label: 'Use your phone hotspot', cost: 10, hint: () => 'Social -2. Costs $10.',
+          run: () => ({ msg: 'Carlos tethered his phone and paid for it in data and dignity.', fx: { social: -2 } }) }
+      ] },
+    { id: 'landlord', neg: true, w: 1.5, title: 'The landlord is "checking the pipes"',
+      text: () => 'He has been checking the pipes for forty minutes. He keeps looking at the dishes.',
+      choices: [
+        { label: 'Clean frantically', hint: () => 'Energy -12, Water -5',
+          run: () => ({ msg: 'Carlos cleaned like a man possessed. The landlord left a suspiciously nice review of the pipes.', fx: { energy: -12, water: -5 } }) },
+        { label: 'Let him look around', hint: () => '40% chance of a $25 "cleaning fee".',
+          run: (s, rng) => rng() < 0.4
+            ? { msg: 'The landlord found the Rotmax shrine. There was a "cleaning fee".', fx: { money: -25 } }
+            : { msg: 'The landlord looked, sniffed, and left. Carlos got away with it.' } }
+      ] },
+    { id: 'phone', neg: true, w: 1.4, title: 'Carlos drops his phone',
+      text: () => 'It fell face-first. It made a noise phones are not supposed to make.',
+      choices: [
+        { label: 'Repair it', cost: 40, hint: () => 'Costs $40.',
+          run: () => ({ msg: 'The repair shop fixed it and charged him for the shame.' }) },
+        { label: 'Live with the crack', hint: () => 'Social -6, Energy -2',
+          run: () => ({ msg: 'Carlos now reads texts through a spiderweb. Replies are slower.', fx: { social: -6, energy: -2 } }) }
+      ] },
+    { id: 'neighbors', neg: true, w: 1.5, title: 'The neighbors throw a party',
+      text: () => 'Bass is coming through the floor. Carlos can feel it in his teeth.',
+      choices: [
+        { label: 'Try to sleep anyway', hint: () => 'Energy -10',
+          run: () => ({ msg: 'Carlos lay awake and counted the beats. There were many.', fx: { energy: -10 } }) },
+        { label: 'Go to the party', hint: () => 'Social +10, Food +8, Energy -8',
+          run: () => ({ msg: 'Carlos went upstairs, ate the chips, and learned the neighbor\'s name is Gary.', fx: { social: 10, food: 8, energy: -8 } }) }
+      ] },
+    { id: 'stomach', neg: true, w: 1.3, title: 'Carlos has a stomach bug',
+      text: () => 'Something Carlos ate has opinions.',
+      choices: [
+        { label: 'Tough it out', hint: () => 'Food -12, Water -10, Energy -6',
+          run: () => ({ msg: 'Carlos suffered heroically and told no one.', fx: { food: -12, water: -10, energy: -6 } }) },
+        { label: 'Buy medicine', cost: 12, hint: () => 'Food -4, Water -4, Energy -2. Costs $12.',
+          run: () => ({ msg: 'The pharmacist looked at Carlos and handed over the strong stuff.', fx: { food: -4, water: -4, energy: -2 } }) }
+      ] },
+    { id: 'spill', neg: true, w: 1.3, title: 'A soda hits the controller',
+      text: () => 'A full can. Over the buttons. In slow motion.',
+      choices: [
+        { label: 'Dry it with a hairdryer', hint: () => 'Energy -6',
+          run: () => ({ msg: 'Carlos blasted it with warm air and prayed. It works. Mostly.', fx: { energy: -6 } }) },
+        { label: 'Buy a new controller', cost: 20, hint: () => 'Smash xp +4. Costs $20.',
+          run: () => ({ msg: 'A new controller. The buttons were stiff for a day and then perfect.', xp: { smash: 4 } }) }
+      ] },
+    { id: 'bus', neg: true, w: 1.4, title: 'The bus never comes',
+      text: () => 'Carlos has been at the stop for an hour. The man next to him sold a house in that time.',
+      choices: [
+        { label: 'Walk', hint: () => 'Energy -12, Water -6, Fitness xp +4',
+          run: () => ({ msg: 'Carlos walked the whole way, muttering about transit.', fx: { energy: -12, water: -6 }, xp: { fit: 4 } }) },
+        { label: 'Take a cab', cost: 15, hint: () => 'Energy -3. Costs $15.',
+          run: () => ({ msg: 'The cab smelled like pine and secrets. Carlos arrived with his dignity.', fx: { energy: -3 } }) }
+      ] },
+    { id: 'bill', neg: true, w: 1.4, title: 'A mystery bill',
+      text: () => 'It says "convenience fee". Nobody knows what was convenient.',
+      choices: [
+        { label: 'Pay it', cost: 25, hint: () => 'Costs $25.',
+          run: () => ({ msg: 'Carlos paid it. He is now technically more convenient.' }) },
+        { label: 'Ignore it', hint: () => '60% nothing. 40% a $40 late fee.',
+          run: (s, rng) => rng() < 0.6
+            ? { msg: 'Carlos ignored the bill. The bill ignored Carlos right back.' }
+            : { msg: 'The bill came back with a late fee and a bad attitude.', fx: { money: -40 } } }
+      ] },
+    { id: 'blackout', neg: true, w: 1.3, title: 'Power outage',
+      text: () => 'The lights died. So did the router, the fridge and the vibe.',
+      choices: [
+        { label: 'Sit in the dark', hint: () => 'Energy -4, Social -4',
+          run: () => ({ msg: 'Carlos sat in the dark and reflected on his choices. There were several.', fx: { energy: -4, social: -4 } }) },
+        { label: 'Crash at a friend\'s place', hint: (s, ev) => `Social +6, Food -4, Energy -6. Staying at ${ev.f}'s.`,
+          run: (s, rng, ev) => ({ msg: `Carlos crashed at ${ev.f}'s place. They ate cereal by candlelight.`, fx: { social: 6, food: -4, energy: -6 } }) }
+      ] },
+    { id: 'milk', neg: true, w: 1.3, title: 'The milk smells strange',
+      text: () => 'It has a texture now. Carlos is not sure milk is allowed to have a texture.',
+      choices: [
+        { label: 'Toss it', hint: () => 'Food -6',
+          run: () => ({ msg: 'Carlos poured it out and said a few words.', fx: { food: -6 } }) },
+        { label: 'Do the sniff test', hint: () => 'Risky. 50% fine, 50% Energy -15.',
+          run: (s, rng) => rng() < 0.5
+            ? { msg: 'The sniff test said "maybe". Carlos heard "yes". He survived.', fx: { food: 6 } }
+            : { msg: 'The sniff test lied. Carlos is now a student of regret.', fx: { energy: -15, food: -6 } } }
+      ] },
+    { id: 'headache', neg: true, w: 1.2, title: 'A headache from nowhere',
+      text: () => 'Carlos blames screens, the weather, and a man he saw in 2019.',
+      choices: [
+        { label: 'Push through', hint: () => 'Energy -10',
+          run: () => ({ msg: 'Carlos pushed through. The headache pushed back.', fx: { energy: -10 } }) },
+        { label: 'Lie down in the dark', hint: () => 'Energy -4, Social -3',
+          run: () => ({ msg: 'Carlos lay in the dark for an hour. It helped. He feels like a vampire.', fx: { energy: -4, social: -3 } }) }
+      ] },
+    { id: 'silence', neg: true, w: 1.3, title: 'The group chat goes quiet',
+      text: () => 'Carlos posted a joke. No one reacted. Not even a pity thumbs up.',
+      choices: [
+        { label: 'Post another joke', hint: () => '50% it lands for Social +12. Otherwise Social -6.',
+          run: (s, rng) => rng() < 0.5
+            ? { msg: 'The second joke landed. Someone typed "LMAO". Carlos felt alive.', fx: { social: 12 } }
+            : { msg: 'The second joke made it worse. Someone left the chat for a minute out of respect.', fx: { social: -6 } } },
+        { label: 'Delete the message', hint: () => 'Social -3',
+          run: () => ({ msg: 'Carlos deleted the message and swore nobody saw it. Everybody saw it.', fx: { social: -3 } }) }
+      ] },
+
+    /* the boys, one at a time */
+    { id: 'baker-squad', w: 1.4, kicker: 'Baker, on Discord', title: 'Baker needs a fourth',
+      text: () => 'Baker pinged the group: "One more person and we can start." It is, obviously, Carlos.',
+      choices: [
+        { label: 'Hop in', hint: () => 'Social +18, Smash xp +10, Energy -6',
+          run: () => ({ msg: 'Carlos hopped in. Baker called him "the missing piece" and then immediately blamed him for the loss.', fx: { social: 18, energy: -6 }, xp: { smash: 10 } }) },
+        { label: 'Say you are busy', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos said he was busy. Baker found a stranger. The stranger was better.' }) }
+      ] },
+    { id: 'baker-take', w: 1.2, kicker: 'Baker, on Discord', title: 'Baker posts a terrible take',
+      text: () => 'A tier list that offended three people and a cat. The channel is on fire.',
+      choices: [
+        { label: 'Argue back', hint: () => 'Social +12, Energy -4',
+          run: () => ({ msg: 'Carlos argued for an hour. Nobody changed their mind. Everyone felt closer.', fx: { social: 12, energy: -4 } }) },
+        { label: 'Mute the channel', hint: () => 'Energy +4, Social -4',
+          run: () => ({ msg: 'Carlos muted the channel and enjoyed the silence. It was a little too quiet.', fx: { energy: 4, social: -4 } }) }
+      ] },
+    { id: 'monty-loan', w: 1.3, kicker: 'Monty', title: 'Monty needs twenty bucks',
+      text: () => 'He says it is until Friday. It is never until Friday.',
+      choices: [
+        { label: 'Lend him $20', cost: 20, hint: () => 'Social +10. Monty\'s credit history is vibes.',
+          run: (s, rng) => rng() < 0.5
+            ? { msg: 'Monty paid it back with a $10 tip, because he found a coupon.', fx: { money: 30, social: 10 } }
+            : { msg: 'Monty has vanished along with the twenty. Carlos feels generous and poor.', fx: { social: 10 } } },
+        { label: 'Say no', hint: () => 'Social -6',
+          run: () => ({ msg: 'Monty said it was fine. It was not fine.', fx: { social: -6 } }) }
+      ] },
+    { id: 'monty-controller', w: 1.2, kicker: 'Monty', title: 'Monty\'s mystery controller',
+      text: () => 'A "mint condition" controller from a yard sale. The stick wobbles a little.',
+      choices: [
+        { label: 'Buy it for $25', cost: 25, hint: () => 'Smash xp +14. Might be broken.',
+          run: (s, rng) => rng() < 0.7
+            ? { msg: 'The wobble turned out to be a feature. Carlos feels sharper.', xp: { smash: 14 } }
+            : { msg: 'It died after one match. Monty has already left the chat.', xp: { smash: 3 } } },
+        { label: 'Pass', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos passed. Monty sold it to a kid for forty.' }) }
+      ] },
+    { id: 'luke-wings', w: 1.3, kicker: 'Luke', title: 'Luke has a coupon',
+      text: () => 'Two-for-one wings. He has exactly one coupon and no impulse control.',
+      choices: [
+        { label: 'Split the wings', cost: 8, hint: () => 'Food +30, Social +12, Energy -6. Costs $8.',
+          run: () => ({ msg: 'Wings, with Luke, at a sticky table. Carlos had a very good evening.', fx: { food: 30, social: 12, energy: -6 } }) },
+        { label: 'Wish him luck', hint: () => 'Social +3',
+          run: () => ({ msg: 'Carlos sent a thumbs up. Luke sent back a photo of the wings.', fx: { social: 3 } }) }
+      ] },
+    { id: 'luke-gym', w: 1.2, kicker: 'Luke', title: 'Luke wants a gym buddy',
+      text: () => 'He says he will cover the day pass if Carlos stops complaining about leg day.',
+      choices: [
+        { label: 'Lift together', hint: () => 'Fitness xp +12, Social +8, Energy -12, Water -5',
+          run: () => ({ msg: 'Luke spotted. Carlos complained about leg day the entire time.', fx: { social: 8, energy: -12, water: -5 }, xp: { fit: 12 } }) },
+        { label: 'Maybe tomorrow', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos said maybe tomorrow. Luke has heard that before.' }) }
+      ] },
+    { id: 'tim-shift', w: 1.4, kicker: 'Tim', title: 'Tim needs a shift covered',
+      text: () => 'Tim works concessions at the theater. His coworker bailed and he is panicking. It pays cash, today.',
+      choices: [
+        { label: 'Cover the shift', hint: () => 'Cash +$40, Social +4, Energy -14',
+          run: () => ({ msg: 'Carlos covered for Tim. They split the free popcorn and the blame.', fx: { money: 40, social: 4, energy: -14 } }) },
+        { label: 'Wish him luck', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'Carlos wished Tim luck. Tim replied with a single skull.' }) }
+      ] },
+    { id: 'tim-clips', w: 1.2, kicker: 'Tim', title: 'Tim sends the clips',
+      text: () => 'Forty-one clips, zero context. Tim says they changed his life.',
+      choices: [
+        { label: 'Watch them all', hint: () => 'Stank xp +10, Social +6, Energy -4, Water -3',
+          run: () => ({ msg: 'Carlos watched all forty-one. He and Tim now share a language.', fx: { social: 6, energy: -4, water: -3 }, xp: { stank: 10 } }) },
+        { label: 'Leave him on read', hint: () => 'Social -3',
+          run: () => ({ msg: 'Carlos left Tim on read. Tim sent clip forty-two as a response.', fx: { social: -3 } }) }
+      ] },
+
+    /* the boys, shared. Any of Baker, Monty, Luke or Tim can show up. */
+    { id: 'f-snacks', w: 1.3, kicker: ev => `${ev.f}, in the group chat`, title: ev => `${ev.f} found free snacks`,
+      text: (s, ev) => `${ev.f} is standing next to a pile of clearance snacks and sending Carlos a photo with six exclamation marks.`,
+      choices: [
+        { label: 'Raid the pile', hint: () => 'Food +16, Social +4',
+          run: (s, rng, ev) => ({ msg: `Carlos and ${ev.f} carried out three bags. Nobody asked how.`, fx: { food: 16, social: 4 } }) },
+        { label: 'Let him keep it', hint: () => 'Social +6',
+          run: (s, rng, ev) => ({ msg: `Carlos told ${ev.f} to enjoy it. ${ev.f} sent a photo of him enjoying it.`, fx: { social: 6 } }) }
+      ] },
+    { id: 'f-lan', w: 1.3, kicker: ev => `${ev.f}, on Discord`, title: ev => `${ev.f} is hosting a LAN night`,
+      text: (s, ev) => `${ev.f} has a power strip, a stack of pizza, and a dream. Bring your own controller.`,
+      choices: [
+        { label: 'Bring a controller', hint: () => 'Social +16, Smash xp +8, Food +8, Energy -10, Water -4',
+          run: (s, rng, ev) => ({ msg: `Carlos spent six hours at ${ev.f}'s place. The pizza lasted four minutes.`, fx: { social: 16, food: 8, energy: -10, water: -4 }, xp: { smash: 8 } }) },
+        { label: 'Stay home', hint: () => 'Nothing changes.',
+          run: (s, rng, ev) => ({ msg: `Carlos stayed home. ${ev.f} sent a photo of an empty chair with Carlos's name taped to it.` }) }
+      ] },
+    { id: 'f-roast', w: 1.2, kicker: ev => `${ev.f}, in the group chat`, title: ev => `${ev.f} roasts Carlos`,
+      text: (s, ev) => `${ev.f} posted a screenshot of Carlos's profile picture with a caption that cannot be unseen.`,
+      choices: [
+        { label: 'Roast back', hint: () => 'Social +8, Energy -3',
+          run: (s, rng, ev) => ({ msg: `Carlos fired back with a deep cut about ${ev.f}'s haircut. The chat lost it.`, fx: { social: 8, energy: -3 } }) },
+        { label: 'Take it in silence', hint: () => 'Social -2',
+          run: (s, rng, ev) => ({ msg: `Carlos took it. ${ev.f} felt a bit bad. Not enough to delete it.`, fx: { social: -2 } }) }
+      ] },
+    { id: 'f-soup', w: 1.1, kicker: ev => `${ev.f}`, title: ev => `${ev.f} is sick and wants soup`,
+      text: (s, ev) => `${ev.f} sent a voice memo that is mostly coughing. Somewhere in there is the word "soup".`,
+      choices: [
+        { label: 'Bring soup', cost: 10, hint: () => 'Social +10, Energy -8. Costs $10.',
+          run: (s, rng, ev) => ({ msg: `Carlos left soup at ${ev.f}'s door and ran. ${ev.f} sent a thumbs up and a cough.`, fx: { social: 10, energy: -8 } }) },
+        { label: 'Send a get-well sticker', hint: () => 'Social +2',
+          run: (s, rng, ev) => ({ msg: `Carlos sent a sticker of a cartoon bandage. ${ev.f} felt about the same.`, fx: { social: 2 } }) }
+      ] },
+    { id: 'f-sneak', w: 1.2, kicker: ev => `${ev.f}`, title: ev => `${ev.f} wants into the theater for free`,
+      text: (s, ev) => `${ev.f} is standing outside the theater with the confidence of a man who has never been caught.`,
+      choices: [
+        { label: 'Sneak him in', hint: () => '60% Social +12. 40% caught: Cash -$20.',
+          run: (s, rng, ev) => rng() < 0.6
+            ? { msg: `${ev.f} got in, saw the movie, and ate popcorn off the floor. A good night.`, fx: { social: 12 } }
+            : { msg: `The manager caught ${ev.f}. Carlos pretended he had never met him. It cost twenty bucks.`, fx: { money: -20, social: -2 } } },
+        { label: 'Make him buy a ticket', hint: () => 'Social -3',
+          run: (s, rng, ev) => ({ msg: `${ev.f} bought a ticket. He looked at Carlos like a man betrayed.`, fx: { social: -3 } }) }
+      ] },
+    { id: 'f-bet', w: 1.3, kicker: ev => `${ev.f}, on Discord`, title: ev => `${ev.f} bets Carlos $10 at Smash`,
+      text: (s, ev) => `${ev.f} says Carlos cannot beat him one-on-one. He said it in all caps.`,
+      choices: [
+        { label: 'Take the bet', cost: 10, hint: s => `${Math.round(rivalWin(s) * 100)}% to win. Win and get $20 back.`,
+          run: (s, rng, ev) => rng() < rivalWin(s)
+            ? { msg: `Carlos took ${ev.f}'s money and a little of his pride.`, fx: { money: 20 }, xp: { smash: 10 } }
+            : { msg: `${ev.f} won. He is insufferable about it and will be for weeks.`, xp: { smash: 4 } } },
+        { label: 'Decline', hint: () => 'Social -3',
+          run: (s, rng, ev) => ({ msg: `Carlos declined. ${ev.f} typed "chicken" and a drumstick.`, fx: { social: -3 } }) }
+      ] },
+    { id: 'f-couch', w: 1.1, kicker: ev => `${ev.f}`, title: ev => `${ev.f} is moving and needs help`,
+      text: (s, ev) => `${ev.f} says the couch "basically carries itself". It does not.`,
+      choices: [
+        { label: 'Carry the couch', hint: () => 'Fitness xp +10, Social +8, Energy -14, Water -6',
+          run: (s, rng, ev) => ({ msg: `Carlos and ${ev.f} wedged the couch in the stairwell for an hour. They are now closer.`, fx: { social: 8, energy: -14, water: -6 }, xp: { fit: 10 } }) },
+        { label: 'Claim a bad back', hint: () => 'Social -4',
+          run: (s, rng, ev) => ({ msg: `Carlos claimed a bad back. ${ev.f} saw him jog for a bus an hour later.`, fx: { social: -4 } }) }
+      ] },
+    { id: 'f-theory', w: 1.1, kicker: ev => `${ev.f}`, title: ev => `${ev.f} has a theory`,
+      text: (s, ev) => `${ev.f} has a theory about the Wi-Fi, the moon, and a guy named Steve. It is forty minutes long.`,
+      choices: [
+        { label: 'Listen carefully', hint: () => 'Social +6, Energy -4',
+          run: (s, rng, ev) => ({ msg: `Carlos listened to all of it. He still does not know who Steve is, but he is on ${ev.f}'s side.`, fx: { social: 6, energy: -4 } }) },
+        { label: 'Say "wow" every minute', hint: () => 'Social +3',
+          run: (s, rng, ev) => ({ msg: `Carlos said "wow" on a timer. ${ev.f} felt deeply understood.`, fx: { social: 3 } }) }
+      ] },
+    { id: 'f-borrow', w: 1.2, kicker: ev => `${ev.f}`, title: ev => `${ev.f} wants to borrow $15`,
+      text: (s, ev) => `${ev.f} says it is for "a thing". He will not say what the thing is.`,
+      choices: [
+        { label: 'Lend $15', cost: 15, hint: () => 'Social +8. 50% he pays back $20.',
+          run: (s, rng, ev) => rng() < 0.5
+            ? { msg: `${ev.f} paid Carlos back with a $5 tip and a hug. Something is off.`, fx: { money: 20, social: 8 } }
+            : { msg: `${ev.f} said "I owe you one" and it was the last Carlos heard of it.`, fx: { social: 8 } } },
+        { label: 'Say you are broke', hint: () => 'Social -2',
+          run: (s, rng, ev) => ({ msg: `Carlos said he was broke. ${ev.f} looked at the theater uniform and said nothing.`, fx: { social: -2 } }) }
+      ] },
+    { id: 'f-birthday', w: 1.1, kicker: ev => `${ev.f}`, title: ev => `${ev.f}'s birthday dinner`,
+      text: (s, ev) => `${ev.f} reserved a table and invited everyone. Carlos has no gift and a vague feeling of dread.`,
+      choices: [
+        { label: 'Go with a small gift', cost: 12, hint: () => 'Social +16, Food +16, Energy -10, Water -4. Costs $12.',
+          run: (s, rng, ev) => ({ msg: `Carlos showed up with a gift card and a good attitude. ${ev.f} cried a little. It was the cake.`, fx: { social: 16, food: 16, energy: -10, water: -4 } }) },
+        { label: 'Send a sticker', hint: () => 'Social +2',
+          run: (s, rng, ev) => ({ msg: `Carlos sent a cake sticker. ${ev.f} replied "lol ok".`, fx: { social: 2 } }) }
+      ] },
+    { id: 'f-karaoke', w: 1.1, kicker: ev => `${ev.f}`, title: ev => `${ev.f} dares Carlos to karaoke`,
+      text: (s, ev) => `${ev.f} already put Carlos's name on the list. The song is not one Carlos knows.`,
+      choices: [
+        { label: 'Sing', hint: () => '70% Social +14. 30% Social -6.',
+          run: (s, rng, ev) => rng() < 0.7
+            ? { msg: `Carlos sang like nobody was watching. Everybody was watching. They loved it.`, fx: { social: 14, energy: -6 } }
+            : { msg: `Carlos forgot the words and the key. ${ev.f} clapped slowly and with love.`, fx: { social: -6, energy: -4 } } },
+        { label: 'Decline', hint: () => 'Social -2',
+          run: (s, rng, ev) => ({ msg: `Carlos declined. ${ev.f} sang Carlos's part, badly, on his behalf.`, fx: { social: -2 } }) }
+      ] },
+    { id: 'f-pizza', w: 1.2, kicker: ev => `${ev.f}`, title: ev => `${ev.f} ordered too much pizza`,
+      text: (s, ev) => `${ev.f} thought a "large" was a unit of friendship. There are four boxes and one man.`,
+      choices: [
+        { label: 'Help finish it', hint: () => 'Food +24, Social +8, Energy -2, Water -3',
+          run: (s, rng, ev) => ({ msg: `Carlos and ${ev.f} finished three boxes and lost the will to speak.`, fx: { food: 24, social: 8, energy: -2, water: -3 } }) },
+        { label: 'Pass', hint: () => 'Nothing changes.',
+          run: (s, rng, ev) => ({ msg: `Carlos passed. ${ev.f} ate pizza for breakfast and learned something about himself.` }) }
+      ] },
+    { id: 'f-clip', w: 1.2, kicker: ev => `${ev.f}, in the group chat`, title: ev => `${ev.f} sends the funniest clip ever`,
+      text: (s, ev) => `${ev.f} says it will change Carlos's life. The clip is nine seconds long and features a goose.`,
+      choices: [
+        { label: 'Share it with everyone', hint: () => 'Social +6',
+          run: (s, rng, ev) => ({ msg: `Carlos shared it. The chat laughed for ten minutes and ${ev.f} took the credit.`, fx: { social: 6 } }) },
+        { label: 'Watch it ten more times', hint: () => 'Stank xp +6, Energy -2',
+          run: (s, rng, ev) => ({ msg: `Carlos watched the goose eleven times. He quotes it now. ${ev.f} is thrilled.`, fx: { energy: -2 }, xp: { stank: 6 } }) }
+      ] },
+    { id: 'f-flake', neg: true, w: 1.3, kicker: ev => `${ev.f}`, title: ev => `${ev.f} cancels at the last second`,
+      text: (s, ev) => `Carlos was already dressed. ${ev.f} sent a message that begins with "so, funny story".`,
+      choices: [
+        { label: 'Be gracious', hint: () => 'Social -4, Energy +4',
+          run: (s, rng, ev) => ({ msg: `Carlos said "no worries" and meant 40% of it. He took a nap.`, fx: { social: -4, energy: 4 } }) },
+        { label: 'Send a long message', hint: () => 'Energy -3. 40% an apology gives Social +8.',
+          run: (s, rng, ev) => rng() < 0.4
+            ? { msg: `${ev.f} apologized in three separate messages. Carlos felt seen.`, fx: { social: 8, energy: -3 } }
+            : { msg: `${ev.f} left Carlos on read. Carlos watched the dots appear and disappear.`, fx: { social: -4, energy: -3 } } }
+      ] },
+    { id: 'f-spoiler', neg: true, w: 1.2, kicker: ev => `${ev.f}, in the group chat`, title: ev => `${ev.f} spoils the ending`,
+      text: (s, ev) => `${ev.f} typed the whole plot twist in the group chat. Then added "oh, was that a spoiler?"`,
+      choices: [
+        { label: 'Yell about it', hint: () => 'Social -3, Energy -4',
+          run: (s, rng, ev) => ({ msg: `Carlos typed in all caps for ten minutes. ${ev.f} apologized with a spoiler-tag sticker.`, fx: { social: -3, energy: -4 } }) },
+        { label: 'Mute the chat for a day', hint: () => 'Social -8',
+          run: (s, rng, ev) => ({ msg: `Carlos muted the chat. He missed a lot of good jokes and a few bad ones.`, fx: { social: -8 } }) }
+      ] },
+
+    /* his girlfriend */
+    { id: 'gf-dinner', w: 1.3, kicker: 'His girlfriend', title: 'She texts: "dinner tonight?"',
+      text: () => 'A simple question. Carlos is in the middle of something very important.',
+      choices: [
+        { label: 'Reply "sure"', hint: () => 'Carlos means well. Odds are poor.',
+          run: gf({ msg: 'Carlos replied "sure" and actually went. It was nice. He will not discuss it.', fx: { social: 10, food: 14, energy: -4 } },
+                  { msg: 'Carlos replied "sure", got pulled into a match, and forgot. She ate alone.', fx: { energy: -4 }, xp: { smash: 6 } }) },
+        { label: 'Leave her on read', hint: () => 'Energy +2',
+          run: () => ({ msg: 'Carlos left it on read, fully intending to answer. He did not.', fx: { energy: 2 }, ignored: 1 }) }
+      ] },
+    { id: 'gf-call', w: 1.3, kicker: 'His girlfriend', title: 'She is calling',
+      text: () => 'The screen shows her name. Carlos is mid-combo.',
+      choices: [
+        { label: 'Answer', hint: () => 'Carlos means well. Odds are poor.',
+          run: gf({ msg: 'He answered and listened for twenty whole minutes. He is a changed man for about a day.', fx: { social: 12, energy: -4 } },
+                  { msg: 'He answered, said "yeah" eleven times, and watched a clip. She could tell.', fx: { social: 3 } }) },
+        { label: 'Let it ring', hint: () => 'Smash xp +5',
+          run: () => ({ msg: 'It rang. Carlos watched it ring. He is very good at watching things ring.', xp: { smash: 5 }, ignored: 1 }) }
+      ] },
+    { id: 'gf-movie', w: 1.2, kicker: 'His girlfriend', title: 'She wants to watch a movie',
+      text: () => 'A whole movie. Together. No phones.',
+      choices: [
+        { label: 'Say yes', hint: () => 'Carlos means well. Odds are poor.',
+          run: gf({ msg: 'They watched the whole thing. Carlos cried at the end and denies it.', fx: { social: 14, energy: 6 } },
+                  { msg: 'Carlos fell asleep ten minutes in. She finished it alone.', fx: { energy: 10 } }) },
+        { label: 'Say "after this match"', hint: () => 'Smash xp +8, Energy -5',
+          run: () => ({ msg: 'The match ended. Then another began. The movie is, apparently, still pending.', fx: { energy: -5 }, xp: { smash: 8 }, ignored: 1 }) }
+      ] },
+    { id: 'gf-paragraph', w: 1.1, kicker: 'His girlfriend', title: 'She sent a very long text',
+      text: () => 'It has paragraphs. It has feelings. It has a sad face at the end.',
+      choices: [
+        { label: 'Read the whole thing', hint: () => 'Carlos means well. Odds are poor.',
+          run: gf({ msg: 'He read every word and replied thoughtfully. She sent a heart. Carlos felt something.', fx: { social: 10 } },
+                  { msg: 'Carlos read the first line, then Tim sent a meme. Both were important.', fx: { social: 2 } }) },
+        { label: 'Send a thumbs up', hint: () => 'Nothing changes.',
+          run: () => ({ msg: 'A thumbs up, to a paragraph. Carlos considers this efficient.', ignored: 1 }) }
+      ] },
+    { id: 'gf-door', w: 1.1, kicker: 'His girlfriend', title: 'She is at the door',
+      text: () => 'She came over without warning. Carlos is mid-match with the boys.',
+      choices: [
+        { label: 'Pause and talk', hint: () => 'Carlos means well. Odds are poor.',
+          run: (s, rng) => rng() < 0.3
+            ? { msg: 'He paused the game and talked for a full half hour. A personal record.', fx: { social: 12, energy: -4 } }
+            : { msg: 'He said "one sec." The sec lasted forty minutes. The door closed quietly.', fx: { social: 4 }, ignored: 1 } },
+        { label: 'One more round', hint: () => 'Social +6, Smash xp +8',
+          run: () => ({ msg: 'One more round turned into five. She left a note on the fridge.', fx: { social: 6 }, xp: { smash: 8 }, ignored: 1 }) }
+      ] }
+  ];
+  const pickEvent = (s, rng) => {
+    const pool = EVENTS.filter(e => e.id !== s.lastEvent && (!e.when || e.when(s)));
+    if (!pool.length) return null;
+    const w = e => e.w * (e.neg ? negScale(s) : 1);
+    let r = rng() * pool.reduce((n, e) => n + w(e), 0);
+    for (const e of pool) { r -= w(e); if (r <= 0) return e; }
+    return pool[pool.length - 1];
+  };
+  const makeCtx = (e, rng) => {
+    const f = pick(FRIENDS, rng);
+    const g = pick(FRIENDS.filter(x => x !== f), rng);
+    return { id: e.id, f, g };
+  };
+
+  const act = (s, id, rng = Math.random) => {
+    if (s.over || s.event) return { ok: false };
+    const a = ACTIONS.find(x => x.id === id);
+    if (!a || !unlocked(s, a) || !available(s, a)) return { ok: false };
+    const stamp = { d: s.day, slot: s.slot };
+    const night = isNight(s.slot);
+    const sim = simulate(s, a);
+    const gain = xpGain(s, a);
+    let line, promoted = null, prize = 0;
+    if (a.special === 'cup') {
+      const t = runCup(s, rng);
+      const parts = t.rounds.map(x => x.win ? `beat ${x.opp} ${x.score}` : `lost to ${x.opp} ${x.score}`);
+      for (let i = 0; i < t.won; i++) gain.smash += scaleXp(s, 8);
+      prize = t.prize;
+      if (t.won === 3) s.trophies += 1;
+      line = `Carlos ${parts.join(', ')}. ${t.place}${t.prize ? `, prize $${t.prize}` : ''}${t.won === 3 ? `, plus trophy number ${s.trophies}` : ''}.`;
+      s.lastCup = { rounds: t.rounds, place: t.place, prize: t.prize, day: s.day, slot: s.slot };
+    } else if (a.special === 'marathon') line = pick(MARATHON, rng);
+    else if (a.special === 'work') {
+      const before = rankOf(s);
+      line = `${pick(a.msgs, rng)} Paid $${a.pay(s)}.`;
+      s.shifts += 1;
+      const after = rankOf(s);
+      if (after.name !== before.name) promoted = after;
+    } else line = pick(a.asleep && night ? a.nightMsgs : a.msgs, rng);
+    s.food = sim.food; s.water = sim.water; s.energy = sim.energy; s.social = sim.social; s.money = sim.money + prize;
+    s.steps += 1;
+    addLog(s, `${a.name}. ${line}`, stamp);
+    if (promoted) addLog(s, `Promoted to ${promoted.name}. Shifts now pay $${promoted.pay}.`, stamp);
+    const ups = grantXp(s, gain, stamp);
+    if (a.asleep && night) s.nightSleeps += 1;
+    for (let i = 0; i < a.slots; i++) s.plan.push(a.id);
+    s.slot += a.slots;
+    const died = checkDeath(s, rng);
+    let event = null;
+    if (!died) {
+      if (s.slot >= SLOTS) rollover(s, rng);
+      if (!s.over && rng() < eventChance(s)) { const e = pickEvent(s, rng); if (e) { s.event = makeCtx(e, rng); event = e.id; } }
+    }
+    return { ok: true, died: !!s.over, event, ups };
+  };
+  const choose = (s, idx, rng = Math.random) => {
+    if (!s.event || s.over) return { ok: false };
+    const def = EVENTS.find(e => e.id === s.event.id);
+    const ch = def && def.choices[idx];
+    if (!ch) return { ok: false };
+    if (ch.cost && s.money < ch.cost) return { ok: false };
+    const ev = s.event;
+    if (ch.cost) s.money -= ch.cost;
+    const res = ch.run(s, rng, ev) || {};
+    const fx = res.fx || {};
+    s.food = clamp(Math.round(s.food + (fx.food || 0)), 0, 100);
+    s.water = clamp(Math.round(s.water + (fx.water || 0)), 0, 100);
+    s.energy = clamp(Math.round(s.energy + (fx.energy || 0)), 0, 100);
+    s.social = clamp(Math.round(s.social + (fx.social || 0)), 0, 100);
+    s.money = Math.max(0, Math.round(s.money + (fx.money || 0)));
+    if (res.ignored) s.ignored += res.ignored;
+    s.steps += 1;
+    addLog(s, res.msg);
+    const ups = grantXp(s, res.xp || {});
+    s.lastEvent = def.id; s.event = null;
+    const died = checkDeath(s, rng);
+    return { ok: true, died, ups };
+  };
+  const buy = (s, id) => {
+    if (s.over) return { ok: false };
+    const it = ITEMS.find(x => x.id === id);
+    if (!it) return { ok: false };
+    const lv = gearLv(s, id);
+    if (lv >= it.levels.length) return { ok: false };
+    const next = it.levels[lv];
+    if (s.money < next.cost) return { ok: false };
+    s.money -= next.cost;
+    s.items[id] = lv + 1;
+    addLog(s, `Bought ${next.name} for $${next.cost}. ${next.text}`);
+    return { ok: true, item: next };
+  };
+
+  const score = s => (s.day - 1) * 100 + s.slot * 8 + totalLevels(s) * 40 + s.trophies * 50 + Math.floor(s.money / 10);
+  const titleOf = s => {
+    const l = SKILL_KEYS.map(k => lvl(s, k));
+    if (l[0] + l[1] + l[2] < 2) return 'Barely a Carlos';
+    if (Math.min(...l) >= 3) return 'Well-Rounded Menace';
+    return { fit: 'Gym Rat', smash: 'Smash Menace', stank: 'Certified Stinker' }[SKILL_KEYS[l.indexOf(Math.max(...l))]];
+  };
+
+  return { SLOTS, ACTIONS, EVENTS, ITEMS, SKILL_KEYS, SKILL_NAMES, NEEDS, FRIENDS, XP_STEPS, MAX_LV, CAUSE_TITLE, RANKS, PRIZE, ROUND_NAMES,
+    newState, levelOf, progress, lvl, gearLv, unlocked, available, preview, act, choose, buy, drainPreview,
+    effMult, dayMult, stankSocial, negScale, eventChance, rivalWin, cupOdds, isNight, score, titleOf, totalLevels,
+    rentInfo, rankOf, rentFor, weekOf, lonely };
+})();
+// ==ENGINE END==
+
+(() => {
+  const E = Engine;
+  const SAVE = 'carlos.save.v3', BEST = 'carlos.best.v1';
+  const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-'];
+  const $ = id => document.getElementById(id);
+  const readJSON = k => { try { const t = localStorage.getItem(k); return t ? JSON.parse(t) : null; } catch (e) { return null; } };
+  const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const dropKey = k => { try { localStorage.removeItem(k); } catch (e) {} };
+  const isState = o => !!o && typeof o === 'object' && o.v === 3 && typeof o.day === 'number' && typeof o.food === 'number' && typeof o.money === 'number' && !!o.xp && !!o.items && Array.isArray(o.plan) && Array.isArray(o.log);
+
+  const hourOf = i => (6 + 2 * i) % 24;
+  const shortH = h => (h % 12 || 12) + (h >= 12 ? 'p' : 'a');
+  const longH = h => (h % 12 || 12) + ':00 ' + (h >= 12 ? 'PM' : 'AM');
+  const PERIOD = ['sunrise', 'morning', 'late morning', 'noon', 'afternoon', 'late afternoon', 'evening', 'evening', 'night', 'midnight', 'small hours', 'small hours'];
+  const NEED_LABEL = { food: 'Food', water: 'Water', energy: 'Energy', social: 'Social' };
+  const SKILL_NOTES = {
+    fit: s => `Every cost is ${Math.round((1 - E.effMult(s)) * 100)}% lower.`,
+    smash: s => `Rival win chance: ${Math.round(E.rivalWin(s) * 100)}%.` + (E.lvl(s, 'smash') >= 3 ? ` Tournament title odds: about ${Math.round(E.cupOdds(s) * 100)}%.` : ''),
+    stank: s => `Bad luck is ${Math.round((1 - E.negScale(s)) * 100)}% less likely. Social drain +${Math.round((E.stankSocial(s) - 1) * 100)}%.`
+  };
+
+  /* ---------- what Carlos is feeling ---------- */
+  const CRIT = {
+    water: ['Carlos is licking the windows for moisture.', 'Carlos is a raisin with a controller.', 'Carlos just tried to drink from a puddle indoors. He lives on the third floor.', 'Carlos would trade his Smash rank for one glass of water. Almost.'],
+    food: ['Carlos is chewing on a controller cable.', 'Carlos is eyeing the houseplant. The houseplant is nervous.', 'Carlos just ate a raw packet of ketchup and called it a meal.', 'Carlos is talking to the mustard jar like a coworker.'],
+    energy: ['Carlos is asleep with his eyes open.', 'Carlos blinked and lost forty minutes.', 'Carlos just tried to put his phone in the fridge.', 'Carlos is running on spite and the memory of snacks.'],
+    social: ['Carlos is talking to the microwave.', 'Carlos waved at his reflection and waited for a reply.', 'Carlos is rehearsing small talk for an audience of nobody.', 'Carlos is leaving himself voicemails.']
+  };
+  const LOW = {
+    water: ['Carlos is very thirsty.', 'Carlos has the lips of a saltine cracker.', 'Carlos looked at a cloud and sighed.', 'Carlos is thirsty enough to respect a puddle.'],
+    food: ['Carlos is hungry.', 'Carlos\'s stomach just said something in a language only dogs understand.', 'Carlos has been staring at the fridge for a while. It has not changed.', 'Carlos is eating the idea of a sandwich.'],
+    energy: ['Carlos is yawning.', 'Carlos is in a committed relationship with the couch.', 'Carlos\'s eyelids have unionized and are demanding a break.', 'Carlos closed his eyes "for a second". The second is still going.'],
+    social: ['Carlos misses the boys.', 'Carlos checked the group chat. Nobody had typed. He checked again.', 'Carlos is lonely enough to wave at a pigeon.', 'Carlos is refreshing Discord like it owes him money.']
+  };
+  const FINE = ['Carlos is doing fine.', 'Carlos is operating at "fine".', 'Carlos is vibing at a respectable temperature.', 'Carlos is fine, in a "do not look closely" way.', 'Carlos is a functioning member of society, technically.', 'Carlos is neither thriving nor dying. A perfect balance.'];
+  const GREAT = ['Carlos feels unstoppable. This will not last.', 'Carlos feels like a main character. A background main character.', 'Carlos is firing on all cylinders. There are four. Two are glitter.', 'Carlos is thriving. Someone should check on him.', 'Carlos is at peak Carlos.'];
+  const NIGHT_OWL = ['It is night. Carlos should be asleep. Carlos is "just checking something".', 'Carlos is making decisions that only make sense at midnight.', 'Carlos is up at an hour that is mostly a rumor.', 'Carlos has entered the hours where every idea is a good one.'];
+  const MORNING = ['Carlos woke up with the confidence of a man who has no plans.', 'The sun is up and Carlos has opinions about that.', 'Carlos is ready to seize the day. Right after one more minute.'];
+  const STANK_HIGH = ['Carlos can smell himself and respects it.', 'Even the flies are asking questions.', 'Carlos has a smell that arrives before his opinions do.', 'A houseplant leaned away from Carlos. He is trying not to take it personally.'];
+  const STANK_MID = ['Carlos has the aura of a damp gym bag.', 'Carlos smells like determination and a little like cheese.', 'Carlos is aging like a locker room.'];
+  const FIT_HIGH = ['Carlos flexed in the mirror. The mirror blinked first.', 'Carlos can open any jar and will tell you about it.', 'Carlos puts things down with intent now.'];
+  const FIT_MID = ['Carlos did a pushup and told everyone.', 'Carlos is looking a little swole. A little.', 'Carlos carried the groceries in one trip and wants a medal.'];
+  const SMASH_HIGH = ['Carlos could teach a masterclass. Nobody asked.', 'Carlos has the thumbs of a concert pianist who hates his enemies.', 'Carlos dreams in frame data.'];
+  const SMASH_MID = ['Carlos mashed buttons and called it technique.', 'Carlos has a signature move. It works sometimes.', 'Carlos trash-talks only when he is winning, which is a start.'];
+  const RICH = [s => `Carlos has $${s.money} and absolutely no impulse control.`, 'Carlos is looking at the shop the way a raccoon looks at a bakery.', 'Carlos feels rich. He is simply between bills.'];
+  const BROKE = [s => `Carlos has $${s.money} and big plans.`, 'Carlos checked his balance and felt a cold wind blow through his wallet.', 'Carlos is broke, but with confidence.'];
+  const RENT_NEAR = [(s, i) => `Carlos is $${i.short} short on rent. He is calling it "a vibe".`, (s, i) => `Rent is $${i.rent}. Carlos is staring at his wallet like it might change its mind.`];
+  const THEATER = ['Carlos smells faintly of butter and responsibility.', 'Carlos has seen the same trailer so many times he can mouth it.', 'Carlos has opinions about the large popcorn.'];
+  const GIRLFRIEND = [s => `Carlos has ${s.ignored + 6} unread messages and a strategy of "wait and see".`, 'Somewhere, a phone is lighting up with a name Carlos knows very well.', 'Carlos swears he is about to reply. Any minute now. Any hour.'];
+  const GEAR = {
+    stick: ['Carlos holds his fight stick like a sacred sword.', 'The fight stick has a name now. Carlos will not say it.'],
+    headset: ['Carlos has a headset on. The boys can hear him breathe. He knows.', 'Carlos whispers "gg" even when nobody is talking.'],
+    bed: ['Carlos looks at his bed like it is a small, expensive cloud.', 'Carlos patted the mattress. The mattress knows.'],
+    fridge: ['Carlos opened the fridge just to hear it hum.', 'Carlos has a fridge with ambition now.'],
+    filter: ['Carlos drinks filtered water and has become insufferable about it.'],
+    monitor: ['Carlos has two screens and double the bad ideas.'],
+    gym: ['Carlos does bicep curls in the kitchen while the water boils.'],
+    shoes: ['Carlos\'s feet feel like they are on a cloud. A theater cloud.']
+  };
+  function lowest(s) { return E.NEEDS.map(k => [k, s[k]]).sort((a, b) => a[1] - b[1])[0]; }
+  function moodKey(s) {
+    if (s.over) return 'dead';
+    const m = lowest(s)[1];
+    return m < 12 ? 'crit' : m < 25 ? 'bad' : m < 45 ? 'meh' : 'ok';
+  }
+  function moodText(s) {
+    if (s.over) return 'Carlos is no longer with us. His controller is still warm.';
+    const h = s.steps * 7 + s.day * 3 + s.slot;
+    const info = E.rentInfo(s);
+    const txt = x => typeof x === 'function' ? x(s, info) : x;
+    const low = lowest(s);
+    if (low[1] < 12) return CRIT[low[0]][h % CRIT[low[0]].length];
+    if (info.short > 0 && info.daysLeft === 0) return `Rent is due tonight and Carlos is $${info.short} short. He is calm the way a squirrel in traffic is calm.`;
+    if (info.short > 0 && info.daysLeft === 1) return `Rent is due tomorrow night. Carlos is $${info.short} short and is treating it as a rumor.`;
+    if (low[1] < 30) return LOW[low[0]][h % LOW[low[0]].length];
+    const pool = FINE.slice();
+    if (E.NEEDS.every(k => s[k] > 60)) pool.push(...GREAT);
+    if (E.isNight(s.slot) && s.energy > 45) pool.push(...NIGHT_OWL);
+    if (s.slot <= 1) pool.push(...MORNING);
+    const K = E.lvl(s, 'stank'), L = E.lvl(s, 'fit'), M = E.lvl(s, 'smash');
+    pool.push(...(K >= 4 ? STANK_HIGH : K >= 2 ? STANK_MID : []));
+    pool.push(...(L >= 5 ? FIT_HIGH : L >= 2 ? FIT_MID : []));
+    pool.push(...(M >= 5 ? SMASH_HIGH : M >= 2 ? SMASH_MID : []));
+    if (s.money >= 250) pool.push(...RICH);
+    if (s.money <= 15) pool.push(...BROKE);
+    if (info.short > 0 && info.daysLeft === 2) pool.push(...RENT_NEAR);
+    if (s.shifts > 0) pool.push(...THEATER);
+    if (s.ignored >= 2) pool.push(...GIRLFRIEND);
+    for (const k in GEAR) if (E.gearLv(s, k) > 0) pool.push(...GEAR[k]);
+    return txt(pool[h % pool.length]);
+  }
+
+  let S = null, lastAct = null, evKey = '', wasOver = false;
+  const R = { meters: {}, skills: {}, acts: {}, shop: {}, cash: null };
+  const timers = {};
+
+  function build() {
+    const mWrap = $('meters');
+    for (const k of E.NEEDS) {
+      const row = document.createElement('div');
+      row.className = 'meter';
+      row.style.setProperty('--c', `var(--${k})`);
+      row.innerHTML = `<div class="meter-head"><span class="meter-name">${NEED_LABEL[k]}</span><span class="meter-right"><span class="warn"></span><span class="meter-delta"></span><span class="meter-val">0</span></span></div><div class="bar" role="meter" aria-label="${NEED_LABEL[k]}" aria-valuemin="0" aria-valuemax="100"><i></i></div>`;
+      mWrap.appendChild(row);
+      R.meters[k] = { row, warn: row.querySelector('.warn'), delta: row.querySelector('.meter-delta'), val: row.querySelector('.meter-val'), bar: row.querySelector('.bar'), fill: row.querySelector('i') };
+    }
+    const cash = $('cash');
+    cash.innerHTML = `<div class="meter-head"><span class="meter-name">Cash</span><span class="meter-right"><span class="meter-delta"></span><span class="meter-val">$0</span></span></div><div class="bar slim" role="meter" aria-label="Cash compared with this week's rent" aria-valuemin="0" aria-valuemax="100"><i></i></div><p class="rent-note" id="rentNote"></p><p class="rent-note" id="rankNote"></p>`;
+    R.cash = { delta: cash.querySelector('.meter-delta'), val: cash.querySelector('.meter-val'), bar: cash.querySelector('.bar'), fill: cash.querySelector('i'), rent: $('rentNote'), rank: $('rankNote') };
+    const sWrap = $('skills');
+    for (const k of E.SKILL_KEYS) {
+      const row = document.createElement('div');
+      row.className = 'skill';
+      row.style.setProperty('--c', `var(--${k})`);
+      row.innerHTML = `<div class="skill-head"><span class="skill-name">${E.SKILL_NAMES[k]}</span><span class="skill-lv"></span></div><div class="bar slim" role="meter" aria-label="${E.SKILL_NAMES[k]} progress" aria-valuemin="0" aria-valuemax="100"><i></i></div><p class="skill-note"></p>`;
+      sWrap.appendChild(row);
+      R.skills[k] = { lv: row.querySelector('.skill-lv'), bar: row.querySelector('.bar'), fill: row.querySelector('i'), note: row.querySelector('.skill-note') };
+    }
+    const aWrap = $('actions');
+    for (const [cat, title] of [['survive', 'Stay alive'], ['life', 'Daily life'], ['train', 'Get better'], ['unlock', 'Level 3 unlocks']]) {
+      const g = document.createElement('div');
+      g.className = 'group';
+      g.innerHTML = `<h3 class="group-title">${title}</h3><div class="acts"></div>`;
+      const box = g.querySelector('.acts');
+      E.ACTIONS.forEach((a, idx) => {
+        if (a.cat !== cat) return;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'act';
+        b.style.setProperty('--c', `var(--${a.tint})`);
+        b.innerHTML = `<span class="act-top"><span class="act-name"><kbd class="key">${KEYS[idx]}</kbd>${a.name}</span><span class="act-cost">${a.slots} block${a.slots > 1 ? 's' : ''}</span></span><span class="act-flavor">${a.flavor}</span><span class="chips"></span>`;
+        b.addEventListener('click', () => doAct(a.id));
+        box.appendChild(b);
+        R.acts[a.id] = { btn: b, chips: b.querySelector('.chips') };
+      });
+      aWrap.appendChild(g);
+    }
+    const shop = $('shop');
+    for (const it of E.ITEMS) {
+      const el = document.createElement('div');
+      el.className = 'shop-item';
+      el.innerHTML = `<div class="act-top"><span class="act-name"></span><span class="pips">${it.levels.map(() => '<i></i>').join('')}</span></div><p class="act-flavor"></p><p class="shop-note"></p><button type="button" class="btn buy"></button>`;
+      const btn = el.querySelector('.buy');
+      btn.addEventListener('click', () => doBuy(it.id));
+      shop.appendChild(el);
+      R.shop[it.id] = { el, name: el.querySelector('.act-name'), pips: [...el.querySelectorAll('.pips i')], text: el.querySelector('.act-flavor'), note: el.querySelector('.shop-note'), btn };
+    }
+  }
+
+  function avatar(s) {
+    const L = E.lvl(s, 'fit'), M = E.lvl(s, 'smash'), K = E.lvl(s, 'stank');
+    const mood = moodKey(s);
+    const armW = (9 + L * 1.3).toFixed(1);
+    const wisps = Array.from({ length: Math.min(K, 6) }, (_, i) => {
+      const x = 44 + i * 14.5;
+      return `<path class="wisp" style="animation-delay:${(i * 0.35).toFixed(2)}s" d="M${x} 28 q-5 -7 0 -13 q5 -6 0 -12"/>`;
+    }).join('');
+    const flies = K >= 5 ? '<g class="flies"><circle cx="80" cy="10" r="2.4"/><circle cx="122" cy="46" r="2.4"/></g>' : '';
+    let eyes, brows = '', mouth, extra = '';
+    if (mood === 'dead') {
+      eyes = '<path class="ln" d="M57 76 l12 12 M69 76 l-12 12 M91 76 l12 12 M103 76 l-12 12"/>';
+      mouth = '<path class="ln" d="M66 106 q4 -4 8 0 t8 0 t8 0"/>';
+    } else {
+      const crit = mood === 'crit';
+      const sleepy = s.energy < 30 && !crit;
+      const ry = crit ? 10 : 9, pr = crit ? 2.4 : 4;
+      eyes = `<ellipse class="ew" cx="63" cy="82" rx="8.5" ry="${ry}"/><ellipse class="ew" cx="97" cy="82" rx="8.5" ry="${ry}"/><circle class="pu" cx="64" cy="83" r="${pr}"/><circle class="pu" cx="98" cy="83" r="${pr}"/>`;
+      if (sleepy) eyes += '<rect class="sk" x="53" y="71" width="20" height="11"/><rect class="sk" x="87" y="71" width="20" height="11"/><path class="ln" d="M55 82 h16 M89 82 h16"/>';
+      if (mood === 'bad' || crit) brows = '<path class="ln" d="M54 67 l17 4 M106 67 l-17 4"/>';
+      if (crit) extra = '<path class="drop" d="M122 60 q6 10 0 14 q-6 -4 0 -14z"/>';
+      mouth = mood === 'ok' ? '<path class="ln" d="M66 100 Q80 113 94 100"/>'
+        : mood === 'meh' ? '<path class="ln" d="M68 104 L92 104"/>'
+        : mood === 'bad' ? '<path class="ln" d="M66 108 Q80 96 94 108"/>'
+        : '<ellipse class="mo" cx="80" cy="105" rx="8" ry="6"/>';
+    }
+    const band = M >= 3 ? '<rect class="bd" x="41" y="56" width="78" height="9" rx="2"/><path class="bd" d="M41 60 l-13 -7 l2 14z"/>' : '';
+    return `<svg viewBox="0 0 160 184" role="img" aria-label="Carlos">
+      ${wisps}${flies}
+      <line class="arm" x1="52" y1="128" x2="32" y2="158" style="stroke-width:${armW}"/>
+      <line class="arm" x1="108" y1="128" x2="128" y2="158" style="stroke-width:${armW}"/>
+      <rect class="sk" x="70" y="104" width="20" height="16" rx="4"/>
+      <rect class="sh" x="46" y="114" width="68" height="70" rx="16"/>
+      <path class="ln thin" d="M68 116 Q80 128 92 116"/>
+      <circle class="sk" cx="42" cy="80" r="7"/><circle class="sk" cx="118" cy="80" r="7"/>
+      <rect class="sk" x="42" y="32" width="76" height="82" rx="32"/>
+      <path class="hr" d="M40 72 C34 14 126 14 120 72 C116 52 104 44 80 44 C56 44 44 52 40 72 Z"/>
+      ${band}${eyes}${brows}${mouth}${extra}
+    </svg>`;
+  }
+
+  function renderClock() {
+    const slot = Math.min(S.slot, 11);
+    $('clockDay').textContent = 'Day ' + S.day;
+    $('clockTime').textContent = longH(hourOf(slot));
+    $('clockSub').textContent = S.over ? 'Lights out' : `Week ${E.weekOf(S.day)}, ${PERIOD[slot]}`;
+    $('restedPill').hidden = !S.rested;
+    $('lonelyPill').hidden = !E.lonely(S) || !!S.over;
+    const b = readJSON(BEST);
+    $('best').textContent = b ? `Best run: ${b.score} pts, ${b.days} day${b.days === 1 ? '' : 's'}` : 'Best run: none yet';
+  }
+  function renderMeters() {
+    for (const k of E.NEEDS) {
+      const v = S[k], r = R.meters[k];
+      r.fill.style.width = v + '%';
+      r.val.textContent = v;
+      r.bar.setAttribute('aria-valuenow', v);
+      r.row.classList.toggle('crit', v < 12);
+      r.row.classList.toggle('low', v >= 12 && v < 25);
+      r.warn.textContent = v < 12 ? 'Critical' : v < 25 ? 'Low' : '';
+    }
+    const d = E.drainPreview(S);
+    $('drain').textContent = `Each awake block costs about ▼${d.food} Food, ▼${d.water} Water, ▼${d.energy} Energy, ▼${d.social} Social.`;
+    $('portrait').innerHTML = avatar(S);
+    $('mood').textContent = moodText(S);
+  }
+  function renderCash() {
+    const info = E.rentInfo(S), c = R.cash;
+    const pct = Math.min(100, Math.round(S.money / info.rent * 100));
+    c.val.textContent = '$' + S.money;
+    c.fill.style.width = pct + '%';
+    c.bar.setAttribute('aria-valuenow', pct);
+    const when = info.daysLeft === 0 ? `tonight (end of Day ${info.dueDay})` : info.daysLeft === 1 ? `tomorrow night (end of Day ${info.dueDay})` : `at the end of Day ${info.dueDay}, ${info.daysLeft} days from now`;
+    const status = info.short > 0 ? ` Short by $${info.short}.` : ' Covered.';
+    c.rent.textContent = `Rent: $${info.rent}, due ${when}.${status}`;
+    c.rent.className = 'rent-note' + (info.short > 0 ? (info.daysLeft <= 1 ? ' alert' : '') : ' ok');
+    const rk = E.rankOf(S);
+    const next = E.RANKS.find(x => x.at > S.shifts);
+    c.rank.textContent = `Theater: ${rk.name}, $${rk.pay} a shift. ${S.shifts} shift${S.shifts === 1 ? '' : 's'} worked${next ? `, promotion at ${next.at}` : ''}.`;
+  }
+  function renderSkills() {
+    for (const k of E.SKILL_KEYS) {
+      const p = E.progress(S.xp[k]), r = R.skills[k];
+      r.lv.textContent = p.lv >= E.MAX_LV ? `Lv ${p.lv} (max)` : `Lv ${p.lv}  ${p.cur}/${p.need} xp`;
+      r.fill.style.width = Math.round(p.frac * 100) + '%';
+      r.bar.setAttribute('aria-valuenow', Math.round(p.frac * 100));
+      r.note.textContent = SKILL_NOTES[k](S);
+    }
+    const ig = $('ignored');
+    ig.hidden = S.ignored < 1;
+    ig.textContent = `Times Carlos ignored his girlfriend: ${S.ignored}.`;
+  }
+  function renderBlocks() {
+    const ol = $('blocks');
+    ol.innerHTML = '';
+    for (let i = 0; i < E.SLOTS; i++) {
+      const li = document.createElement('li');
+      const id = S.plan[i];
+      const a = id ? E.ACTIONS.find(x => x.id === id) : null;
+      const now = i === S.slot && !S.over;
+      li.className = 'block' + (E.isNight(i) ? ' night' : '') + (a ? ' done' : '') + (now ? ' now' : '');
+      if (a) li.style.setProperty('--c', `var(--${a.tint})`);
+      if (now) li.setAttribute('aria-current', 'step');
+      const t = shortH(hourOf(i));
+      li.setAttribute('aria-label', `${t}: ${a ? a.name : now ? 'now' : 'open'}`);
+      li.innerHTML = `<span class="b-time">${t}</span><span class="b-what">${a ? a.code : now ? 'Now' : ''}</span>`;
+      ol.appendChild(li);
+    }
+    const left = S.over ? 0 : E.SLOTS - S.slot;
+    $('blocksLeft').textContent = S.over ? 'Day over' : `${left} block${left === 1 ? '' : 's'} left today`;
+    $('nightNote').hidden = !(E.isNight(S.slot) && !S.over);
+  }
+  function chipsFor(a) {
+    const p = E.preview(S, a);
+    const out = [];
+    const add = (label, d, c, pre) => { if (d) out.push(`<span class="chip" style="--c:var(--${c})"><b>${label}</b>${d > 0 ? '▲' : '▼'}${pre || ''}${Math.abs(d)}</span>`); };
+    add('Cash', p.money, 'money', '$');
+    add('Food', p.food, 'food'); add('Water', p.water, 'water'); add('Energy', p.energy, 'energy'); add('Social', p.social, 'social');
+    for (const k of E.SKILL_KEYS) if (p.xp[k]) out.push(`<span class="chip" style="--c:var(--${k})"><b>${E.SKILL_NAMES[k]} xp</b>▲${p.xp[k]}${a.special === 'cup' ? '+' : ''}</span>`);
+    if (a.special === 'cup') {
+      out.push(`<span class="chip" style="--c:var(--money)"><b>Title odds</b>about ${Math.round(E.cupOdds(S) * 100)}%</span>`);
+      out.push(`<span class="chip" style="--c:var(--money)"><b>Prize</b>$${E.PRIZE.champ}</span>`);
+    }
+    if (p.fatal) out.push(`<span class="chip fatal-chip"><b>Fatal</b>${p.fatal} hits 0</span>`);
+    return { html: out.join(''), fatal: !!p.fatal };
+  }
+  function renderActions() {
+    const waiting = !!S.event || !!S.over;
+    for (const a of E.ACTIONS) {
+      const r = R.acts[a.id];
+      const un = E.unlocked(S, a), av = E.available(S, a);
+      r.btn.disabled = !un || !av || waiting;
+      if (!un) {
+        r.chips.innerHTML = `<span class="lock-note">Locked. Reach ${E.SKILL_NAMES[a.req.k]} level ${a.req.lv}.</span>`;
+        r.btn.classList.remove('fatal');
+      } else {
+        const c = chipsFor(a);
+        r.chips.innerHTML = (av ? '' : `<span class="lock-note">${a.whenNote}</span>`) + c.html;
+        r.btn.classList.toggle('fatal', c.fatal);
+      }
+    }
+  }
+  function renderCup() {
+    const box = $('cup'), c = S.lastCup;
+    if (!c) { box.hidden = true; return; }
+    box.hidden = false;
+    $('cupWhen').textContent = `Day ${c.day}, ${longH(hourOf(Math.min(c.slot, 11)))}`;
+    $('bracket').innerHTML = [0, 1, 2].map(i => {
+      const m = c.rounds[i];
+      if (!m) return `<div class="match skip"><span class="m-round">${E.ROUND_NAMES[i]}</span><span class="m-opp">Not reached</span><span class="m-score">-</span></div>`;
+      return `<div class="match ${m.win ? 'win' : 'loss'}"><span class="m-round">${m.round}</span><span class="m-opp">${m.opp}</span><span class="m-score">${m.win ? 'Won' : 'Lost'} ${m.score}</span></div>`;
+    }).join('');
+    $('cupResult').textContent = `${c.place}.${c.prize ? ` Prize: $${c.prize}.` : ' No prize money this time.'}`;
+  }
+  function renderShop() {
+    const info = E.rentInfo(S);
+    for (const it of E.ITEMS) {
+      const r = R.shop[it.id], lv = E.gearLv(S, it.id);
+      const maxed = lv >= it.levels.length;
+      const lvData = it.levels[Math.min(lv, it.levels.length - 1)];
+      r.name.textContent = lvData.name;
+      r.text.textContent = lvData.text;
+      r.pips.forEach((p, i) => p.classList.toggle('on', i < lv));
+      r.el.classList.toggle('maxed', maxed);
+      let note = lv > 0 && !maxed ? `You own: ${it.levels[lv - 1].name}. ` : '';
+      let alert = false;
+      if (maxed) {
+        r.btn.textContent = 'Maxed out';
+        r.btn.disabled = true;
+        note = `Fully upgraded: ${lvData.name}.`;
+      } else {
+        const after = S.money - lvData.cost;
+        r.btn.textContent = `Buy for $${lvData.cost}`;
+        r.btn.disabled = after < 0 || !!S.over;
+        if (after < 0) note += `Need $${-after} more.`;
+        else if (after < info.rent) { note += `Leaves $${after}. Rent is $${info.rent}, due end of Day ${info.dueDay}.`; alert = info.daysLeft <= 2; }
+        else note += `Leaves $${after}.`;
+      }
+      r.note.textContent = note;
+      r.note.className = 'shop-note' + (alert ? ' alert' : '');
+    }
+  }
+  function kickerOf(def, ev) {
+    const k = typeof def.kicker === 'function' ? def.kicker(ev) : def.kicker;
+    return k || (def.neg ? 'Bad luck' : 'Something happened');
+  }
+  function renderEvent() {
+    const box = $('event');
+    if (!S.event || S.over) { box.hidden = true; evKey = ''; return; }
+    const key = S.event.id + ':' + S.log.length;
+    if (key === evKey && !box.hidden) return;
+    evKey = key;
+    const ev = S.event;
+    const def = E.EVENTS.find(e => e.id === ev.id);
+    box.classList.toggle('bad', !!def.neg);
+    $('evKicker').textContent = kickerOf(def, ev);
+    $('evTitle').textContent = typeof def.title === 'function' ? def.title(ev) : def.title;
+    $('evText').textContent = def.text(S, ev);
+    const wrap = $('evChoices');
+    wrap.innerHTML = '';
+    def.choices.forEach((c, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'act';
+      const poor = !!c.cost && S.money < c.cost;
+      b.innerHTML = `<span class="act-name"><kbd class="key">${i + 1}</kbd>${c.label}</span><span class="act-flavor">${poor ? `Not enough cash. Needs $${c.cost}.` : c.hint(S, ev)}</span>`;
+      b.disabled = poor;
+      b.addEventListener('click', () => doChoose(i));
+      wrap.appendChild(b);
+    });
+    box.hidden = false;
+  }
+  function renderLog() {
+    const ol = $('log');
+    ol.innerHTML = '';
+    S.log.slice(0, 10).forEach(e => {
+      const li = document.createElement('li');
+      const t = document.createElement('span');
+      t.className = 'lg-t';
+      t.textContent = `D${e.d} ${shortH(hourOf(Math.min(e.slot, 11)))}`;
+      const x = document.createElement('span');
+      x.textContent = e.text;
+      li.append(t, x);
+      ol.appendChild(li);
+    });
+    if (!S.log.length) {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="lg-t">D1 6a</span><span>Carlos wakes up. The fridge hums. Rent is $120 on Sunday night and he has $60.</span>';
+      ol.appendChild(li);
+    }
+  }
+  function renderOver() {
+    const o = $('over');
+    if (!S.over) { o.hidden = true; wasOver = false; return; }
+    const days = S.over.day - 1;
+    $('overTitle').textContent = E.CAUSE_TITLE[S.over.cause];
+    $('overMsg').textContent = S.over.msg;
+    const rows = [
+      ['Days survived', days], ['Time of death', `Day ${S.over.day}, ${longH(hourOf(Math.min(S.over.slot, 11)))}`],
+      ['Skill levels', E.totalLevels(S)], ['Trophies', S.trophies],
+      ['Theater shifts', S.shifts], ['Girlfriend ignored', S.ignored + (S.ignored === 1 ? ' time' : ' times')],
+      ['Score', E.score(S)], ['Best score', (readJSON(BEST) || { score: E.score(S) }).score]
+    ];
+    $('overStats').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
+    $('overLine').textContent = `Final title: ${E.titleOf(S)}.`;
+    if (!wasOver) { o.hidden = false; wasOver = true; $('again').focus(); }
+  }
+  function render() {
+    renderClock(); renderMeters(); renderCash(); renderSkills(); renderBlocks(); renderActions(); renderCup(); renderShop(); renderEvent(); renderLog(); renderOver();
+  }
+
+  function snap() { return { food: S.food, water: S.water, energy: S.energy, social: S.social, money: S.money }; }
+  function flash(before) {
+    for (const k of ['food', 'water', 'energy', 'social', 'money']) {
+      const d = S[k] - before[k];
+      if (!d) continue;
+      const el = k === 'money' ? R.cash.delta : R.meters[k].delta;
+      el.textContent = (d > 0 ? '▲' : '▼') + (k === 'money' ? '$' : '') + Math.abs(d);
+      el.className = 'meter-delta show ' + (d > 0 ? 'up' : 'down');
+      clearTimeout(timers[k]);
+      timers[k] = setTimeout(() => { el.className = 'meter-delta'; }, 2400);
+    }
+  }
+  function finishRun() {
+    const sc = E.score(S);
+    const b = readJSON(BEST);
+    if (!b || sc > b.score) writeJSON(BEST, { score: sc, days: S.over.day - 1, title: E.titleOf(S) });
+    dropKey(SAVE);
+  }
+  function after(before) {
+    if (S.over) finishRun(); else writeJSON(SAVE, S);
+    render();
+    flash(before);
+    if (S.over) return;
+    if (S.event) {
+      const first = $('evChoices').querySelector('button:not(:disabled)');
+      if (first) first.focus({ preventScroll: true });
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      $('event').scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    } else if (lastAct && R.acts[lastAct] && !R.acts[lastAct].btn.disabled) {
+      R.acts[lastAct].btn.focus({ preventScroll: true });
+    }
+  }
+  function doAct(id) {
+    if (!S || S.over || S.event) return;
+    const before = snap();
+    const r = E.act(S, id);
+    if (!r.ok) return;
+    lastAct = id;
+    after(before);
+  }
+  function doChoose(i) {
+    if (!S || S.over || !S.event) return;
+    const before = snap();
+    const r = E.choose(S, i);
+    if (!r.ok) return;
+    after(before);
+  }
+  function doBuy(id) {
+    if (!S || S.over) return;
+    const before = snap();
+    const r = E.buy(S, id);
+    if (!r.ok) return;
+    writeJSON(SAVE, S);
+    render();
+    flash(before);
+    const b = R.shop[id].btn;
+    if (!b.disabled) b.focus({ preventScroll: true });
+  }
+  function newRun() {
+    S = E.newState();
+    lastAct = null; evKey = ''; wasOver = false;
+    writeJSON(SAVE, S);
+    $('how').open = true;
+    render();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (!S || S.over || e.metaKey || e.ctrlKey || e.altKey) return;
+    const i = KEYS.indexOf(e.key);
+    if (i < 0) return;
+    if (S.event) { doChoose(i); return; }
+    const a = E.ACTIONS[i];
+    if (a) doAct(a.id);
+  });
+  $('again').addEventListener('click', newRun);
+  let armed = false, armTimer = null;
+  $('reset').addEventListener('click', () => {
+    const b = $('reset');
+    if (!armed) {
+      armed = true;
+      b.textContent = 'Click again to start over';
+      clearTimeout(armTimer);
+      armTimer = setTimeout(() => { armed = false; b.textContent = 'Start over'; }, 4000);
+      return;
+    }
+    armed = false; clearTimeout(armTimer); b.textContent = 'Start over';
+    newRun();
+  });
+
+  function boot(data) {
+    build();
+    const saved = isState(data) ? data : readJSON(SAVE);
+    S = isState(saved) && !saved.over ? saved : E.newState();
+    $('how').open = S.day === 1 && S.log.length === 0;
+    render();
+  }
+  try { if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => S); } catch (e) {}
+  const hot = window.claude && window.claude.hot;
+  if (hot && hot.ready) hot.ready(boot); else boot(hot ? hot.data : undefined);
+})();
+</script>

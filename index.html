@@ -51,7 +51,7 @@ body{
   font-family:var(--f-body);
   font-size:15px;
   line-height:1.45;
-  padding-block:20px 56px;
+  padding-block:20px 104px;
   padding-left:max(16px,env(safe-area-inset-left,0px));
   padding-right:max(16px,env(safe-area-inset-right,0px));
 }
@@ -80,7 +80,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 @media (max-width:860px){
   .layout{grid-template-columns:minmax(0,1fr)}
   .rail,.main{display:contents}
-  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-actions{order:5}.o-cup{order:6}.o-shop{order:7}.o-skills{order:8}.o-log{order:9}.o-hall{order:10}.o-reset{order:11}
+  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-actions{order:5}.o-cup{order:6}.o-goal{order:7}.o-skills{order:8}.o-log{order:9}.o-hall{order:10}.o-reset{order:11}
 }
 
 /* carlos */
@@ -211,17 +211,78 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 .foot{font:400 12px var(--f-mono);color:var(--ink-2)}
 
 /* game over */
-.over{position:fixed;inset:0;z-index:50;display:grid;place-items:center;overflow:auto;
+.over{position:fixed;inset:0;z-index:70;display:grid;overflow:auto;
   padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   background:color-mix(in srgb,var(--paper) 84%,transparent)}
-.over-card{width:min(560px,100%);display:grid;gap:12px;padding:22px}
+.over-card{margin:auto;width:min(560px,100%);display:grid;gap:12px;padding:22px}
 .over-kicker{font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--bad)}
+.over-kicker.win{color:var(--good)}
 .over-title{font:800 clamp(1.6rem,5vw,2.2rem)/1.1 var(--f-display);letter-spacing:-.02em;text-wrap:balance}
 .over-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0}
 .over-stats div{border:2px solid var(--edge);border-radius:6px;padding:8px 10px;background:var(--card-2)}
 .over-stats dt{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2)}
 .over-stats dd{margin:2px 0 0;font:800 1.15rem var(--f-display);font-variant-numeric:tabular-nums}
 .over-line{color:var(--ink-2)}
+
+/* floating menu buttons */
+.dock{position:fixed;z-index:40;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:10px}
+.dock .btn{box-shadow:4px 4px 0 var(--shadow)}
+.dock-cash{font:500 12px var(--f-mono);margin-left:6px}
+
+/* pop-up menus and minigames */
+.modal{position:fixed;inset:0;z-index:60;display:grid;overflow:auto;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:color-mix(in srgb,var(--paper) 86%,transparent)}
+.modal-card{margin:auto;width:min(620px,100%);display:grid;gap:12px;padding:20px}
+.modal-card.wide{width:min(920px,100%)}
+.modal-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.modal-head h2{margin-right:auto}
+.tabs{display:flex;gap:6px;border-bottom:2px solid var(--edge)}
+.tab{font:700 14px var(--f-body);color:var(--ink-2);background:transparent;border:2px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;padding:8px 16px;cursor:pointer;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--ink);background:var(--card);border-color:var(--edge)}
+.tab:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.pane-note{margin:4px 0 12px}
+.homes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.home-card{display:grid;gap:6px;align-content:start;border:2px solid var(--edge);border-radius:8px;padding:12px;background:var(--card);box-shadow:3px 3px 0 var(--shadow);min-width:0}
+.home-card.here{background:color-mix(in srgb,var(--social) 18%,var(--card))}
+.perks{margin:0;padding-left:1.1em;font-size:13px;color:var(--ink-2);display:grid;gap:2px}
+.promo-bar{margin-top:6px}
+
+/* goal card */
+.goal-text{margin-top:6px;color:var(--ink-2);font-size:13.5px}
+.goal-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:12px 0 3px;font-weight:700;font-size:14px}
+
+/* who is in the event */
+.ev-wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:start}
+.ev-wrap.solo{grid-template-columns:minmax(0,1fr)}
+.ev-who{width:104px;display:grid;justify-items:center;gap:4px}
+.ev-who svg{width:100%;height:auto;display:block;border:2px solid var(--edge);border-radius:6px;background:var(--card-2)}
+.who-name{font:500 12px var(--f-mono);color:var(--ink-2);text-align:center}
+@media (max-width:520px){.ev-who{width:74px}}
+
+/* theater minigame */
+.mg-stats{display:flex;flex-wrap:wrap;gap:6px 18px;font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
+.track{position:relative;height:64px;border:2px solid var(--edge);border-radius:8px;background:var(--card-2);overflow:hidden;touch-action:manipulation;cursor:pointer;user-select:none;-webkit-user-select:none}
+.zone{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--money) 32%,transparent);border-left:2px solid var(--money);border-right:2px solid var(--money)}
+.zone i{position:absolute;top:0;bottom:0;left:33.33%;width:33.34%;background:color-mix(in srgb,var(--money) 78%,transparent)}
+.marker{position:absolute;top:-2px;bottom:-2px;left:0;width:6px;margin-left:-3px;background:var(--ink);border-radius:3px}
+.mg-feedback{min-height:1.5em;font-weight:700}
+.mg-actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn.big{font-size:18px;padding:14px 28px;flex:1 1 220px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+
+/* tournament rhythm game */
+.acc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+.acc-bar{position:relative;height:16px;border:2px solid var(--edge);border-radius:4px;background:var(--card-2)}
+.acc-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--smash)}
+.acc-bar b{position:absolute;top:-6px;bottom:-6px;left:50%;width:3px;margin-left:-1.5px;background:var(--bad)}
+.acc-txt{font:500 12.5px var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;height:min(300px,44vh);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.lane{position:relative;border:2px solid var(--edge);border-radius:8px;background:var(--card-2);overflow:hidden}
+.target{position:absolute;left:50%;bottom:16px;width:42px;height:36px;margin-left:-21px;border:2px dashed var(--edge);border-radius:8px;display:grid;place-items:center;font:700 18px var(--f-body);color:var(--ink-2)}
+.target.hit{background:var(--hl);border-style:solid;color:var(--ink)}
+.note{position:absolute;left:50%;top:0;width:42px;height:36px;margin-left:-21px;border:3px solid var(--c);border-radius:8px;display:grid;place-items:center;font:800 18px var(--f-body);color:var(--ink);background:color-mix(in srgb,var(--c) 30%,var(--card));will-change:transform}
+.pads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.pad{font:800 22px var(--f-body);padding:12px 0;touch-action:manipulation;user-select:none;-webkit-user-select:none;border-color:var(--c)}
 
 /* leaderboard */
 .lb-list{list-style:none;margin:0;padding:0;display:grid;gap:0}
@@ -230,6 +291,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 .lb-list li.mine{background:var(--hl);margin:0 -6px;padding-inline:6px;border-radius:4px}
 .lb-rank{font:500 12px var(--f-mono);color:var(--ink-2)}
 .lb-name{font-weight:700;overflow-wrap:anywhere}
+.lb-title{display:block;font:400 11.5px var(--f-mono);color:var(--ink-2)}
 .lb-score{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
 .lb-days{font:400 12px var(--f-mono);color:var(--ink-2);white-space:nowrap}
 .lb-post{display:grid;gap:6px}
@@ -259,7 +321,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
   <header class="top">
     <div>
       <h1 class="title">The Life of <span class="hl">Carlos</span></h1>
-      <p class="tag">Twelve blocks a day. Eat, drink, sleep, see the boys, and make rent on Sunday night.</p>
+      <p class="tag">Twelve blocks a day. Eat, drink, sleep, see the boys, make rent, and work your way up to Carlos Manor.</p>
     </div>
     <div class="card clock">
       <div class="clock-main"><span class="clock-day" id="clockDay">Day 1</span><span class="clock-time" id="clockTime">6:00 AM</span></div>
@@ -279,6 +341,15 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
         <p class="drain" id="drain"></p>
         <div class="cash" id="cash" style="--c:var(--money)"></div>
       </section>
+      <section class="card o-goal" aria-labelledby="h-goal">
+        <h2 id="h-goal">How to win</h2>
+        <p class="goal-text">Live in Carlos Manor for 28 days in total and own every shop upgrade.</p>
+        <div class="goal-row"><span>Days in Carlos Manor</span><span class="skill-lv" id="goalDays"></span></div>
+        <div class="bar slim" style="--c:var(--money)"><i id="goalDaysBar"></i></div>
+        <div class="goal-row"><span>Shop upgrades owned</span><span class="skill-lv" id="goalGear"></span></div>
+        <div class="bar slim" style="--c:var(--smash)"><i id="goalGearBar"></i></div>
+        <p class="skill-note" id="goalHome"></p>
+      </section>
       <section class="card o-skills" aria-label="Skills">
         <h2>Skills</h2>
         <div class="skills" id="skills"></div>
@@ -293,12 +364,13 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
         <ul>
           <li>Every action uses 1 or 2 of the day's 12 blocks. A block is two hours.</li>
           <li>Food, Water, Energy and Social fall every block. If any of them hits 0, Carlos is done.</li>
-          <li>Rent comes out at the end of every 7th day. If Carlos cannot cover it, he is evicted. Watch the rent bar under his meters.</li>
-          <li>The theater pays cash for a two-block shift. Shifts start between 12p and 8p, and the pay rises as he gets promoted.</li>
-          <li>Chilling on Discord with the boys fills Social. Low Social cuts training XP, and a high Stank makes Social drain faster.</li>
-          <li>The shop sells upgrades for meals, water, sleep, Discord, Smash, shifts and training. Buying is instant and permanent for this Carlos.</li>
-          <li>Tournaments run a real bracket against three opponents. Win all three for the big cash prize. Skill and a fight stick raise the odds.</li>
+          <li>Rent is charged for each day at the rate of wherever Carlos lives, and the week's total comes out at the end of every 7th day. If he cannot cover it, he is evicted.</li>
+          <li>A theater shift is a 15-second ticket-tearing game. A great shift pays more and fills the promotion bar faster. A rough one pays less and pulls the bar back. Shifts start between 12p and 8p.</li>
+          <li>Chilling on Discord with the boys fills Social. Low Social cuts training XP.</li>
+          <li>The Shop button in the corner sells upgrades and lets Carlos move. Bigger homes cost more rent, but his needs drain slower, sleep is better and bad luck is rarer.</li>
+          <li>Tournaments are a three-round arrow rhythm game. A higher Smash level and a fight stick make notes slower, timing looser and targets lower. Win all three rounds for $150 and a trophy.</li>
           <li>Random events can be good, bad, or his friends. Bad luck is real, but Stank makes it less likely.</li>
+          <li>To win, live in Carlos Manor for 28 days in total and own every shop upgrade.</li>
           <li>Night runs from 10p to 6a. Sleep restores more then, and everything else costs extra energy. Two or more night sleeps give +25% training XP the next day.</li>
         </ul>
       </details>
@@ -309,9 +381,14 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
       </section>
 
       <section class="card event o-event" id="event" hidden aria-live="assertive">
-        <p class="ev-kicker" id="evKicker">Something happened</p>
-        <h3 class="ev-title" id="evTitle"></h3>
-        <p class="ev-text" id="evText"></p>
+        <div class="ev-wrap" id="evWrap">
+          <div class="ev-who" id="evWho" hidden></div>
+          <div>
+            <p class="ev-kicker" id="evKicker">Something happened</p>
+            <h3 class="ev-title" id="evTitle"></h3>
+            <p class="ev-text" id="evText"></p>
+          </div>
+        </div>
         <div class="ev-choices" id="evChoices"></div>
       </section>
 
@@ -325,11 +402,6 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
         <div class="sec-head"><h2 id="h-cup">Last tournament</h2><span class="hint" id="cupWhen"></span></div>
         <div class="bracket" id="bracket"></div>
         <p class="cup-result" id="cupResult"></p>
-      </section>
-
-      <section class="card o-shop" aria-labelledby="h-shop">
-        <div class="sec-head"><h2 id="h-shop">Shop</h2><span class="hint">Buying takes no time. Upgrades last for this Carlos.</span></div>
-        <div class="shop" id="shop"></div>
       </section>
 
       <section class="card log o-log" aria-labelledby="h-log">
@@ -348,7 +420,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 
 <div class="over" id="over" hidden role="dialog" aria-modal="true" aria-labelledby="overTitle">
   <div class="card over-card">
-    <p class="over-kicker">Carlos is gone</p>
+    <p class="over-kicker" id="overKicker">Carlos is gone</p>
     <h2 class="over-title" id="overTitle"></h2>
     <p id="overMsg"></p>
     <dl class="over-stats" id="overStats"></dl>
@@ -363,6 +435,70 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
   </div>
 </div>
 
+<div class="dock" role="toolbar" aria-label="Menus">
+  <button class="btn primary" id="openShop" type="button">Shop<span class="dock-cash" id="dockCash">$60</span></button>
+  <button class="btn" id="openHome" type="button">Housing</button>
+</div>
+
+<div class="modal" id="store" hidden role="dialog" aria-modal="true" aria-labelledby="storeTitle">
+  <div class="card modal-card wide">
+    <div class="modal-head">
+      <h2 id="storeTitle">Shop and housing</h2>
+      <span class="hint" id="storeCash"></span>
+      <button class="btn" id="storeClose" type="button">Close</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Menu sections">
+      <button class="tab" role="tab" id="tabGear" aria-controls="paneGear" aria-selected="true" type="button">Gear</button>
+      <button class="tab" role="tab" id="tabHome" aria-controls="paneHome" aria-selected="false" type="button">Housing</button>
+    </div>
+    <div id="paneGear" role="tabpanel" aria-labelledby="tabGear">
+      <p class="hint pane-note">Buying takes no time. Upgrades last for this Carlos. Owning all 16 is half of the win condition.</p>
+      <div class="shop" id="shop"></div>
+    </div>
+    <div id="paneHome" role="tabpanel" aria-labelledby="tabHome" hidden>
+      <p class="hint pane-note">Moving is instant. Rent is charged per day at your current home's rate, so you only pay for the days you live somewhere. Moving to a smaller place costs $40.</p>
+      <div class="homes" id="homes"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="work" hidden role="dialog" aria-modal="true" aria-labelledby="workTitle">
+  <div class="card modal-card">
+    <p class="ev-kicker">Theater shift</p>
+    <h2 class="ev-title" id="workTitle">Tear the tickets</h2>
+    <p id="workText"></p>
+    <div class="mg-stats"><span id="wkTime">15.0s</span><span id="wkScore">0 pts</span><span id="wkCount"></span></div>
+    <div class="track" id="wkTrack" aria-hidden="true"><div class="zone" id="wkZone"><i></i></div><div class="marker" id="wkMarker"></div></div>
+    <p class="mg-feedback" id="wkFeed" aria-live="polite"></p>
+    <div class="mg-actions">
+      <button class="btn primary big" id="wkTear" type="button" hidden>Tear!</button>
+      <button class="btn primary" id="wkStart" type="button">Start shift</button>
+      <button class="btn" id="wkCancel" type="button">Not now</button>
+      <button class="btn primary" id="wkDone" type="button" hidden>Clock out</button>
+    </div>
+    <p class="hint">Space, Enter, a click or a tap all tear. 36+ points is a legendary shift (x1.5 pay), 26+ is great (x1.25), 15+ is normal. Under 15 is a rough shift (x0.6).</p>
+  </div>
+</div>
+
+<div class="modal" id="cupg" hidden role="dialog" aria-modal="true" aria-labelledby="cgTitle">
+  <div class="card modal-card">
+    <p class="ev-kicker">Local tournament</p>
+    <h2 class="ev-title" id="cgTitle">Bracket time</h2>
+    <p id="cgText"></p>
+    <div class="mg-stats"><span id="cgRound"></span><span id="cgTime"></span></div>
+    <div class="acc"><div class="acc-bar" aria-hidden="true"><i id="cgAcc"></i><b id="cgNeed"></b></div><span class="acc-txt" id="cgAccTxt"></span></div>
+    <div class="lanes" id="cgLanes" aria-hidden="true"></div>
+    <div class="pads" id="cgPads"></div>
+    <p class="mg-feedback" id="cgFeed" aria-live="polite"></p>
+    <div class="mg-actions">
+      <button class="btn primary" id="cgStart" type="button">Start the bracket</button>
+      <button class="btn" id="cgCancel" type="button">Not now</button>
+      <button class="btn primary" id="cgDone" type="button" hidden>Back to the day</button>
+    </div>
+    <p class="hint">Arrow keys or D F J K on a keyboard. Tap the pads on a phone.</p>
+  </div>
+</div>
+
 <script>
 // ==ENGINE START==
 const Engine = (() => {
@@ -373,14 +509,28 @@ const Engine = (() => {
   const SKILL_NAMES = { fit: 'Fitness', smash: 'Smash', stank: 'Stank' };
   const NEEDS = ['food', 'water', 'energy', 'social'];
   const FRIENDS = ['Baker', 'Monty', 'Luke', 'Tim'];
-  const START_CASH = 60, RENT_BASE = 120, RENT_STEP = 10;
+  const START_CASH = 60, RENT_STEP = 10, MOVE_DOWN = 40, WIN_DAYS = 28;
   const EVENT_CHANCE = 0.28;
-  const PRIZE = { champ: 120, final: 25 };
+  const PRIZE = { champ: 150, final: 40 };
   const RANKS = [
     { at: 0, name: 'Usher', pay: 44 },
-    { at: 5, name: 'Concessions', pay: 50 },
-    { at: 15, name: 'Projectionist', pay: 58 },
-    { at: 30, name: 'Shift lead', pay: 68 }
+    { at: 6, name: 'Concessions', pay: 52 },
+    { at: 20, name: 'Projectionist', pay: 62 },
+    { at: 40, name: 'Shift lead', pay: 74 }
+  ];
+  /* theater shift grades from the minigame: pay multiplier and promotion bar change */
+  const PERF = {
+    fail: { pay: 0.6, promo: -1 }, ok: { pay: 1, promo: 1 }, good: { pay: 1.25, promo: 2 }, great: { pay: 1.5, promo: 3 }
+  };
+  const HOMES = [
+    { name: 'Basement suite', the: 'the basement suite', base: 120, move: 0, drain: 0, sleep: 0, social: 0, neg: 0,
+      text: 'One window, at ankle height. The neighbor\'s dryer sounds like a jet taking off.' },
+    { name: 'One-bedroom apartment', the: 'a one-bedroom apartment', base: 190, move: 80, drain: 0.1, sleep: 0.15, social: 0, neg: 0,
+      text: 'A real bedroom with a real door. Carlos can finally slam it.' },
+    { name: 'Townhouse', the: 'a townhouse', base: 290, move: 160, drain: 0.2, sleep: 0.3, social: 0.15, neg: 0.15,
+      text: 'Two floors, a tiny yard, and a garage the boys claimed within an hour.' },
+    { name: 'Carlos Manor', the: 'Carlos Manor', base: 420, move: 300, drain: 0.3, sleep: 0.5, social: 0.3, neg: 0.3, win: true,
+      text: 'The biggest house in town. It has a hallway Carlos has never been down.' }
   ];
   const ITEMS = [
     { id: 'fridge', levels: [
@@ -409,6 +559,7 @@ const Engine = (() => {
       { name: 'Triple monitor setup', cost: 180, text: 'Rotmax gives 50% more Stank XP.' }] }
   ];
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const GEAR_TOTAL = ITEMS.reduce((n, it) => n + it.levels.length, 0);
   const pick = (arr, rng) => arr[Math.min(arr.length - 1, Math.floor(rng() * arr.length))];
 
   const levelOf = xp => { let l = 0; for (let i = 1; i < XP_STEPS.length; i++) if (xp >= XP_STEPS[i]) l = i; return l; };
@@ -419,8 +570,9 @@ const Engine = (() => {
     return { lv, frac: (xp - a) / (b - a), cur: xp - a, need: b - a };
   };
   const newState = () => ({
-    v: 3, day: 1, slot: 0, food: 80, water: 80, energy: 90, social: 70, money: START_CASH,
+    v: 4, day: 1, slot: 0, food: 80, water: 80, energy: 90, social: 70, money: START_CASH,
     xp: { fit: 0, smash: 0, stank: 0 }, trophies: 0, shifts: 0, ignored: 0, steps: 0, rested: false, nightSleeps: 0,
+    home: 0, rentAcc: 0, bigDays: 0, promo: 0,
     items: { fridge: 0, filter: 0, bed: 0, headset: 0, stick: 0, shoes: 0, gym: 0, monitor: 0 },
     lastCup: null, plan: [], log: [], event: null, lastEvent: null, over: null
   });
@@ -429,25 +581,39 @@ const Engine = (() => {
   const isNight = slot => slot >= 8;
   const effMult = s => 1 - Math.min(0.4, 0.04 * lvl(s, 'fit'));
   const dayMult = s => Math.min(2.4, 1 + 0.035 * (s.day - 1));
-  const stankSocial = s => 1 + Math.min(0.6, 0.06 * lvl(s, 'stank'));
-  const negScale = s => Math.max(0.2, 1 - 0.1 * lvl(s, 'stank'));
+  const home = s => HOMES[s.home || 0];
+  const stankLuck = s => Math.min(0.8, 0.1 * lvl(s, 'stank'));
+  const negScale = s => (1 - stankLuck(s)) * (1 - home(s).neg);
   const eventChance = () => EVENT_CHANCE;
   const rivalWin = s => clamp(0.3 + 0.08 * lvl(s, 'smash') + 0.08 * gearLv(s, 'stick'), 0, 0.92);
   const totalLevels = s => SKILL_KEYS.reduce((n, k) => n + lvl(s, k), 0);
   const lonely = s => s.social < 25;
 
   const weekOf = day => Math.ceil(day / 7);
-  const rentFor = week => RENT_BASE + RENT_STEP * (week - 1);
+  /* Rent is charged by the day, at the rate of wherever Carlos slept that night, and paid at the end of every 7th day. */
+  const rentFor = (week, h = 0) => HOMES[h].base + RENT_STEP * (week - 1);
+  const dailyRent = s => rentFor(weekOf(s.day), s.home || 0) / 7;
   const rentInfo = s => {
-    const week = weekOf(s.day), rent = rentFor(week), dueDay = week * 7;
-    return { week, rent, dueDay, daysLeft: dueDay - s.day, short: Math.max(0, rent - s.money) };
+    const week = weekOf(s.day), dueDay = week * 7, daysLeft = dueDay - s.day;
+    const rent = Math.round((s.rentAcc || 0) + dailyRent(s) * (daysLeft + 1));
+    return { week, rent, dueDay, daysLeft, short: Math.max(0, rent - s.money), weekly: rentFor(week, s.home || 0) };
   };
-  const rankOf = s => { let r = RANKS[0]; for (const x of RANKS) if (s.shifts >= x.at) r = x; return r; };
+  const rankOf = s => { let r = RANKS[0]; for (const x of RANKS) if ((s.promo || 0) >= x.at) r = x; return r; };
+  const homePerks = h => {
+    const out = [];
+    if (h.drain) out.push(`Food, Water, Energy and Social drain ${Math.round(h.drain * 100)}% slower`);
+    if (h.sleep) out.push(`Sleep restores ${Math.round(h.sleep * 100)}% more Energy`);
+    if (h.social) out.push(`Discord gives ${Math.round(h.social * 100)}% more Social`);
+    if (h.neg) out.push(`Bad luck is ${Math.round(h.neg * 100)}% less likely`);
+    if (h.win) out.push(`Live here ${WIN_DAYS} days in total, with every shop upgrade, to win`);
+    if (!out.length) out.push('No perks. The cheapest rent in town.');
+    return out;
+  };
 
   const drain = (s, asleep) => {
-    const m = effMult(s) * dayMult(s);
-    const sm = stankSocial(s);
-    return asleep ? { food: 3 * m, water: 4 * m, energy: 0, social: 0.5 * sm } : { food: 7 * m, water: 9 * m, energy: 4 * m, social: 2 * sm };
+    const hm = 1 - home(s).drain;
+    const m = effMult(s) * dayMult(s) * hm;
+    return asleep ? { food: 3 * m, water: 4 * m, energy: 0, social: 0.5 * hm } : { food: 7 * m, water: 9 * m, energy: 4 * m, social: 2 * hm };
   };
   const drainPreview = s => {
     const d = drain(s, false);
@@ -462,9 +628,38 @@ const Engine = (() => {
   const gameProb = (c, o) => 1 / (1 + Math.exp(-(c - o) / 14));
   const matchProb = g => g * g * (3 - 2 * g);
   const cupOdds = s => { let p = 1; for (let r = 0; r < 3; r++) p *= matchProb(gameProb(cupPower(s), oppBase(s, r))); return p; };
-  const runCup = (s, rng) => {
+  /* Settings for the rhythm minigame. k is how good Carlos is: higher k means slower notes,
+     fewer notes, looser timing and a lower accuracy target. */
+  const cupParams = s => {
+    const k = lvl(s, 'smash') + 1.5 * gearLv(s, 'stick');
+    const tired = s.energy < 30 ? 0.08 : 0;
+    return {
+      k, travel: 1.0 + 0.05 * k, good: 0.10 + 0.006 * k, perfect: 0.04 + 0.002 * k,
+      nps: [0, 1, 2].map(r => 2.6 + 0.6 * r - 0.06 * k),
+      need: [0, 1, 2].map(r => clamp(0.62 + 0.1 * r - 0.02 * k + tired, 0.25, 0.92))
+    };
+  };
+  const cupDraw = rng => {
     const names = OPP_NAMES.slice();
-    const opps = [0, 1, 2].map(() => names.splice(Math.min(names.length - 1, Math.floor(rng() * names.length)), 1)[0]);
+    return [0, 1, 2].map(() => names.splice(Math.min(names.length - 1, Math.floor(rng() * names.length)), 1)[0]);
+  };
+  const cupTally = rounds => {
+    const won = rounds.filter(x => x.win).length;
+    const place = won === 3 ? 'Champion' : won === 2 ? 'Runner-up' : won === 1 ? 'Semifinalist' : 'Out in round one';
+    const prize = won === 3 ? PRIZE.champ : won === 2 ? PRIZE.final : 0;
+    return { rounds, won, place, prize };
+  };
+  const playedCup = p => {
+    const rounds = [];
+    for (let r = 0; r < 3 && r < p.results.length; r++) {
+      const x = p.results[r];
+      rounds.push({ round: ROUND_NAMES[r], opp: p.opps[r] || 'A stranger', score: `${Math.round(x.acc * 100)}% vs ${Math.round(x.need * 100)}% target`, win: !!x.win });
+      if (!x.win) break;
+    }
+    return cupTally(rounds);
+  };
+  const runCup = (s, rng) => {
+    const opps = cupDraw(rng);
     const c = cupPower(s);
     const rounds = [];
     for (let r = 0; r < 3; r++) {
@@ -476,10 +671,7 @@ const Engine = (() => {
       rounds.push({ round: ROUND_NAMES[r], opp: opps[r], score: `${a}-${b}`, win });
       if (!win) break;
     }
-    const won = rounds.filter(x => x.win).length;
-    const place = won === 3 ? 'Champion' : won === 2 ? 'Runner-up' : won === 1 ? 'Semifinalist' : 'Out in round one';
-    const prize = won === 3 ? PRIZE.champ : won === 2 ? PRIZE.final : 0;
-    return { rounds, won, place, prize };
+    return cupTally(rounds);
   };
 
   const ACTIONS = [
@@ -537,7 +729,25 @@ const Engine = (() => {
     social: ['Carlos went so long without talking to anyone that he started negotiating with the router.', 'Carlos spoke to no one for days. The group chat moved on without him.', 'Carlos got lonely. Even the pigeon left.'],
     rent: ['The landlord changed the locks. Carlos still had the Wi-Fi password, but nowhere to use it.', 'Rent was due and Carlos was not ready. The couch went to the curb with him.', 'Carlos came home to a note on the door. It was not a friendly note.']
   };
-  const CAUSE_TITLE = { food: 'Carlos starved.', water: 'Carlos dried out.', energy: 'Carlos burned out.', social: 'Carlos got lonely.', rent: 'Carlos was evicted.' };
+  const CAUSE_TITLE = { food: 'Carlos starved.', water: 'Carlos dried out.', energy: 'Carlos burned out.', social: 'Carlos got lonely.', rent: 'Carlos was evicted.', win: 'Carlos won at life.' };
+  const WINS = [
+    'Carlos owns the biggest house in town and every gadget money can buy. The boys moved in. Somehow Carlos is the only one paying rent, and he has never been happier.',
+    'Carlos stood on the balcony of Carlos Manor holding a pro fight stick. Somewhere, his old landlord wept.',
+    'Four weeks in Carlos Manor and a house full of upgrades. Carlos has peaked. Baker is already planning the housewarming LAN.'
+  ];
+  const WORK_MSGS = {
+    fail: ['Carlos tore tickets the wrong way and sent a family of five to the wrong movie.', 'Carlos dropped a whole roll of tickets down the escalator. The manager wrote something down.', 'A line formed out the door. Carlos panicked and started tearing receipts.'],
+    good: ['Carlos tore tickets with rhythm. A regular called him "the ticket guy".', 'Clean tears, quick line. The manager nodded once, which is a lot for her.', 'The line never got past the popcorn machine. Respect.'],
+    great: ['Carlos tore tickets like a surgeon. The manager wiped away a single tear.', 'The line moved so fast people thought it was a glitch. Carlos got a gold star sticker.', 'Perfect shift. A kid asked for Carlos\'s autograph. He signed a popcorn bag.']
+  };
+  const gearCount = s => ITEMS.reduce((n, it) => n + gearLv(s, it.id), 0);
+  const allGear = s => gearCount(s) >= GEAR_TOTAL;
+  const checkWin = (s, rng = Math.random) => {
+    if (s.over || (s.bigDays || 0) < WIN_DAYS || !allGear(s)) return false;
+    s.over = { cause: 'win', msg: pick(WINS, rng), day: s.day, slot: s.slot };
+    addLog(s, s.over.msg);
+    return true;
+  };
 
   const unlocked = (s, a) => !a.req || lvl(s, a.req.k) >= a.req.lv;
   const available = (s, a) => !a.when || a.when(s);
@@ -549,12 +759,13 @@ const Engine = (() => {
     return out;
   };
 
+  const homeGain = (s, a, stat) => (a.id === 'sleep' && stat === 'energy' ? home(s).sleep : 0) + (a.id === 'discord' && stat === 'social' ? home(s).social : 0);
   const simulate = (s, a) => {
     const m = effMult(s) * dayMult(s);
     const night = isNight(s.slot);
     const fx = a.asleep && night ? a.nightFx : a.fx;
     const adj = (v, stat) => v > 0
-      ? v * (1 + gearSum(s, a, 'gain', stat))
+      ? v * (1 + gearSum(s, a, 'gain', stat) + homeGain(s, a, stat))
       : v * m * (stat === 'energy' && night && !a.asleep ? 1.4 : 1) * (1 - gearSum(s, a, 'cost', stat));
     let food = s.food + adj(fx.food || 0, 'food');
     let water = s.water + adj(fx.water || 0, 'water');
@@ -617,14 +828,17 @@ const Engine = (() => {
     const rested = s.nightSleeps >= 2;
     const week = weekOf(s.day);
     const weekEnd = s.day % 7 === 0;
+    s.rentAcc = (s.rentAcc || 0) + dailyRent(s);
+    if (s.home === HOMES.length - 1) s.bigDays = (s.bigDays || 0) + 1;
     s.day += 1; s.slot -= SLOTS; s.plan = s.plan.slice(SLOTS);
     s.rested = rested; s.nightSleeps = 0;
     addLog(s, rested ? `Day ${s.day} begins. Carlos slept well, so training is 25% faster today.` : `Day ${s.day} begins.`);
     if (weekEnd) {
-      const rent = rentFor(week);
+      const rent = Math.round(s.rentAcc);
+      s.rentAcc = 0;
       if (s.money >= rent) {
         s.money -= rent;
-        addLog(s, `Rent paid: $${rent}. Next week it is $${rentFor(week + 1)}.`);
+        addLog(s, `Rent paid: $${rent}. Next week ${HOMES[s.home || 0].the} costs $${rentFor(week + 1, s.home || 0)}.`);
       } else {
         s.over = { cause: 'rent', msg: pick(DEATHS.rent, rng), day: s.day, slot: s.slot };
         addLog(s, s.over.msg);
@@ -633,6 +847,7 @@ const Engine = (() => {
       const info = rentInfo(s);
       if (info.daysLeft <= 2 && info.short > 0) addLog(s, `Rent is due at the end of Day ${info.dueDay}. Carlos is $${info.short} short.`);
     }
+    if (!s.over) checkWin(s, rng);
   };
 
   const gf = (win, lose) => (s, rng) => rng() < 0.25 ? win : Object.assign({ ignored: 1 }, lose);
@@ -1128,7 +1343,9 @@ const Engine = (() => {
     return { id: e.id, f, g };
   };
 
-  const act = (s, id, rng = Math.random) => {
+  /* opts.perf: theater minigame grade (fail, ok, good, great). opts.played: tournament minigame results.
+     Without them (bots, tests) a shift counts as ok and the tournament is simulated. */
+  const act = (s, id, rng = Math.random, opts = {}) => {
     if (s.over || s.event) return { ok: false };
     const a = ACTIONS.find(x => x.id === id);
     if (!a || !unlocked(s, a) || !available(s, a)) return { ok: false };
@@ -1136,24 +1353,28 @@ const Engine = (() => {
     const night = isNight(s.slot);
     const sim = simulate(s, a);
     const gain = xpGain(s, a);
-    let line, promoted = null, prize = 0;
+    let line, promoted = null, extra = 0;
     if (a.special === 'cup') {
-      const t = runCup(s, rng);
+      const t = opts.played && opts.played.results && opts.played.results.length ? playedCup(opts.played) : runCup(s, rng);
       const parts = t.rounds.map(x => x.win ? `beat ${x.opp} ${x.score}` : `lost to ${x.opp} ${x.score}`);
       for (let i = 0; i < t.won; i++) gain.smash += scaleXp(s, 8);
-      prize = t.prize;
+      extra = t.prize;
       if (t.won === 3) s.trophies += 1;
       line = `Carlos ${parts.join(', ')}. ${t.place}${t.prize ? `, prize $${t.prize}` : ''}${t.won === 3 ? `, plus trophy number ${s.trophies}` : ''}.`;
-      s.lastCup = { rounds: t.rounds, place: t.place, prize: t.prize, day: s.day, slot: s.slot };
+      s.lastCup = { rounds: t.rounds, place: t.place, prize: t.prize, won: t.won, day: s.day, slot: s.slot };
     } else if (a.special === 'marathon') line = pick(MARATHON, rng);
     else if (a.special === 'work') {
       const before = rankOf(s);
-      line = `${pick(a.msgs, rng)} Paid $${a.pay(s)}.`;
+      const perf = PERF[opts.perf] ? opts.perf : 'ok';
+      const pay = Math.round(before.pay * PERF[perf].pay);
+      extra = pay - before.pay;
+      line = `${pick(perf === 'ok' ? a.msgs : WORK_MSGS[perf], rng)} Paid $${pay}.`;
       s.shifts += 1;
+      s.promo = Math.max(before.at, (s.promo || 0) + PERF[perf].promo);
       const after = rankOf(s);
       if (after.name !== before.name) promoted = after;
     } else line = pick(a.asleep && night ? a.nightMsgs : a.msgs, rng);
-    s.food = sim.food; s.water = sim.water; s.energy = sim.energy; s.social = sim.social; s.money = sim.money + prize;
+    s.food = sim.food; s.water = sim.water; s.energy = sim.energy; s.social = sim.social; s.money = sim.money + extra;
     s.steps += 1;
     addLog(s, `${a.name}. ${line}`, stamp);
     if (promoted) addLog(s, `Promoted to ${promoted.name}. Shifts now pay $${promoted.pay}.`, stamp);
@@ -1203,11 +1424,22 @@ const Engine = (() => {
     s.money -= next.cost;
     s.items[id] = lv + 1;
     addLog(s, `Bought ${next.name} for $${next.cost}. ${next.text}`);
+    checkWin(s);
     return { ok: true, item: next };
   };
+  const move = (s, id) => {
+    if (s.over || !HOMES[id] || id === (s.home || 0)) return { ok: false };
+    const fee = id > (s.home || 0) ? HOMES[id].move : MOVE_DOWN;
+    if (s.money < fee) return { ok: false };
+    s.money -= fee; s.home = id;
+    addLog(s, `Carlos moved into ${HOMES[id].the} for $${fee}. Rent there is $${rentFor(weekOf(s.day), id)} a week, charged by the day.`);
+    return { ok: true, fee };
+  };
 
-  const score = s => (s.day - 1) * 100 + s.slot * 8 + totalLevels(s) * 40 + s.trophies * 50 + Math.floor(s.money / 10);
+  const won = s => !!s.over && s.over.cause === 'win';
+  const score = s => (s.day - 1) * 100 + s.slot * 8 + totalLevels(s) * 40 + s.trophies * 50 + Math.floor(s.money / 10) + (won(s) ? 1500 : 0);
   const titleOf = s => {
+    if (won(s)) return 'Lord of Carlos Manor';
     const l = SKILL_KEYS.map(k => lvl(s, k));
     if (l[0] + l[1] + l[2] < 2) return 'Barely a Carlos';
     if (Math.min(...l) >= 3) return 'Well-Rounded Menace';
@@ -1215,21 +1447,29 @@ const Engine = (() => {
   };
 
   return { SLOTS, ACTIONS, EVENTS, ITEMS, SKILL_KEYS, SKILL_NAMES, NEEDS, FRIENDS, XP_STEPS, MAX_LV, CAUSE_TITLE, RANKS, PRIZE, ROUND_NAMES,
-    newState, levelOf, progress, lvl, gearLv, unlocked, available, preview, act, choose, buy, drainPreview,
-    effMult, dayMult, stankSocial, negScale, eventChance, rivalWin, cupOdds, isNight, score, titleOf, totalLevels,
-    rentInfo, rankOf, rentFor, weekOf, lonely };
+    HOMES, MOVE_DOWN, WIN_DAYS, GEAR_TOTAL, PERF,
+    newState, levelOf, progress, lvl, gearLv, unlocked, available, preview, act, choose, buy, move, drainPreview,
+    effMult, dayMult, stankLuck, negScale, eventChance, rivalWin, cupOdds, cupParams, cupDraw, isNight, score, titleOf, totalLevels,
+    rentInfo, rankOf, rentFor, dailyRent, weekOf, lonely, homePerks, gearCount, allGear, won };
 })();
 // ==ENGINE END==
 
 (() => {
   const E = Engine;
-  const SAVE = 'carlos.save.v3', BEST = 'carlos.best.v1';
+  const SAVE = 'carlos.save.v4', OLD_SAVE = 'carlos.save.v3', BEST = 'carlos.best.v1';
   const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-'];
   const $ = id => document.getElementById(id);
   const readJSON = k => { try { const t = localStorage.getItem(k); return t ? JSON.parse(t) : null; } catch (e) { return null; } };
   const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const dropKey = k => { try { localStorage.removeItem(k); } catch (e) {} };
-  const isState = o => !!o && typeof o === 'object' && o.v === 3 && typeof o.day === 'number' && typeof o.food === 'number' && typeof o.money === 'number' && !!o.xp && !!o.items && Array.isArray(o.plan) && Array.isArray(o.log);
+  const isState = o => !!o && typeof o === 'object' && o.v === 4 && typeof o.day === 'number' && typeof o.food === 'number' && typeof o.money === 'number' && typeof o.home === 'number' && !!o.xp && !!o.items && Array.isArray(o.plan) && Array.isArray(o.log);
+  /* Carry a run from the previous version over, so nobody loses their Carlos. */
+  function migrate(o) {
+    if (!o || typeof o !== 'object' || o.v !== 3) return o;
+    o.v = 4; o.home = 0; o.bigDays = 0; o.promo = o.shifts || 0;
+    o.rentAcc = E.rentFor(E.weekOf(o.day), 0) / 7 * ((o.day - 1) % 7);
+    return o;
+  }
 
   const hourOf = i => (6 + 2 * i) % 24;
   const shortH = h => (h % 12 || 12) + (h >= 12 ? 'p' : 'a');
@@ -1238,8 +1478,8 @@ const Engine = (() => {
   const NEED_LABEL = { food: 'Food', water: 'Water', energy: 'Energy', social: 'Social' };
   const SKILL_NOTES = {
     fit: s => `Every cost is ${Math.round((1 - E.effMult(s)) * 100)}% lower.`,
-    smash: s => `Rival win chance: ${Math.round(E.rivalWin(s) * 100)}%.` + (E.lvl(s, 'smash') >= 3 ? ` Tournament title odds: about ${Math.round(E.cupOdds(s) * 100)}%.` : ''),
-    stank: s => `Bad luck is ${Math.round((1 - E.negScale(s)) * 100)}% less likely. Social drain +${Math.round((E.stankSocial(s) - 1) * 100)}%.`
+    smash: s => `Rival win chance: ${Math.round(E.rivalWin(s) * 100)}%.` + (E.lvl(s, 'smash') >= 3 ? ` Tournament difficulty: ${diffLabel(s)}.` : ' Tournaments unlock at level 3.'),
+    stank: s => `Bad luck is ${Math.round(E.stankLuck(s) * 100)}% less likely.`
   };
 
   /* ---------- what Carlos is feeling ---------- */
@@ -1280,6 +1520,12 @@ const Engine = (() => {
     gym: ['Carlos does bicep curls in the kitchen while the water boils.'],
     shoes: ['Carlos\'s feet feel like they are on a cloud. A theater cloud.']
   };
+  const HOME_LINES = [
+    ['Carlos can hear the neighbor\'s dryer from bed. They are close now.', 'Carlos\'s basement window has a great view of ankles.'],
+    ['Carlos closed his bedroom door just to feel something.', 'Carlos has a kitchen counter now. He put one thing on it. It is a controller.'],
+    ['Carlos stood on the stairs of his townhouse for no reason. It felt important.', 'The boys have claimed the garage. Carlos is a guest in his own garage.'],
+    ['Carlos got lost on the way to his own kitchen.', 'Carlos hears an echo when he says "bro". He says it a lot now.', 'Carlos has a room he calls "the Smash wing". It has one beanbag.']
+  ];
   function lowest(s) { return E.NEEDS.map(k => [k, s[k]]).sort((a, b) => a[1] - b[1])[0]; }
   function moodKey(s) {
     if (s.over) return 'dead';
@@ -1310,6 +1556,7 @@ const Engine = (() => {
     if (s.shifts > 0) pool.push(...THEATER);
     if (s.ignored >= 2) pool.push(...GIRLFRIEND);
     for (const k in GEAR) if (E.gearLv(s, k) > 0) pool.push(...GEAR[k]);
+    pool.push(...HOME_LINES[s.home || 0]);
     return txt(pool[h % pool.length]);
   }
 
@@ -1321,7 +1568,7 @@ const Engine = (() => {
   let posted = false, lastRows = [], mineId = null;
   const lbHeaders = extra => Object.assign({ apikey: LB.key }, extra || {});
   async function lbTop() {
-    const r = await fetch(`${LB.url}/rest/v1/scores?select=id,name,score,days&order=score.desc,created_at.asc&limit=10`, { headers: lbHeaders() });
+    const r = await fetch(`${LB.url}/rest/v1/scores?select=id,name,score,days,title&order=score.desc,created_at.asc&limit=10`, { headers: lbHeaders() });
     if (!r.ok) throw new Error('top ' + r.status);
     return r.json();
   }
@@ -1344,6 +1591,7 @@ const Engine = (() => {
       if (mine != null && r.id === mine) li.className = 'mine';
       const a = document.createElement('span'); a.className = 'lb-rank'; a.textContent = '#' + (i + 1);
       const b = document.createElement('span'); b.className = 'lb-name'; b.textContent = r.name;
+      if (r.title) { const tt = document.createElement('span'); tt.className = 'lb-title'; tt.textContent = r.title; b.appendChild(tt); }
       const c = document.createElement('span'); c.className = 'lb-score'; c.textContent = r.score + ' pts';
       const d = document.createElement('span'); d.className = 'lb-days'; d.textContent = r.days + (r.days === 1 ? ' day' : ' days');
       li.append(a, b, c, d);
@@ -1395,6 +1643,339 @@ const Engine = (() => {
   const R = { meters: {}, skills: {}, acts: {}, shop: {}, cash: null };
   const timers = {};
 
+  /* ---------- the boys, drawn like Carlos ---------- */
+  const FRIEND_LOOK = {
+    Baker: { skin: '#E2AE84', hair: '#5A3A22', shirt: '#F28C28' },
+    Monty: { skin: '#8A5636', hair: '#17141C', shirt: '#8E5CF7' },
+    Luke: { skin: '#F2CBA6', hair: '#D9AE3F', shirt: '#2FAE6A' },
+    Tim: { skin: '#BF8358', hair: '#9B3E25', shirt: '#D23B3B' }
+  };
+  function friendSVG(name) {
+    const L = FRIEND_LOOK[name] || FRIEND_LOOK.Baker;
+    const ink = '#1D1A22';
+    const smile = d => `<path d="${d}" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    let hair = '', face = '', over = '', body = `<path d="M68 116 Q80 128 92 116" stroke="${ink}" stroke-width="2" fill="none" opacity=".5"/>`;
+    let mouth = smile('M66 100 Q80 113 94 100');
+    if (name === 'Baker') {
+      /* backwards cap and a beard */
+      hair = `<path fill="#2C6BED" d="M40 66 C36 16 124 16 120 66 C114 50 102 44 80 44 C58 44 46 50 40 66 Z"/><rect fill="#2C6BED" x="106" y="34" width="30" height="9" rx="4.5" transform="rotate(20 106 34)"/><rect fill="${L.hair}" x="70" y="40" width="20" height="6" rx="3"/>`;
+      face = `<path fill="${L.hair}" d="M44 88 C46 126 114 126 116 88 C110 104 98 112 80 112 C62 112 50 104 44 88 Z"/>`;
+      mouth = smile('M69 98 Q81 106 92 97');
+    } else if (name === 'Monty') {
+      /* curls and glasses */
+      hair = [46, 57, 68, 80, 92, 103, 114].map((x, i) => `<circle fill="${L.hair}" cx="${x}" cy="${i % 2 ? 32 : 39}" r="12"/>`).join('')
+        + `<path fill="${L.hair}" d="M40 70 C36 30 124 30 120 70 C114 54 102 48 80 48 C58 48 46 54 40 70 Z"/>`;
+      over = `<g fill="none" stroke="${ink}" stroke-width="3"><rect x="51" y="72" width="24" height="20" rx="6"/><rect x="85" y="72" width="24" height="20" rx="6"/><path d="M75 80 h10"/></g>`;
+    } else if (name === 'Luke') {
+      /* spikes and headphones */
+      hair = `<path fill="${L.hair}" d="M40 66 L42 30 L56 40 L60 16 L74 34 L82 12 L90 34 L102 16 L106 40 L118 30 L120 66 C112 50 100 46 80 46 C60 46 48 50 40 66 Z"/>`;
+      over = `<path d="M37 82 C30 4 130 4 123 82" fill="none" stroke="#2A2F45" stroke-width="7"/><rect fill="#2A2F45" x="27" y="69" width="17" height="27" rx="6"/><rect fill="#2A2F45" x="116" y="69" width="17" height="27" rx="6"/>`;
+      mouth = smile('M64 99 Q80 116 96 99');
+    } else if (name === 'Tim') {
+      /* buzz cut, theater bow tie and name tag */
+      hair = `<path fill="${L.hair}" d="M42 64 C40 22 120 22 118 64 C112 46 100 40 80 40 C60 40 48 46 42 64 Z"/>`;
+      body = `<path fill="#151A33" d="M68 118 l12 6 l12 -6 v14 l-12 -6 l-12 6 z"/><rect fill="#fff" stroke="#151A33" stroke-width="1.5" x="88" y="144" width="20" height="10" rx="2"/>`;
+    }
+    return `<svg viewBox="0 0 160 184" aria-hidden="true">
+      <line x1="52" y1="128" x2="32" y2="158" stroke="${L.skin}" stroke-width="11" stroke-linecap="round"/>
+      <line x1="108" y1="128" x2="128" y2="158" stroke="${L.skin}" stroke-width="11" stroke-linecap="round"/>
+      <rect fill="${L.skin}" x="70" y="104" width="20" height="16" rx="4"/>
+      <rect fill="${L.shirt}" x="46" y="114" width="68" height="70" rx="16"/>
+      ${body}
+      <circle fill="${L.skin}" cx="42" cy="80" r="7"/><circle fill="${L.skin}" cx="118" cy="80" r="7"/>
+      <rect fill="${L.skin}" x="42" y="32" width="76" height="82" rx="32"/>
+      ${hair}${face}
+      <ellipse fill="#fff" cx="63" cy="82" rx="8.5" ry="9"/><ellipse fill="#fff" cx="97" cy="82" rx="8.5" ry="9"/>
+      <circle fill="${ink}" cx="64" cy="83" r="4"/><circle fill="${ink}" cx="98" cy="83" r="4"/>
+      ${mouth}${over}
+    </svg>`;
+  }
+  const PHONE_SVG = `<svg viewBox="0 0 160 184" aria-hidden="true">
+    <rect x="44" y="18" width="72" height="148" rx="14" fill="#1D1A22"/>
+    <rect x="51" y="32" width="58" height="118" rx="6" fill="#F4F7FB"/>
+    <rect x="58" y="44" width="44" height="7" rx="3.5" fill="#BAC5DA"/><rect x="58" y="56" width="30" height="7" rx="3.5" fill="#BAC5DA"/>
+    <path d="M80 122 C62 108 58 96 66 90 C72 86 78 89 80 94 C82 89 88 86 94 90 C102 96 98 108 80 122 Z" fill="#E8457D"/>
+    <circle cx="114" cy="24" r="15" fill="#C62828"/><text x="114" y="29.5" text-anchor="middle" font-family="Figtree, sans-serif" font-weight="800" font-size="15" fill="#fff">9+</text>
+  </svg>`;
+  const CLOUD_SVG = `<svg viewBox="0 0 160 184" aria-hidden="true">
+    <path d="M44 100 C26 100 22 74 42 70 C42 48 70 40 82 58 C92 40 124 46 120 72 C140 74 138 100 118 100 Z" fill="#8A93AD"/>
+    <path d="M84 100 L70 126 H84 L74 154 L104 118 H89 L99 100 Z" fill="#F5C31E"/>
+    <path d="M50 112 l-6 14 M60 120 l-6 14 M114 112 l-6 14 M126 106 l-6 14" stroke="#2C8DF5" stroke-width="4" stroke-linecap="round"/>
+  </svg>`;
+  function whoOf(def, ev) {
+    for (const f of E.FRIENDS) if (def.id.startsWith(f.toLowerCase() + '-')) return { kind: 'friend', name: f };
+    if (def.id.startsWith('f-')) return { kind: 'friend', name: ev.f };
+    if (def.id.startsWith('gf-')) return { kind: 'phone' };
+    if (def.neg) return { kind: 'cloud' };
+    return null;
+  }
+
+  /* ---------- pop-up menus ---------- */
+  let modalReturn = null;
+  const MODALS = ['store', 'work', 'cupg'];
+  const modalOpen = () => MODALS.some(id => !$(id).hidden);
+  function openModal(id, focusEl) {
+    if (!modalOpen()) modalReturn = document.activeElement;
+    $(id).hidden = false;
+    const f = focusEl || $(id).querySelector('button:not([hidden]):not(:disabled)');
+    if (f) f.focus({ preventScroll: true });
+  }
+  function closeModal(id) {
+    $(id).hidden = true;
+    const r = modalReturn;
+    modalReturn = null;
+    if (r && r.focus && document.body.contains(r) && !r.disabled) r.focus({ preventScroll: true });
+  }
+  function setTab(name) {
+    const gear = name === 'gear';
+    $('tabGear').setAttribute('aria-selected', String(gear));
+    $('tabHome').setAttribute('aria-selected', String(!gear));
+    $('paneGear').hidden = !gear;
+    $('paneHome').hidden = gear;
+  }
+  function openStore(tab) {
+    if (!S || modalOpen()) return;
+    setTab(tab);
+    renderStore();
+    openModal('store', $(tab === 'gear' ? 'tabGear' : 'tabHome'));
+  }
+
+  /* ---------- theater minigame: tear the ticket when the marker is in the green ---------- */
+  const WKC = { dur: 15, good: 0.09, perfect: 0.03, wait: 2.5, gap: 0.35 };
+  const WK_GRADES = [
+    { min: 36, id: 'great', label: 'Legendary shift' },
+    { min: 26, id: 'good', label: 'Great shift' },
+    { min: 15, id: 'ok', label: 'Normal shift' },
+    { min: -Infinity, id: 'fail', label: 'Rough shift' }
+  ];
+  const WK_FEED = {
+    perfect: ['Perfect tear!', 'Surgical.', 'Clean as a whistle.', 'Textbook.'],
+    good: ['Good tear.', 'Not bad.', 'Solid.'],
+    miss: ['Ripped it in half.', 'That was a receipt.', 'Oof. Wrong end.'],
+    late: ['The customer gave up and left.']
+  };
+  const wk = { running: false };
+  const pickOne = arr => arr[Math.floor(Math.random() * arr.length)];
+  function openWork() {
+    wk.running = false;
+    const rk = E.rankOf(S);
+    $('workText').textContent = `${rk.name} on duty. Tear each ticket when the moving marker is inside the green zone. The bright middle is a perfect tear. Normal pay is $${rk.pay}. A legendary shift pays $${Math.round(rk.pay * 1.5)} and fills the promotion bar faster. A rough one pays $${Math.round(rk.pay * 0.6)} and pulls the bar back.`;
+    $('wkTime').textContent = WKC.dur.toFixed(1) + 's';
+    $('wkScore').textContent = '0 pts';
+    $('wkCount').textContent = '';
+    $('wkFeed').textContent = '';
+    $('wkZone').style.visibility = 'hidden';
+    $('wkMarker').style.left = '0%';
+    $('wkStart').hidden = false; $('wkCancel').hidden = false; $('wkTear').hidden = true; $('wkDone').hidden = true;
+    openModal('work', $('wkStart'));
+  }
+  function wkStep(now) {
+    const t = (now - wk.t0) / 1000;
+    const dt = Math.min(0.05, Math.max(0, (now - wk.last) / 1000));
+    wk.last = now;
+    const sp = 0.9 + 0.06 * Math.min(t, WKC.dur);
+    wk.pos += wk.dir * sp * dt;
+    if (wk.pos > 1) { wk.pos = 2 - wk.pos; wk.dir = -1; }
+    if (wk.pos < 0) { wk.pos = -wk.pos; wk.dir = 1; }
+    return t;
+  }
+  function wkStart() {
+    if (wk.running) return;
+    const now = performance.now();
+    Object.assign(wk, { running: true, t0: now, last: now, pos: 0, dir: 1, shown: false, nextAt: 0.5, zone: 0.5, zoneAt: 0, pts: 0, P: 0, G: 0, M: 0 });
+    $('wkStart').hidden = true; $('wkCancel').hidden = true; $('wkTear').hidden = false;
+    $('wkTear').focus({ preventScroll: true });
+    $('wkFeed').textContent = 'Here comes the first customer.';
+    requestAnimationFrame(wkLoop);
+  }
+  function wkLoop(now) {
+    if (!wk.running) return;
+    const t = wkStep(now);
+    if (!wk.shown && t >= wk.nextAt && t < WKC.dur) { wk.zone = 0.12 + Math.random() * 0.76; wk.shown = true; wk.zoneAt = t; }
+    else if (wk.shown && t - wk.zoneAt > WKC.wait) wkJudge(t, 'late');
+    const z = $('wkZone');
+    z.style.visibility = wk.shown ? 'visible' : 'hidden';
+    z.style.left = ((wk.zone - WKC.good) * 100) + '%';
+    z.style.width = (WKC.good * 200) + '%';
+    $('wkMarker').style.left = (wk.pos * 100) + '%';
+    $('wkTime').textContent = Math.max(0, WKC.dur - t).toFixed(1) + 's';
+    if (t >= WKC.dur) { wkEnd(); return; }
+    requestAnimationFrame(wkLoop);
+  }
+  function wkPress() {
+    if (!wk.running || !wk.shown) return;
+    const t = wkStep(performance.now());
+    const d = Math.abs(wk.pos - wk.zone);
+    wkJudge(t, d <= WKC.perfect ? 'perfect' : d <= WKC.good ? 'good' : 'miss');
+  }
+  function wkJudge(t, kind) {
+    if (kind === 'perfect') { wk.P++; wk.pts += 3; }
+    else if (kind === 'good') { wk.G++; wk.pts += 2; }
+    else wk.M++;
+    wk.shown = false;
+    wk.nextAt = t + WKC.gap;
+    $('wkFeed').textContent = pickOne(WK_FEED[kind]);
+    $('wkScore').textContent = wk.pts + ' pts';
+    $('wkCount').textContent = `${wk.P} perfect, ${wk.G} good, ${wk.M} missed`;
+  }
+  function wkEnd() {
+    wk.running = false;
+    $('wkZone').style.visibility = 'hidden';
+    $('wkTear').hidden = true;
+    const g = WK_GRADES.find(x => wk.pts >= x.min);
+    const before = snap(), promo0 = S.promo, rank0 = E.rankOf(S).name;
+    const r = E.act(S, 'work', Math.random, { perf: g.id });
+    if (!r.ok) { closeModal('work'); return; }
+    commit(before);
+    if (S.over) { $('work').hidden = true; modalReturn = null; return; }
+    const pay = S.money - before.money, dp = S.promo - promo0, rank1 = E.rankOf(S).name;
+    $('wkFeed').textContent = `${g.label}: ${wk.pts} points. Paid $${pay}. Promotion bar ${dp > 0 ? '+' + dp : dp < 0 ? dp : 'unchanged'}.` + (rank1 !== rank0 ? ` Promoted to ${rank1}!` : '');
+    /* short pause so a mashed key does not skip the result */
+    setTimeout(() => { if ($('work').hidden) return; $('wkDone').hidden = false; $('wkDone').focus({ preventScroll: true }); }, 600);
+  }
+  function wkClose() {
+    if (wk.running) return;
+    closeModal('work');
+    focusNext();
+  }
+
+  /* ---------- tournament minigame: four-lane arrow rhythm game, three rounds ---------- */
+  const LANES = [
+    { glyph: '←', name: 'Left', keys: ['ArrowLeft', 'd', 'D'], c: 'food' },
+    { glyph: '↓', name: 'Down', keys: ['ArrowDown', 'f', 'F'], c: 'water' },
+    { glyph: '↑', name: 'Up', keys: ['ArrowUp', 'j', 'J'], c: 'stank' },
+    { glyph: '→', name: 'Right', keys: ['ArrowRight', 'k', 'K'], c: 'smash' }
+  ];
+  const ROUND_LEN = 8.2, BETWEEN = 1400;
+  const cg = { phase: 'idle', notes: [], timer: null, results: [] };
+  const pct = x => Math.round(x * 100) + '%';
+  function diffLabel(s) { const k = E.cupParams(s).k; return k >= 10 ? 'Easy' : k >= 6 ? 'Medium' : 'Hard'; }
+  function cgClear() { for (const n of cg.notes) if (n.el) n.el.remove(); cg.notes = []; }
+  function openCup() {
+    clearTimeout(cg.timer);
+    cg.params = E.cupParams(S);
+    cg.opps = E.cupDraw(Math.random);
+    cg.results = [];
+    cg.phase = 'ready';
+    cgClear();
+    $('cgTitle').textContent = 'Bracket time';
+    $('cgRound').textContent = 'Bracket: ' + cg.opps.join(', then ');
+    $('cgTime').textContent = '';
+    $('cgText').textContent = `Three rounds of about 8 seconds. Hit each arrow as it reaches the box at the bottom. Beat the target accuracy (the red line) to win the round, or Carlos is out. Difficulty: ${diffLabel(S)}.` + (S.energy < 30 ? ' Carlos is tired, so the targets are higher.' : '');
+    $('cgAcc').style.width = '0%';
+    $('cgNeed').style.left = pct(cg.params.need[0]);
+    $('cgAccTxt').textContent = `Target ${pct(cg.params.need[0])}`;
+    $('cgFeed').textContent = '';
+    $('cgStart').hidden = false; $('cgCancel').hidden = false; $('cgDone').hidden = true;
+    openModal('cupg', $('cgStart'));
+  }
+  function cgStartRound(r) {
+    const p = cg.params;
+    cgClear();
+    cg.round = r; cg.phase = 'play'; cg.P = 0; cg.G = 0; cg.M = 0; cg.stray = 0;
+    let t = p.travel + 0.2, last = -1, run = 0;
+    while (t < ROUND_LEN - 0.7) {
+      let lane = Math.floor(Math.random() * 4);
+      if (lane === last) { run++; if (run >= 2) { lane = (lane + 1 + Math.floor(Math.random() * 3)) % 4; run = 0; } } else run = 0;
+      cg.notes.push({ t, lane, el: null, done: false });
+      last = lane;
+      t += Math.max(0.2, (1 / p.nps[r]) * pickOne([0.5, 1, 1, 1, 1.5]));
+    }
+    cg.H = $('cgLanes').clientHeight || 300;
+    $('cgTitle').textContent = `${E.ROUND_NAMES[r]} vs ${cg.opps[r]}`;
+    $('cgRound').textContent = `Round ${r + 1} of 3`;
+    $('cgNeed').style.left = pct(p.need[r]);
+    $('cgAcc').style.width = '0%';
+    $('cgAccTxt').textContent = `Target ${pct(p.need[r])}`;
+    $('cgFeed').textContent = 'Go!';
+    cg.t0 = performance.now();
+    requestAnimationFrame(cgLoop);
+  }
+  function cgAcc(final) {
+    const judged = final ? cg.notes.length : cg.P + cg.G + cg.M;
+    const den = judged + 0.5 * cg.stray;
+    return den > 0 ? (cg.P + 0.6 * cg.G) / den : 0;
+  }
+  function cgLoop(now) {
+    if (cg.phase !== 'play') return;
+    const p = cg.params, t = (now - cg.t0) / 1000, hitY = cg.H - 34;
+    for (const n of cg.notes) {
+      if (n.done) continue;
+      if (t - n.t > p.good) {
+        n.done = true; cg.M++;
+        if (n.el) { n.el.remove(); n.el = null; }
+        $('cgFeed').textContent = 'Miss';
+        continue;
+      }
+      const ahead = n.t - t;
+      if (ahead <= p.travel) {
+        if (!n.el) {
+          n.el = document.createElement('div');
+          n.el.className = 'note';
+          n.el.textContent = LANES[n.lane].glyph;
+          R.lanes[n.lane].lane.appendChild(n.el);
+        }
+        n.el.style.transform = `translateY(${(hitY * (1 - ahead / p.travel) - 18).toFixed(1)}px)`;
+      }
+    }
+    const acc = cgAcc(false);
+    $('cgAcc').style.width = pct(Math.min(1, acc));
+    $('cgAccTxt').textContent = `${pct(acc)} of ${pct(p.need[cg.round])} target`;
+    $('cgTime').textContent = Math.max(0, ROUND_LEN - t).toFixed(1) + 's left';
+    if (t >= ROUND_LEN && cg.notes.every(n => n.done)) { cgEndRound(); return; }
+    requestAnimationFrame(cgLoop);
+  }
+  function cgPress(lane) {
+    if (cg.phase !== 'play') return;
+    const p = cg.params, t = (performance.now() - cg.t0) / 1000;
+    let best = null, bd = Infinity;
+    for (const n of cg.notes) if (!n.done && n.lane === lane) { const d = Math.abs(n.t - t); if (d < bd) { bd = d; best = n; } }
+    const tg = R.lanes[lane].target;
+    tg.classList.add('hit');
+    setTimeout(() => tg.classList.remove('hit'), 110);
+    if (best && bd <= p.good) {
+      best.done = true;
+      if (best.el) { best.el.remove(); best.el = null; }
+      if (bd <= p.perfect) { cg.P++; $('cgFeed').textContent = 'Perfect!'; }
+      else { cg.G++; $('cgFeed').textContent = 'Good'; }
+    } else { cg.stray++; $('cgFeed').textContent = 'Off beat'; }
+  }
+  function cgEndRound() {
+    const p = cg.params, r = cg.round;
+    const acc = cgAcc(true), need = p.need[r], win = acc >= need;
+    cg.results.push({ acc, need, win });
+    cgClear();
+    if (win && r < 2) {
+      cg.phase = 'between';
+      $('cgFeed').textContent = `Won the ${E.ROUND_NAMES[r].toLowerCase()}: ${pct(acc)} against a ${pct(need)} target. Next up, ${cg.opps[r + 1]}.`;
+      cg.timer = setTimeout(() => { if (cg.phase === 'between') cgStartRound(r + 1); }, BETWEEN);
+    } else cgFinish();
+  }
+  function cgFinish() {
+    cg.phase = 'done';
+    const before = snap();
+    const res = E.act(S, 'cup', Math.random, { played: { opps: cg.opps, results: cg.results } });
+    if (!res.ok) { closeModal('cupg'); return; }
+    commit(before);
+    if (S.over) { $('cupg').hidden = true; modalReturn = null; return; }
+    const c = S.lastCup, last = cg.results[cg.results.length - 1];
+    $('cgTitle').textContent = c.place;
+    $('cgRound').textContent = '';
+    $('cgTime').textContent = '';
+    $('cgFeed').textContent = c.won === 3
+      ? `Champion! Carlos takes $${c.prize} and a trophy home.`
+      : `Carlos hit ${pct(last.acc)} against a ${pct(last.need)} target and went out in the ${E.ROUND_NAMES[cg.results.length - 1].toLowerCase()}. ${c.prize ? `Prize: $${c.prize}.` : 'No prize this time.'}`;
+    setTimeout(() => { if ($('cupg').hidden) return; $('cgDone').hidden = false; $('cgDone').focus({ preventScroll: true }); }, 600);
+  }
+  function cgClose() {
+    if (cg.phase === 'play' || cg.phase === 'between') return;
+    const done = cg.phase === 'done';
+    cg.phase = 'idle';
+    cgClear();
+    closeModal('cupg');
+    if (done) focusNext();
+  }
+
   function build() {
     const mWrap = $('meters');
     for (const k of E.NEEDS) {
@@ -1406,8 +1987,8 @@ const Engine = (() => {
       R.meters[k] = { row, warn: row.querySelector('.warn'), delta: row.querySelector('.meter-delta'), val: row.querySelector('.meter-val'), bar: row.querySelector('.bar'), fill: row.querySelector('i') };
     }
     const cash = $('cash');
-    cash.innerHTML = `<div class="meter-head"><span class="meter-name">Cash</span><span class="meter-right"><span class="meter-delta"></span><span class="meter-val">$0</span></span></div><div class="bar slim" role="meter" aria-label="Cash compared with this week's rent" aria-valuemin="0" aria-valuemax="100"><i></i></div><p class="rent-note" id="rentNote"></p><p class="rent-note" id="rankNote"></p>`;
-    R.cash = { delta: cash.querySelector('.meter-delta'), val: cash.querySelector('.meter-val'), bar: cash.querySelector('.bar'), fill: cash.querySelector('i'), rent: $('rentNote'), rank: $('rankNote') };
+    cash.innerHTML = `<div class="meter-head"><span class="meter-name">Cash</span><span class="meter-right"><span class="meter-delta"></span><span class="meter-val">$0</span></span></div><div class="bar slim" role="meter" aria-label="Cash compared with this week's rent" aria-valuemin="0" aria-valuemax="100"><i></i></div><p class="rent-note" id="rentNote"></p><p class="rent-note" id="rankNote"></p><div class="bar slim promo-bar" style="--c:var(--energy)" role="meter" aria-label="Promotion progress" aria-valuemin="0" aria-valuemax="100"><i id="promoFill"></i></div>`;
+    R.cash = { delta: cash.querySelector('.meter-delta'), val: cash.querySelector('.meter-val'), bar: cash.querySelector('.bar'), fill: cash.querySelector('i'), rent: $('rentNote'), rank: $('rankNote'), promo: $('promoFill'), promoBar: cash.querySelector('.promo-bar') };
     const sWrap = $('skills');
     for (const k of E.SKILL_KEYS) {
       const row = document.createElement('div');
@@ -1446,6 +2027,34 @@ const Engine = (() => {
       shop.appendChild(el);
       R.shop[it.id] = { el, name: el.querySelector('.act-name'), pips: [...el.querySelectorAll('.pips i')], text: el.querySelector('.act-flavor'), note: el.querySelector('.shop-note'), btn };
     }
+    const homes = $('homes');
+    R.homes = E.HOMES.map((h, i) => {
+      const el = document.createElement('div');
+      el.className = 'home-card';
+      el.innerHTML = `<div class="act-top"><span class="act-name">${h.name}</span><span class="act-cost"></span></div><p class="act-flavor">${h.text}</p><ul class="perks">${E.homePerks(h).map(p => `<li>${p}</li>`).join('')}</ul><p class="shop-note"></p><button type="button" class="btn buy"></button>`;
+      const btn = el.querySelector('.buy');
+      btn.addEventListener('click', () => doMove(i));
+      homes.appendChild(el);
+      return { el, cost: el.querySelector('.act-cost'), note: el.querySelector('.shop-note'), btn };
+    });
+    const lanes = $('cgLanes'), pads = $('cgPads');
+    R.lanes = LANES.map((L, i) => {
+      const lane = document.createElement('div');
+      lane.className = 'lane';
+      lane.style.setProperty('--c', `var(--${L.c})`);
+      lane.innerHTML = `<div class="target">${L.glyph}</div>`;
+      lane.addEventListener('pointerdown', e => { e.preventDefault(); cgPress(i); });
+      lanes.appendChild(lane);
+      const pad = document.createElement('button');
+      pad.type = 'button';
+      pad.className = 'btn pad';
+      pad.textContent = L.glyph;
+      pad.setAttribute('aria-label', L.name);
+      pad.style.setProperty('--c', `var(--${L.c})`);
+      pad.addEventListener('pointerdown', e => { e.preventDefault(); cgPress(i); });
+      pads.appendChild(pad);
+      return { lane, target: lane.querySelector('.target'), pad };
+    });
   }
 
   function avatar(s) {
@@ -1522,11 +2131,14 @@ const Engine = (() => {
     c.bar.setAttribute('aria-valuenow', pct);
     const when = info.daysLeft === 0 ? `tonight (end of Day ${info.dueDay})` : info.daysLeft === 1 ? `tomorrow night (end of Day ${info.dueDay})` : `at the end of Day ${info.dueDay}, ${info.daysLeft} days from now`;
     const status = info.short > 0 ? ` Short by $${info.short}.` : ' Covered.';
-    c.rent.textContent = `Rent: $${info.rent}, due ${when}.${status}`;
+    c.rent.textContent = `Rent this week: $${info.rent} for ${E.HOMES[S.home].name.toLowerCase()}, due ${when}.${status}`;
     c.rent.className = 'rent-note' + (info.short > 0 ? (info.daysLeft <= 1 ? ' alert' : '') : ' ok');
     const rk = E.rankOf(S);
-    const next = E.RANKS.find(x => x.at > S.shifts);
-    c.rank.textContent = `Theater: ${rk.name}, $${rk.pay} a shift. ${S.shifts} shift${S.shifts === 1 ? '' : 's'} worked${next ? `, promotion at ${next.at}` : ''}.`;
+    const next = E.RANKS.find(x => x.at > S.promo);
+    const frac = next ? (S.promo - rk.at) / (next.at - rk.at) : 1;
+    c.rank.textContent = `Theater: ${rk.name}, $${rk.pay} a normal shift. ` + (next ? `Promotion to ${next.name}: ${S.promo - rk.at}/${next.at - rk.at}.` : 'Top of the ladder.');
+    c.promo.style.width = Math.round(frac * 100) + '%';
+    c.promoBar.setAttribute('aria-valuenow', Math.round(frac * 100));
   }
   function renderSkills() {
     for (const k of E.SKILL_KEYS) {
@@ -1568,9 +2180,11 @@ const Engine = (() => {
     add('Food', p.food, 'food'); add('Water', p.water, 'water'); add('Energy', p.energy, 'energy'); add('Social', p.social, 'social');
     for (const k of E.SKILL_KEYS) if (p.xp[k]) out.push(`<span class="chip" style="--c:var(--${k})"><b>${E.SKILL_NAMES[k]} xp</b>▲${p.xp[k]}${a.special === 'cup' ? '+' : ''}</span>`);
     if (a.special === 'cup') {
-      out.push(`<span class="chip" style="--c:var(--money)"><b>Title odds</b>about ${Math.round(E.cupOdds(S) * 100)}%</span>`);
+      out.push(`<span class="chip" style="--c:var(--smash)"><b>Rhythm game</b>up to 30s</span>`);
+      out.push(`<span class="chip" style="--c:var(--smash)"><b>Difficulty</b>${diffLabel(S)}</span>`);
       out.push(`<span class="chip" style="--c:var(--money)"><b>Prize</b>$${E.PRIZE.champ}</span>`);
     }
+    if (a.special === 'work') out.push(`<span class="chip" style="--c:var(--energy)"><b>Timing game</b>15s, up to x1.5 pay</span>`);
     if (p.fatal) out.push(`<span class="chip fatal-chip"><b>Fatal</b>${p.fatal} hits 0</span>`);
     return { html: out.join(''), fatal: !!p.fatal };
   }
@@ -1623,12 +2237,52 @@ const Engine = (() => {
         r.btn.textContent = `Buy for $${lvData.cost}`;
         r.btn.disabled = after < 0 || !!S.over;
         if (after < 0) note += `Need $${-after} more.`;
-        else if (after < info.rent) { note += `Leaves $${after}. Rent is $${info.rent}, due end of Day ${info.dueDay}.`; alert = info.daysLeft <= 2; }
+        else if (after < info.rent) { note += `Leaves $${after}. Rent this week is $${info.rent}, due end of Day ${info.dueDay}.`; alert = info.daysLeft <= 2; }
         else note += `Leaves $${after}.`;
       }
       r.note.textContent = note;
       r.note.className = 'shop-note' + (alert ? ' alert' : '');
     }
+  }
+  function renderHomes() {
+    const info = E.rentInfo(S);
+    E.HOMES.forEach((h, i) => {
+      const r = R.homes[i];
+      const here = S.home === i;
+      const fee = i > S.home ? h.move : E.MOVE_DOWN;
+      const weekly = E.rentFor(info.week, i);
+      const proj = Math.round(S.rentAcc + weekly / 7 * (info.daysLeft + 1));
+      r.el.classList.toggle('here', here);
+      r.cost.textContent = `$${weekly}/week`;
+      if (here) {
+        r.btn.textContent = 'You live here';
+        r.btn.disabled = true;
+        r.note.textContent = `This week's rent: $${info.rent}, due end of Day ${info.dueDay}.`;
+        r.note.className = 'shop-note';
+        return;
+      }
+      const left = S.money - fee;
+      r.btn.textContent = `${i > S.home ? 'Move in' : 'Move here'} for $${fee}`;
+      r.btn.disabled = left < 0 || !!S.over;
+      r.note.textContent = left < 0 ? `Moving costs $${fee}. Need $${-left} more.`
+        : `Moving costs $${fee}. This week's rent would become $${proj}, and Carlos would have $${left} left.`;
+      r.note.className = 'shop-note' + (left >= 0 && left < proj && info.daysLeft <= 2 ? ' alert' : '');
+    });
+  }
+  function renderGoal() {
+    const d = Math.min(S.bigDays, E.WIN_DAYS), g = E.gearCount(S);
+    $('goalDays').textContent = `${d}/${E.WIN_DAYS}`;
+    $('goalDaysBar').style.width = (d / E.WIN_DAYS * 100) + '%';
+    $('goalGear').textContent = `${g}/${E.GEAR_TOTAL}`;
+    $('goalGearBar').style.width = (g / E.GEAR_TOTAL * 100) + '%';
+    $('goalHome').textContent = `Carlos lives in: ${E.HOMES[S.home].name}, $${E.rentFor(E.weekOf(S.day), S.home)} a week. Use Housing to move.`;
+  }
+  function renderStore() {
+    renderShop();
+    renderHomes();
+    const info = E.rentInfo(S);
+    $('storeCash').textContent = `Cash $${S.money}. Rent this week $${info.rent}.`;
+    $('dockCash').textContent = '$' + S.money;
   }
   function kickerOf(def, ev) {
     const k = typeof def.kicker === 'function' ? def.kicker(ev) : def.kicker;
@@ -1643,6 +2297,13 @@ const Engine = (() => {
     const ev = S.event;
     const def = E.EVENTS.find(e => e.id === ev.id);
     box.classList.toggle('bad', !!def.neg);
+    const who = whoOf(def, ev), wb = $('evWho');
+    $('evWrap').classList.toggle('solo', !who);
+    if (who) {
+      wb.hidden = false;
+      wb.innerHTML = (who.kind === 'friend' ? friendSVG(who.name) : who.kind === 'phone' ? PHONE_SVG : CLOUD_SVG)
+        + `<span class="who-name">${who.kind === 'friend' ? who.name : who.kind === 'phone' ? 'His girlfriend' : 'Bad luck'}</span>`;
+    } else { wb.hidden = true; wb.innerHTML = ''; }
     $('evKicker').textContent = kickerOf(def, ev);
     $('evTitle').textContent = typeof def.title === 'function' ? def.title(ev) : def.title;
     $('evText').textContent = def.text(S, ev);
@@ -1683,11 +2344,15 @@ const Engine = (() => {
     const o = $('over');
     if (!S.over) { o.hidden = true; wasOver = false; return; }
     const days = S.over.day - 1;
+    const win = S.over.cause === 'win';
+    $('overKicker').textContent = win ? 'You beat the game' : 'Carlos is gone';
+    $('overKicker').classList.toggle('win', win);
     $('overTitle').textContent = E.CAUSE_TITLE[S.over.cause];
     $('overMsg').textContent = S.over.msg;
     const rows = [
       ['Days survived', days], ['Time of death', `Day ${S.over.day}, ${longH(hourOf(Math.min(S.over.slot, 11)))}`],
       ['Skill levels', E.totalLevels(S)], ['Trophies', S.trophies],
+      ['Days in Carlos Manor', S.bigDays], ['Upgrades owned', `${E.gearCount(S)}/${E.GEAR_TOTAL}`],
       ['Theater shifts', S.shifts], ['Girlfriend ignored', S.ignored + (S.ignored === 1 ? ' time' : ' times')],
       ['Score', E.score(S)], ['Best score', (readJSON(BEST) || { score: E.score(S) }).score]
     ];
@@ -1696,7 +2361,7 @@ const Engine = (() => {
     if (!wasOver) { o.hidden = false; wasOver = true; lbSetup(); (lbOn && !posted ? $('lbName') : $('again')).focus(); }
   }
   function render() {
-    renderClock(); renderMeters(); renderCash(); renderSkills(); renderBlocks(); renderActions(); renderCup(); renderShop(); renderEvent(); renderLog(); renderOver();
+    renderClock(); renderMeters(); renderCash(); renderGoal(); renderSkills(); renderBlocks(); renderActions(); renderCup(); renderStore(); renderEvent(); renderLog(); renderOver();
   }
 
   function snap() { return { food: S.food, water: S.water, energy: S.energy, social: S.social, money: S.money }; }
@@ -1717,11 +2382,14 @@ const Engine = (() => {
     if (!b || sc > b.score) writeJSON(BEST, { score: sc, days: S.over.day - 1, title: E.titleOf(S) });
     dropKey(SAVE);
   }
-  function after(before) {
+  function commit(before) {
     if (S.over) finishRun(); else writeJSON(SAVE, S);
     render();
     flash(before);
-    if (S.over) return;
+  }
+  function after(before) { commit(before); focusNext(); }
+  function focusNext() {
+    if (!S || S.over) return;
     if (S.event) {
       const first = $('evChoices').querySelector('button:not(:disabled)');
       if (first) first.focus({ preventScroll: true });
@@ -1732,12 +2400,26 @@ const Engine = (() => {
     }
   }
   function doAct(id) {
-    if (!S || S.over || S.event) return;
+    if (!S || S.over || S.event || modalOpen()) return;
+    const a = E.ACTIONS.find(x => x.id === id);
+    if (!a || !E.unlocked(S, a) || !E.available(S, a)) return;
+    if (a.special === 'work') { lastAct = id; openWork(); return; }
+    if (a.special === 'cup') { lastAct = id; openCup(); return; }
     const before = snap();
     const r = E.act(S, id);
     if (!r.ok) return;
     lastAct = id;
     after(before);
+  }
+  function doMove(i) {
+    if (!S || S.over) return;
+    const before = snap();
+    const r = E.move(S, i);
+    if (!r.ok) return;
+    writeJSON(SAVE, S);
+    render();
+    flash(before);
+    $('storeClose').focus({ preventScroll: true });
   }
   function doChoose(i) {
     if (!S || S.over || !S.event) return;
@@ -1751,15 +2433,19 @@ const Engine = (() => {
     const before = snap();
     const r = E.buy(S, id);
     if (!r.ok) return;
+    if (S.over) { $('store').hidden = true; modalReturn = null; commit(before); return; }
     writeJSON(SAVE, S);
     render();
     flash(before);
     const b = R.shop[id].btn;
-    if (!b.disabled) b.focus({ preventScroll: true });
+    (b.disabled ? $('storeClose') : b).focus({ preventScroll: true });
   }
   function newRun() {
     S = E.newState();
     lastAct = null; evKey = ''; wasOver = false; posted = false; mineId = null;
+    wk.running = false; clearTimeout(cg.timer); cg.phase = 'idle';
+    for (const id of MODALS) $(id).hidden = true;
+    modalReturn = null;
     $('lbOver').hidden = true;
     writeJSON(SAVE, S);
     $('how').open = true;
@@ -1767,7 +2453,21 @@ const Engine = (() => {
   }
 
   document.addEventListener('keydown', e => {
-    if (!S || S.over || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (!$('work').hidden) {
+      if (e.key === ' ' || e.key === 'Enter') { if (wk.running) { e.preventDefault(); if (!e.repeat) wkPress(); } }
+      else if (e.key === 'Escape' && !wk.running) { e.preventDefault(); wkClose(); }
+      return;
+    }
+    if (!$('cupg').hidden) {
+      const lane = LANES.findIndex(L => L.keys.includes(e.key));
+      if (lane >= 0) { e.preventDefault(); if (cg.phase === 'play' && !e.repeat) cgPress(lane); return; }
+      if (e.key === 'Escape' && (cg.phase === 'ready' || cg.phase === 'done')) { e.preventDefault(); cgClose(); }
+      return;
+    }
+    if (!$('store').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeModal('store'); } return; }
+    if (!S || S.over) return;
+    if (e.target && e.target.tagName === 'INPUT') return;
     const i = KEYS.indexOf(e.key);
     if (i < 0) return;
     if (S.event) { doChoose(i); return; }
@@ -1776,6 +2476,20 @@ const Engine = (() => {
   });
   $('again').addEventListener('click', newRun);
   $('lbSend').addEventListener('click', lbSubmit);
+  $('openShop').addEventListener('click', () => openStore('gear'));
+  $('openHome').addEventListener('click', () => openStore('home'));
+  $('storeClose').addEventListener('click', () => closeModal('store'));
+  $('store').addEventListener('click', e => { if (e.target === $('store')) closeModal('store'); });
+  $('tabGear').addEventListener('click', () => setTab('gear'));
+  $('tabHome').addEventListener('click', () => setTab('home'));
+  $('wkStart').addEventListener('click', wkStart);
+  $('wkCancel').addEventListener('click', wkClose);
+  $('wkDone').addEventListener('click', wkClose);
+  $('wkTear').addEventListener('pointerdown', e => { e.preventDefault(); wkPress(); });
+  $('wkTrack').addEventListener('pointerdown', e => { e.preventDefault(); wkPress(); });
+  $('cgStart').addEventListener('click', () => { if (cg.phase === 'ready') { $('cgStart').hidden = true; $('cgCancel').hidden = true; cgStartRound(0); } });
+  $('cgCancel').addEventListener('click', cgClose);
+  $('cgDone').addEventListener('click', cgClose);
   $('lbName').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') lbSubmit(); });
   let armed = false, armTimer = null;
   $('reset').addEventListener('click', () => {
@@ -1793,7 +2507,9 @@ const Engine = (() => {
 
   function boot(data) {
     build();
-    const saved = isState(data) ? data : readJSON(SAVE);
+    let saved = data && typeof data === 'object' ? migrate(data) : null;
+    if (!isState(saved)) saved = readJSON(SAVE);
+    if (!isState(saved)) saved = migrate(readJSON(OLD_SAVE));
     S = isState(saved) && !saved.over ? saved : E.newState();
     $('how').open = S.day === 1 && S.log.length === 0;
     render();

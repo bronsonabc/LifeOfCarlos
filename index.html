@@ -80,7 +80,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 @media (max-width:860px){
   .layout{grid-template-columns:minmax(0,1fr)}
   .rail,.main{display:contents}
-  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-actions{order:5}.o-cup{order:6}.o-goal{order:7}.o-skills{order:8}.o-log{order:9}.o-hall{order:10}.o-reset{order:11}
+  .o-carlos{order:1}.o-how{order:2}.o-blocks{order:3}.o-event{order:4}.o-crisis{order:5}.o-actions{order:6}.o-cup{order:7}.o-goal{order:8}.o-skills{order:9}.o-gus{order:9}.o-log{order:10}.o-hall{order:11}.o-reset{order:12}
 }
 
 /* carlos */
@@ -224,6 +224,26 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 .over-stats dd{margin:2px 0 0;font:800 1.15rem var(--f-display);font-variant-numeric:tabular-nums}
 .over-line{color:var(--ink-2)}
 
+/* starting traits */
+.trait-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.trait-good{font-size:13px;color:var(--good);font-weight:600}
+.trait-bad{font-size:13px;color:var(--bad);font-weight:600}
+.trait-note{margin-top:6px;font:400 12px/1.5 var(--f-mono);color:var(--ink-2)}
+.trait-note b{font-weight:500;color:var(--ink)}
+.pill.trait-pill{background:color-mix(in srgb,var(--smash) 26%,var(--card))}
+
+/* Gus card */
+.gus-head{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:center;margin-bottom:12px}
+.gus-pic svg{width:72px;height:auto;display:block;border:2px solid var(--edge);border-radius:6px;background:var(--card-2)}
+
+/* hard event tracker */
+.crisis{background:color-mix(in srgb,var(--bad) 10%,var(--card));border-color:var(--bad)}
+.crisis .pill{font-size:12px}
+.cr-goals{display:grid;gap:10px;margin-top:12px}
+.cr-stakes{margin-top:12px;font:400 12.5px/1.5 var(--f-mono);color:var(--ink-2)}
+.cr-stakes b{font-weight:500;color:var(--ink)}
+.group.crisis-group .group-title{color:var(--bad)}
+
 /* floating menu buttons */
 .dock{position:fixed;z-index:40;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:10px}
 .dock .btn{box-shadow:4px 4px 0 var(--shadow)}
@@ -325,7 +345,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
     </div>
     <div class="card clock">
       <div class="clock-main"><span class="clock-day" id="clockDay">Day 1</span><span class="clock-time" id="clockTime">6:00 AM</span></div>
-      <div class="clock-sub"><span id="clockSub">Week 1, sunrise</span><span class="pill" id="restedPill" hidden>Rested: +25% XP</span><span class="pill sad" id="lonelyPill" hidden>Lonely: -30% XP</span></div>
+      <div class="clock-sub"><span id="clockSub">Week 1, sunrise</span><span class="pill" id="restedPill" hidden>Rested: +25% XP</span><span class="pill sad" id="lonelyPill" hidden>Lonely: -30% XP</span><span class="pill trait-pill" id="traitPill" hidden></span></div>
       <div class="clock-best" id="best">Best run: none yet</div>
     </div>
   </header>
@@ -335,7 +355,10 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
       <section class="card o-carlos" aria-label="Carlos">
         <div class="carlos-head">
           <div class="portrait" id="portrait"></div>
-          <p class="mood" id="mood"></p>
+          <div>
+            <p class="mood" id="mood"></p>
+            <p class="trait-note" id="traitNote" hidden></p>
+          </div>
         </div>
         <div class="meters" id="meters"></div>
         <p class="drain" id="drain"></p>
@@ -355,6 +378,15 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
         <div class="skills" id="skills"></div>
         <p class="ignored" id="ignored" hidden></p>
       </section>
+      <section class="card o-gus" aria-labelledby="h-gus">
+        <div class="gus-head">
+          <div class="gus-pic" id="gusPic"></div>
+          <div><h2 id="h-gus">Gus</h2><p class="skill-note" id="gusTitle"></p></div>
+        </div>
+        <div class="skill-head"><span class="skill-name">Tricks</span><span class="skill-lv" id="gusLv"></span></div>
+        <div class="bar slim" style="--c:var(--food)" role="meter" aria-label="Gus trick progress" aria-valuemin="0" aria-valuemax="100" id="gusBarWrap"><i id="gusBar"></i></div>
+        <p class="skill-note" id="gusNote"></p>
+      </section>
       <button class="btn o-reset" id="reset" type="button">Start over</button>
     </aside>
 
@@ -362,14 +394,17 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
       <details class="card how o-how" id="how">
         <summary>How a week works</summary>
         <ul>
+          <li>Every new Carlos starts with a trait you pick. Each one has an upside and a downside.</li>
           <li>Every action uses 1 or 2 of the day's 12 blocks. A block is two hours.</li>
           <li>Food, Water, Energy and Social fall every block. If any of them hits 0, Carlos is done.</li>
           <li>Rent is charged for each day at the rate of wherever Carlos lives, and the week's total comes out at the end of every 7th day. If he cannot cover it, he is evicted.</li>
           <li>A theater shift is a 15-second ticket-tearing game. A great shift pays more and fills the promotion bar faster. A rough one pays less and pulls the bar back. Shifts start between 12p and 8p.</li>
           <li>Chilling on Discord with the boys fills Social. Low Social cuts training XP.</li>
           <li>The Shop button in the corner sells upgrades and lets Carlos move. Bigger homes cost more rent, but his needs drain slower, sleep is better and bad luck is rarer.</li>
-          <li>Tournaments are a three-round arrow rhythm game. A higher Smash level and a fight stick make notes slower, timing looser and targets lower. Win all three rounds for $150 and a trophy.</li>
-          <li>Random events can be good, bad, or his friends. Bad luck is real, but Stank makes it less likely.</li>
+          <li>Tournaments are a three-round arrow rhythm game. A higher Smash level and a fight stick make notes slower, timing looser and targets lower. Win all three rounds for $150 and a trophy. There is one tournament a week.</li>
+          <li>Teach Gus tricks to level him up. A smarter Gus causes less trouble and brings much better surprises.</li>
+          <li>Random events can be good, bad, his friends, or Gus, his cat. Bad luck is real, but Stank makes it less likely.</li>
+          <li>Once a month (every 28 days) a hard event hits: a surprise inspection, the flu, a kickboxing match, Dustin's album and more. Carlos gets a few days to finish the goals. Beat it for a big reward, or eat a big penalty.</li>
           <li>To win, live in Carlos Manor for 28 days in total and own every shop upgrade.</li>
           <li>Night runs from 10p to 6a. Sleep restores more then, and everything else costs extra energy. Two or more night sleeps give +25% training XP the next day.</li>
         </ul>
@@ -390,6 +425,18 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
           </div>
         </div>
         <div class="ev-choices" id="evChoices"></div>
+      </section>
+
+      <section class="card crisis o-crisis" id="crisis" hidden aria-labelledby="crTitle">
+        <div class="sec-head"><h2 id="crTitle"></h2><span class="pill sad" id="crDue"></span></div>
+        <div class="ev-wrap">
+          <div class="ev-who" id="crWho"></div>
+          <div>
+            <p id="crText"></p>
+            <div class="cr-goals" id="crGoals"></div>
+            <p class="cr-stakes" id="crStakes"></p>
+          </div>
+        </div>
       </section>
 
       <section class="card o-actions" aria-labelledby="h-act">
@@ -438,6 +485,17 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing
 <div class="dock" role="toolbar" aria-label="Menus">
   <button class="btn primary" id="openShop" type="button">Shop<span class="dock-cash" id="dockCash">$60</span></button>
   <button class="btn" id="openHome" type="button">Housing</button>
+  <button class="btn" id="soundBtn" type="button" aria-pressed="true">Sound on</button>
+</div>
+
+<div class="modal" id="traits" hidden role="dialog" aria-modal="true" aria-labelledby="trTitle">
+  <div class="card modal-card wide">
+    <p class="ev-kicker">New Carlos</p>
+    <h2 class="ev-title" id="trTitle">Pick a starting trait</h2>
+    <p>Every trait has an upside and a downside. It lasts the whole run and shows next to your name on the leaderboard.</p>
+    <div class="trait-list" id="traitList"></div>
+    <p class="hint">Number keys 1 to 9 pick a trait.</p>
+  </div>
 </div>
 
 <div class="modal" id="store" hidden role="dialog" aria-modal="true" aria-labelledby="storeTitle">
@@ -522,6 +580,37 @@ const Engine = (() => {
   const PERF = {
     fail: { pay: 0.6, promo: -1 }, ok: { pay: 1, promo: 1 }, good: { pay: 1.25, promo: 2 }, great: { pay: 1.5, promo: 3 }
   };
+  /* Starting traits: one upside, one downside. The numbers here are read by drain, simulate, xp, events and pay. */
+  const TRAITS = {
+    nightOwl: { name: 'Night Owl', tag: 'Most alive at 3am.',
+      good: 'No extra Energy cost at night, and daytime naps restore as much as a full night of sleep.', bad: 'Actions before 10am cost 25% more Energy.', nightFree: true, napFull: true, morning: 1.25 },
+    bigEater: { name: 'Big Eater', tag: 'Has never once left food on a plate.',
+      good: 'Meals restore 40% more Food.', bad: 'Food drains 25% faster.', mealGain: 0.4, foodDrain: 1.25 },
+    rizz: { name: 'Rizz', tag: 'Somehow, she is still into him.',
+      good: 'Girlfriend events go well 60% of the time instead of 25%.', bad: 'She texts twice as often.', gfWin: 0.6, gfWeight: 2 },
+    cursed: { name: 'Cursed', tag: 'A black cat crossed his path. It was Gus.',
+      good: 'All skill XP +25%.', bad: 'Bad luck is twice as likely.', xpAll: 1.25, negMult: 2 },
+    gymBro: { name: 'Gym Bro', tag: 'Wilson Krom\'s favorite student.',
+      good: 'Starts at Fitness level 2. Workouts give 25% more XP.', bad: 'Smash and Stank XP are 25% slower.', xp: { fit: 1.25, smash: 0.75, stank: 0.75 }, start: { xp: { fit: 25 } } },
+    trustFund: { name: 'Trust Fund', tag: 'His dad "knows a guy".',
+      good: 'Starts with $360 instead of $60.', bad: 'Theater shifts pay 20% less. His heart is not in it.', pay: 0.8, start: { money: 360 } },
+    catWhisperer: { name: 'Cat Whisperer', tag: 'Gus is the only one who truly understands him.',
+      good: 'Gus learns tricks 50% faster and shows up twice as often.', bad: 'Discord gives 20% less Social.', gusXp: 1.5, gusWeight: 2, discordGain: -0.2 },
+    stinker: { name: 'Born Stinker', tag: 'Came into this world pre-ripened.',
+      good: 'Starts at Stank level 3: Rotmax marathons and less bad luck from day one.', bad: 'Social drains 25% faster. People keep their distance.', socialDrain: 1.25, start: { xp: { stank: 45 } } }
+  };
+  const trait = s => TRAITS[s.trait] || {};
+  const traitName = s => TRAITS[s.trait] ? TRAITS[s.trait].name : null;
+  const applyTrait = (s, id) => {
+    s.trait = TRAITS[id] ? id : 'none';
+    const st = (TRAITS[id] && TRAITS[id].start) || {};
+    if (st.money) s.money = st.money;
+    if (st.xp) for (const k in st.xp) s.xp[k] = Math.max(s.xp[k], st.xp[k]);
+    return s;
+  };
+  const traitXp = (s, k) => (trait(s).xpAll || 1) * ((trait(s).xp || {})[k] || 1);
+  const gfHint = s => trait(s).gfWin ? 'Carlos has rizz. Odds are good.' : 'Carlos means well. Odds are poor.';
+
   const HOMES = [
     { name: 'Basement suite', the: 'the basement suite', base: 120, move: 0, drain: 0, sleep: 0, social: 0, neg: 0,
       text: 'One window, at ankle height. The neighbor\'s dryer sounds like a jet taking off.' },
@@ -572,7 +661,7 @@ const Engine = (() => {
   const newState = () => ({
     v: 4, day: 1, slot: 0, food: 80, water: 80, energy: 90, social: 70, money: START_CASH,
     xp: { fit: 0, smash: 0, stank: 0 }, trophies: 0, shifts: 0, ignored: 0, steps: 0, rested: false, nightSleeps: 0,
-    home: 0, rentAcc: 0, bigDays: 0, promo: 0,
+    home: 0, rentAcc: 0, bigDays: 0, promo: 0, crisis: null, crisisMonth: 0, lastCrisis: null, crisesWon: 0, crisesLost: 0, gusXp: 0, cupWeek: 0,
     items: { fridge: 0, filter: 0, bed: 0, headset: 0, stick: 0, shoes: 0, gym: 0, monitor: 0 },
     lastCup: null, plan: [], log: [], event: null, lastEvent: null, over: null
   });
@@ -612,8 +701,9 @@ const Engine = (() => {
 
   const drain = (s, asleep) => {
     const hm = 1 - home(s).drain;
-    const m = effMult(s) * dayMult(s) * hm;
-    return asleep ? { food: 3 * m, water: 4 * m, energy: 0, social: 0.5 * hm } : { food: 7 * m, water: 9 * m, energy: 4 * m, social: 2 * hm };
+    const m = effMult(s) * dayMult(s) * hm * crisisDrain(s);
+    const tf = trait(s).foodDrain || 1, ts = trait(s).socialDrain || 1;
+    return asleep ? { food: 3 * m * tf, water: 4 * m, energy: 0, social: 0.5 * hm * ts } : { food: 7 * m * tf, water: 9 * m, energy: 4 * m, social: 2 * hm * ts };
   };
   const drainPreview = s => {
     const d = drain(s, false);
@@ -695,7 +785,7 @@ const Engine = (() => {
     { id: 'work', name: 'Theater shift', code: 'Work', cat: 'life', tint: 'money', slots: 2, special: 'work',
       flavor: 'Tear tickets, sweep popcorn, get paid.', fx: { energy: -12, water: -4, food: -3, social: 4 },
       gear: [{ item: 'shoes', kind: 'cost', stat: 'energy', per: 0.2 }],
-      pay: s => rankOf(s).pay, when: s => s.slot >= 3 && s.slot <= 7, whenNote: 'Shifts start between 12p and 8p.',
+      pay: s => Math.round(rankOf(s).pay * (trait(s).pay || 1)), when: s => s.slot >= 3 && s.slot <= 7, whenNote: 'Shifts start between 12p and 8p.',
       msgs: ['Tore tickets and swept popcorn. Smelled like butter for hours.', 'Someone dropped a large soda. Carlos mopped with dignity.', 'Tim slipped him free nachos on break. Best part of the shift.', 'He watched the same trailer forty times.'] },
     { id: 'lift', name: 'Workout', code: 'Lift', cat: 'train', tint: 'fit', slots: 1,
       flavor: 'Lift things. Put them down.', fx: { energy: -14, water: -5 }, xp: { fit: 10 },
@@ -712,9 +802,28 @@ const Engine = (() => {
       flavor: 'Better training per block, but it drains him.', fx: { energy: -26, water: -10, food: -6 }, xp: { fit: 26 },
       msgs: ['Ran to the end of the street and kept going.', 'Ten kilometres of wind and regret.', 'He ran until the neighborhood changed.'] },
     { id: 'cup', name: 'Local tournament', code: 'Cup', cat: 'unlock', tint: 'smash', slots: 2, req: { k: 'smash', lv: 3 },
-      flavor: 'Eight players, three rounds. Winner takes the cash.', fx: { energy: -12, food: -4 }, xp: { smash: 14 }, special: 'cup', msgs: [''] },
+      flavor: 'Eight players, three rounds. Winner takes the cash. One per week.', fx: { energy: -12, food: -4 }, xp: { smash: 14 }, special: 'cup', msgs: [''],
+      when: s => cupOpen(s), whenNote: s => `One tournament a week. The next one opens on Day ${weekOf(s.day) * 7 + 1}.` },
     { id: 'marathon', name: 'Rotmax marathon', code: 'Rot+', cat: 'unlock', tint: 'stank', slots: 2, req: { k: 'stank', lv: 3 },
-      flavor: 'Hours deep. Something changes.', fx: { energy: -10, water: -9, food: -5 }, xp: { stank: 30 }, special: 'marathon', msgs: [''] }
+      flavor: 'Hours deep. Something changes.', fx: { energy: -10, water: -9, food: -5 }, xp: { stank: 30 }, special: 'marathon', msgs: [''] },
+    { id: 'trick', name: 'Teach Gus a trick', code: 'Gus', cat: 'life', tint: 'food', slots: 1,
+      flavor: 'Treats, patience, and a cat who is clearly judging him.', fx: { energy: -5, food: -2, social: 4 }, special: 'trick', msgs: [''] },
+    /* only shown while the matching hard event is running */
+    { id: 'clean', name: 'Clean the place', code: 'Clean', cat: 'crisis', tint: 'water', slots: 1, crisis: 'inspection',
+      flavor: 'Scrub, sweep, and hide the Rotmax shrine.', fx: { energy: -8, water: -3 },
+      msgs: ['Carlos found three forks under the couch and a sock that was once white.', 'He scrubbed the stove until he could see his own regret.', 'He threw out a pizza box from a previous era.'] },
+    { id: 'record', name: 'Record with Dustin', code: 'Track', cat: 'crisis', tint: 'stank', slots: 2, crisis: 'album',
+      flavor: 'Lay down a verse in Dustin\'s closet studio.', fx: { energy: -10, food: -3, social: 12 }, xp: { stank: 6 },
+      msgs: ['Carlos recorded a verse in a closet full of coats. The acoustics are "warm".', 'Dustin made Carlos do 14 takes of one ad-lib. It was "yeah".', 'Carlos rhymed "protein" with "Wilson Krom told me". Dustin kept it.'] },
+    { id: 'date', name: 'Take her on a date', code: 'Date', cat: 'crisis', tint: 'fit', slots: 2, crisis: 'ultimatum', cost: 40,
+      flavor: 'Dinner, no phone, full attention. Costs $40.', fx: { social: 20, food: 18, energy: -8 },
+      msgs: ['Carlos left his phone at home and listened to every word. It was nice. He will not discuss it.'] },
+    { id: 'search', name: 'Search for Gus', code: 'Gus', cat: 'crisis', tint: 'food', slots: 1, crisis: 'gusmissing',
+      flavor: 'Shake the treat bag up and down the block.', fx: { energy: -8, water: -3 },
+      msgs: ['Carlos shook the treat bag in every alley. Three other cats came. None of them were Gus.', 'Carlos put up flyers. The photo is Gus mid-sneeze.', 'Carlos checked under every porch on the block. A neighbor now thinks he is a burglar.'] },
+    { id: 'bail', name: 'Bail water', code: 'Bail', cat: 'crisis', tint: 'water', slots: 1, crisis: 'flood',
+      flavor: 'A bucket, a mop and a dream.', fx: { energy: -10, water: -4 },
+      msgs: ['Carlos bailed water with a popcorn bucket from the theater.', 'He found the leak and wrapped it in duct tape and hope.', 'He mopped until the floor squeaked in a new key.'] }
   ];
   const MARATHON = [
     'Carlos watched forty clips about a guy who never blinks. He now blinks less.',
@@ -729,7 +838,37 @@ const Engine = (() => {
     social: ['Carlos went so long without talking to anyone that he started negotiating with the router.', 'Carlos spoke to no one for days. The group chat moved on without him.', 'Carlos got lonely. Even the pigeon left.'],
     rent: ['The landlord changed the locks. Carlos still had the Wi-Fi password, but nowhere to use it.', 'Rent was due and Carlos was not ready. The couch went to the curb with him.', 'Carlos came home to a note on the door. It was not a friendly note.']
   };
-  const CAUSE_TITLE = { food: 'Carlos starved.', water: 'Carlos dried out.', energy: 'Carlos burned out.', social: 'Carlos got lonely.', rent: 'Carlos was evicted.', win: 'Carlos won at life.' };
+  const CAUSE_TITLE = { food: 'Carlos starved.', water: 'Carlos dried out.', energy: 'Carlos burned out.', social: 'Carlos got lonely.', rent: 'Carlos was evicted.', win: 'Carlos won at life.', emperor: 'Gus is Emperor of the World.' };
+
+  /* ---------- Gus: tricks and levels (the top level is a secret ending) ---------- */
+  const GUS_STEPS = [0, 15, 40, 80, 140, 220, 330, 470, 650, 880, 1200];
+  const GUS_MAX = GUS_STEPS.length - 1;
+  const TRICKS = ['Nothing', 'Sit', 'High five', 'Fetch', 'Play dead', 'Open the fridge', 'Play Smash', 'Day trading', 'Going viral', 'Public speaking', 'World domination'];
+  const GUS_TITLES = ['Regular cat', 'Sits (sometimes)', 'Good boy', 'Treat negotiator', 'Street performer', 'Fridge raider', 'Smash prodigy', 'Day trader', 'Influencer', 'City councilcat', 'Emperor of the World'];
+  const GUS_PROGRESS = ['Gus did it once, then looked at Carlos like it was his idea.', 'Gus got it on the third try and demanded four treats.', 'Gus is getting suspiciously good at this.', 'Gus stared at Carlos for a long time. Then he did it perfectly.'];
+  const GUS_REFUSE = ['Gus refused, walked away, and knocked a glass off the counter. He learned a little anyway.', 'Gus fell asleep halfway through the lesson. He might have learned something in his dreams.', 'Gus ate all the treats and did not do the trick. Carlos is the one being trained here.'];
+  const EMPEROR = [
+    'Gus learned his final trick: world domination. He was crowned Emperor of the World in a ceremony nobody can quite explain. His first decree: Carlos never pays rent again. His second: the fridge is now his.',
+    'Gus gave one speech, in perfect English, at the United Nations. By sunset he was Emperor of the World. Carlos is now Royal Treat Holder, the most powerful human alive.'
+  ];
+  const gusLvl = s => { let l = 0; for (let i = 1; i < GUS_STEPS.length; i++) if ((s.gusXp || 0) >= GUS_STEPS[i]) l = i; return l; };
+  const gusProgress = s => {
+    const lv = gusLvl(s), xp = s.gusXp || 0;
+    if (lv >= GUS_MAX) return { lv, frac: 1, cur: 0, need: 0 };
+    const a = GUS_STEPS[lv], b = GUS_STEPS[lv + 1];
+    return { lv, frac: (xp - a) / (b - a), cur: xp - a, need: b - a };
+  };
+  const gusGain = (s, amt, stamp, rng = Math.random) => {
+    const before = gusLvl(s);
+    s.gusXp = Math.min((s.gusXp || 0) + Math.round(amt * (trait(s).gusXp || 1)), GUS_STEPS[GUS_MAX]);
+    const after = gusLvl(s);
+    for (let l = before + 1; l <= after && l < GUS_MAX; l++) addLog(s, `Gus learned a new trick: ${TRICKS[l]}! He is now level ${l}: ${GUS_TITLES[l]}.`, stamp);
+    if (after >= GUS_MAX && !s.over) {
+      s.over = { cause: 'emperor', msg: pick(EMPEROR, rng), day: s.day, slot: s.slot };
+      addLog(s, s.over.msg, stamp);
+    }
+  };
+  const cupOpen = s => (s.cupWeek || 0) < weekOf(s.day) || (!!s.crisis && s.crisis.id === 'major' && !s.crisis.entered);
   const WINS = [
     'Carlos owns the biggest house in town and every gadget money can buy. The boys moved in. Somehow Carlos is the only one paying rent, and he has never been happier.',
     'Carlos stood on the balcony of Carlos Manor holding a pro fight stick. Somewhere, his old landlord wept.',
@@ -742,6 +881,108 @@ const Engine = (() => {
   };
   const gearCount = s => ITEMS.reduce((n, it) => n + gearLv(s, it.id), 0);
   const allGear = s => gearCount(s) >= GEAR_TOTAL;
+  /* ---------- monthly hard events: goals, a deadline, a reward and a penalty ---------- */
+  const MONTH = 28;
+  const CRISES = [
+    { id: 'inspection', who: 'cloud', title: 'Surprise inspection', days: 3,
+      text: s => `The landlord slid a note under the door: a full inspection at the end of Day ${s.crisis ? s.crisis.deadline : s.day + 2}. The place smells like Rotmax and old nachos.`,
+      goals: [{ label: 'Clean the place', need: 5, on: id => id === 'clean' ? 1 : 0 }],
+      reward: '$60 off this week\'s rent', penalty: 'a $200 cleaning fee',
+      win: { msg: 'The landlord ran a finger along the shelf and found nothing. He knocked $60 off this week\'s rent out of pure shock.', rent: -60 },
+      lose: { msg: 'The landlord found the nacho cheese stalactite. Cleaning fee: $200.', fx: { money: -200 } } },
+    { id: 'premiere', who: 'Tim', title: 'Premiere week at the theater', days: 3,
+      text: () => 'Tim says the theater is short-staffed for the biggest premiere of the year. The manager wants Carlos on 5 shifts in the next 3 days.',
+      goals: [{ label: 'Work theater shifts', need: 5, on: id => id === 'work' ? 1 : 0 }],
+      reward: 'a $120 bonus and +4 promotion', penalty: '-10 promotion, and he can be demoted',
+      win: { msg: 'Carlos survived premiere week. The manager handed him a $120 bonus and said his name right for the first time.', fx: { money: 120 }, promo: 4 },
+      lose: { msg: 'Carlos skipped premiere week. The manager docked his promotion and gave his parking spot to a cardboard cutout.', promo: -10 } },
+    { id: 'major', who: 'Baker', title: 'Baker signed Carlos up for a Smash major', days: 4, when: s => lvl(s, 'smash') >= 3,
+      text: () => 'Baker posted the bracket in the group chat before asking. Carlos has to reach the final of a local tournament in the next 4 days, or he will never hear the end of it.',
+      goals: [{ label: 'Reach a tournament final', need: 1, on: (id, ctx) => id === 'cup' && ctx.cupWon >= 2 ? 1 : 0 }],
+      reward: '$100 from the boys and Social +20', penalty: 'Social -35 and $50 for the boys\' pizza',
+      win: { msg: 'Carlos made the final. Baker framed the bracket, and the boys chipped in $100 as "sponsorship".', fx: { money: 100, social: 20 } },
+      lose: { msg: 'Carlos choked. The boys made a highlight reel of his worst moments. It has 400 views, and he owes the boys $50 for pizza.', fx: { social: -35, money: -50 } } },
+    { id: 'flu', who: 'cloud', title: 'Carlos has the flu', days: 3, drain: 1.25,
+      text: () => 'Fever, chills, and a voice like a haunted kazoo. His needs drain 25% faster until he rests it off.',
+      goals: [{ label: 'Sleep', need: 10, on: id => id === 'sleep' ? 1 : 0 }, { label: 'Drink water', need: 6, on: id => id === 'drink' ? 1 : 0 }],
+      reward: 'Energy +25 and Fitness xp +10', penalty: 'Energy -40, Food -25, Water -25',
+      win: { msg: 'The fever broke. Carlos feels like a new man, which is to say the same man but less sweaty.', fx: { energy: 25 }, xp: { fit: 10 } },
+      lose: { msg: 'The flu won. Carlos spent a whole day as a blanket burrito.', fx: { energy: -40, food: -25, water: -25 } } },
+    { id: 'fightnight', who: 'Wilson', title: 'Wilson signed Carlos up for a kickboxing match', days: 4,
+      text: s => `Wilson Krom entered Carlos into an amateur kickboxing night without asking. The fight is at the end of Day ${s.crisis ? s.crisis.deadline : s.day + 3}. Wilson says train hard and eat only protein.`,
+      goals: [{ label: 'Train (a workout is 1, a long run is 2)', need: 8, on: id => id === 'lift' ? 1 : id === 'run' ? 2 : 0 }],
+      reward: 'a $150 purse and Fitness xp +20', penalty: 'Energy -50, Social -15, and a $60 ice-pack bill',
+      win: { msg: 'Carlos won by decision. Wilson screamed "PROTEIN" into the crowd and cried. Purse: $150.', fx: { money: 150 }, xp: { fit: 20 } },
+      lose: { msg: 'Carlos lasted eleven seconds. He woke up to Wilson offering him a protein bar, and a $60 bill for ice packs.', fx: { energy: -50, social: -15, money: -60 } } },
+    { id: 'album', who: 'Dustin', title: 'Dustin\'s album drops this week', days: 4,
+      text: () => 'Dustin needs Carlos on four tracks before release day. He already printed the cover. Carlos is on it. Shirtless.',
+      goals: [{ label: 'Record with Dustin', need: 4, on: id => id === 'record' ? 1 : 0 }],
+      reward: '$180 in royalties and Social +15', penalty: 'a diss track about Carlos (Social -40)',
+      win: { msg: 'The album dropped. Track 3 has Carlos rhyming "Rotmax" with "lots of snacks" and it went semi-viral. Royalties: $180.', fx: { money: 180, social: 15 } },
+      lose: { msg: 'Dustin dropped the album without Carlos and added a diss track about him. Unfortunately, it slaps.', fx: { social: -40 } } },
+    { id: 'ultimatum', who: 'phone', title: 'She gave Carlos an ultimatum', days: 3, when: s => s.ignored >= 3,
+      text: s => `She has been ignored ${s.ignored} times and she has counted. One real date in the next 3 days, no phone, or it is over.`,
+      goals: [{ label: 'Take her on a real date', need: 1, on: id => id === 'date' ? 1 : 0 }],
+      reward: 'Social +25 and a clean slate', penalty: 'she leaves (Social -35)',
+      win: { msg: 'Carlos took her to dinner and left his phone at home. She laughed at his jokes. The ignore counter has been reset, which is the most romantic thing a counter can do.', fx: { social: 25 }, resetIgnored: true },
+      lose: { msg: 'She left. Carlos changed his relationship status to "grinding". The boys sent a single skull emoji.', fx: { social: -35 } } },
+    { id: 'flood', who: 'cloud', title: 'A pipe burst', days: 2,
+      text: () => 'Water is pouring through the ceiling. The landlord says he will "get to it next month". Carlos has to fix it himself.',
+      goals: [{ label: 'Bail water and patch the pipe', need: 4, on: id => id === 'bail' ? 1 : 0 }],
+      reward: '$40 from the insurance claim', penalty: 'a $250 damage bill',
+      win: { msg: 'Carlos patched the pipe with duct tape and confidence. It holds. The landlord took the credit, but insurance paid Carlos $40.', fx: { money: 40 } },
+      lose: { msg: 'The water won. The damage bill is $250 and the couch is now a boat.', fx: { money: -250 } } }
+  ];
+  CRISES.push({ id: 'gusmissing', who: 'gus', title: 'Gus is missing', days: 3,
+    text: () => 'The window was open and Gus is gone. His food bowl is full, which has never happened before. Carlos has to find him.',
+    goals: [{ label: 'Search for Gus', need: 4, on: id => id === 'search' ? 1 : 0 }],
+    reward: 'Gus comes home (Social +20, Energy +10)', penalty: 'Gus comes home on his own, furious (Social -25, Energy -20)',
+    win: { msg: 'Carlos found Gus on the neighbor\'s roof eating a rotisserie chicken. Gus came home like he had never left.', fx: { social: 20, energy: 10 } },
+    lose: { msg: 'Gus came home on his own three days later, smelling like a stranger\'s perfume. He will not make eye contact with Carlos.', fx: { social: -25, energy: -20 } } });
+  const crisisDef = id => CRISES.find(c => c.id === id) || CRISES[0];
+  const crisisText = (s, d) => typeof d.text === 'function' ? d.text(s) : d.text;
+  const crisisDrain = s => s.crisis ? (crisisDef(s.crisis.id).drain || 1) : 1;
+  const monthOf = day => Math.ceil(day / MONTH);
+  const applyOutcome = (s, o, stamp) => {
+    const fx = o.fx || {};
+    for (const k of NEEDS) s[k] = clamp(Math.round(s[k] + (fx[k] || 0)), 0, 100);
+    s.money = Math.max(0, Math.round(s.money + (fx.money || 0)));
+    if (o.rent) s.rentAcc = Math.max(0, (s.rentAcc || 0) + o.rent);
+    if (o.promo) s.promo = Math.max(0, (s.promo || 0) + o.promo);
+    if (o.resetIgnored) s.ignored = 0;
+    addLog(s, o.msg, stamp);
+    grantXp(s, o.xp || {}, stamp);
+  };
+  const crisisTick = (s, id, ctx, stamp) => {
+    if (!s.crisis) return false;
+    const d = crisisDef(s.crisis.id);
+    d.goals.forEach((g, i) => { s.crisis.prog[i] = Math.min(g.need, (s.crisis.prog[i] || 0) + g.on(id, ctx || {})); });
+    if (!d.goals.every((g, i) => s.crisis.prog[i] >= g.need)) return false;
+    s.crisis = null;
+    s.crisesWon = (s.crisesWon || 0) + 1;
+    applyOutcome(s, Object.assign({}, d.win, { msg: `Hard event beaten: ${d.title}. ${d.win.msg}` }), stamp);
+    return true;
+  };
+  /* called at the start of each new day */
+  const crisisRollover = (s, endedDay, rng) => {
+    if (s.crisis && endedDay >= s.crisis.deadline) {
+      const d = crisisDef(s.crisis.id);
+      s.crisis = null;
+      s.crisesLost = (s.crisesLost || 0) + 1;
+      applyOutcome(s, Object.assign({}, d.lose, { msg: `Hard event failed: ${d.title}. ${d.lose.msg}` }));
+      return;
+    }
+    if (s.crisis) return;
+    const m = monthOf(s.day), dim = (s.day - 1) % MONTH + 1;
+    if ((s.crisisMonth || 0) >= m || dim < (m === 1 ? 9 : 3)) return;
+    if (dim < 22 && rng() > 0.18) return;
+    const pool = CRISES.filter(c => (!c.when || c.when(s)) && c.id !== s.lastCrisis);
+    const d = pick(pool, rng);
+    s.crisis = { id: d.id, start: s.day, deadline: s.day + d.days - 1, prog: d.goals.map(() => 0) };
+    s.crisisMonth = m;
+    s.lastCrisis = d.id;
+    s.event = { id: 'crisis', c: d.id, f: pick(FRIENDS, rng), g: pick(FRIENDS, rng) };
+  };
   const checkWin = (s, rng = Math.random) => {
     if (s.over || (s.bigDays || 0) < WIN_DAYS || !allGear(s)) return false;
     s.over = { cause: 'win', msg: pick(WINS, rng), day: s.day, slot: s.slot };
@@ -750,12 +991,13 @@ const Engine = (() => {
   };
 
   const unlocked = (s, a) => !a.req || lvl(s, a.req.k) >= a.req.lv;
-  const available = (s, a) => !a.when || a.when(s);
+  const available = (s, a) => (!a.when || a.when(s)) && (!a.crisis || (!!s.crisis && s.crisis.id === a.crisis)) && (!a.cost || s.money >= a.cost);
   const gearSum = (s, a, kind, stat) => (a.gear || []).filter(g => g.kind === kind && g.stat === stat).reduce((n, g) => n + g.per * gearLv(s, g.item), 0);
   const scaleXp = (s, v) => Math.round(v * (s.rested ? 1.25 : 1) * (lonely(s) ? 0.7 : 1));
   const xpGain = (s, a) => {
     const out = { fit: 0, smash: 0, stank: 0 };
-    for (const k in (a.xp || {})) out[k] = Math.round(a.xp[k] * (s.rested ? 1.25 : 1) * (lonely(s) ? 0.7 : 1) * (1 + gearSum(s, a, 'xp', k)));
+    const nx = trait(s).nightXp && isNight(s.slot) ? trait(s).nightXp : 1;
+    for (const k in (a.xp || {})) out[k] = Math.round(a.xp[k] * nx * (s.rested ? 1.25 : 1) * (lonely(s) ? 0.7 : 1) * (1 + gearSum(s, a, 'xp', k)));
     return out;
   };
 
@@ -763,10 +1005,14 @@ const Engine = (() => {
   const simulate = (s, a) => {
     const m = effMult(s) * dayMult(s);
     const night = isNight(s.slot);
-    const fx = a.asleep && night ? a.nightFx : a.fx;
+    const T = trait(s);
+    const fx = a.asleep && (night || T.napFull) ? a.nightFx : a.fx;
+    const tGain = stat => (a.id === 'eat' && stat === 'food' ? T.mealGain || 0 : 0) + (a.id === 'discord' && stat === 'social' ? T.discordGain || 0 : 0);
+    const nightCost = night && !a.asleep && !T.nightFree ? 1.4 : 1;
+    const morningCost = s.slot <= 1 && !a.asleep && T.morning ? T.morning : 1;
     const adj = (v, stat) => v > 0
-      ? v * (1 + gearSum(s, a, 'gain', stat) + homeGain(s, a, stat))
-      : v * m * (stat === 'energy' && night && !a.asleep ? 1.4 : 1) * (1 - gearSum(s, a, 'cost', stat));
+      ? v * (1 + gearSum(s, a, 'gain', stat) + homeGain(s, a, stat) + tGain(stat))
+      : v * m * (stat === 'energy' ? nightCost * morningCost : 1) * (1 - gearSum(s, a, 'cost', stat));
     let food = s.food + adj(fx.food || 0, 'food');
     let water = s.water + adj(fx.water || 0, 'water');
     let energy = s.energy + adj(fx.energy || 0, 'energy');
@@ -775,7 +1021,7 @@ const Engine = (() => {
       const d = drain(s, !!a.asleep);
       food -= d.food; water -= d.water; energy -= d.energy; social -= d.social;
     }
-    const money = s.money + (a.pay ? a.pay(s) : 0);
+    const money = s.money + (a.pay ? a.pay(s) : 0) - (a.cost || 0);
     return {
       food: Math.round(clamp(food, 0, 100)), water: Math.round(clamp(water, 0, 100)),
       energy: Math.round(clamp(energy, 0, 100)), social: Math.round(clamp(social, 0, 100)), money,
@@ -790,7 +1036,7 @@ const Engine = (() => {
   const preview = (s, a) => {
     const sim = simulate(s, a);
     return { food: sim.food - s.food, water: sim.water - s.water, energy: sim.energy - s.energy, social: sim.social - s.social,
-      money: sim.money - s.money, xp: xpGain(s, a), fatal: fatalCause(sim) };
+      money: sim.money - s.money, xp: Object.fromEntries(Object.entries(xpGain(s, a)).map(([k, v]) => [k, Math.round(v * traitXp(s, k))])), fatal: fatalCause(sim) };
   };
 
   const addLog = (s, text, stamp) => {
@@ -801,7 +1047,7 @@ const Engine = (() => {
   const grantXp = (s, gain, stamp) => {
     const ups = [];
     for (const k of SKILL_KEYS) {
-      const g = gain[k] || 0;
+      const g = Math.round((gain[k] || 0) * traitXp(s, k));
       if (!g) continue;
       const before = levelOf(s.xp[k]);
       s.xp[k] = Math.min(s.xp[k] + g, XP_STEPS[MAX_LV]);
@@ -847,10 +1093,11 @@ const Engine = (() => {
       const info = rentInfo(s);
       if (info.daysLeft <= 2 && info.short > 0) addLog(s, `Rent is due at the end of Day ${info.dueDay}. Carlos is $${info.short} short.`);
     }
+    if (!s.over) crisisRollover(s, s.day - 1, rng);
     if (!s.over) checkWin(s, rng);
   };
 
-  const gf = (win, lose) => (s, rng) => rng() < 0.25 ? win : Object.assign({ ignored: 1 }, lose);
+  const gf = (win, lose) => (s, rng) => rng() < (trait(s).gfWin || 0.25) ? win : Object.assign({ ignored: 1 }, lose);
   /* Event signature: text(s, ev), hint(s, ev), run(s, rng, ev). ev = { id, f, g } where f and g are two different friends. */
   const EVENTS = [
     /* everyday life */
@@ -1281,11 +1528,243 @@ const Engine = (() => {
           run: (s, rng, ev) => ({ msg: `Carlos muted the chat. He missed a lot of good jokes and a few bad ones.`, fx: { social: -8 } }) }
       ] },
 
+    /* Gus, the cat */
+    { id: 'gus-counter', neg: true, w: 1.3, kicker: 'Gus', title: 'Gus is on the counter',
+      text: () => 'Gus made direct eye contact with Carlos and slowly pushed his dinner off the counter. He did not blink.',
+      choices: [
+        { label: 'Let it go', hint: () => 'Food -10',
+          run: () => ({ msg: 'Dinner hit the floor. Gus licked it once, decided it was beneath him, and left.', fx: { food: -10 } }) },
+        { label: 'Dive for it', hint: () => '50% save it. 50% Energy -8 and Food -6.',
+          run: (s, rng) => rng() < 0.5
+            ? { msg: 'Carlos caught the plate mid-air like a goalkeeper. Gus looked genuinely impressed.', fx: { energy: -2 }, xp: { fit: 3 } }
+            : { msg: 'Carlos dove, missed, and slid into the fridge. Gus watched the whole thing from the top of it.', fx: { energy: -8, food: -6 } } }
+      ] },
+    { id: 'gus-zoomies', neg: true, w: 1.3, kicker: 'Gus', title: 'Gus has the 3am zoomies', when: s => isNight(s.slot),
+      text: () => 'Something is sprinting laps around the apartment and yelling. It is Gus. It is always Gus.',
+      choices: [
+        { label: 'Try to sleep through it', hint: () => 'Energy -8',
+          run: () => ({ msg: 'Carlos lay in the dark while Gus did parkour off his face. Sleep was not achieved.', fx: { energy: -8 } }) },
+        { label: 'Get the laser pointer', hint: () => 'Energy -6, Social +6',
+          run: () => ({ msg: 'Carlos tired Gus out with the laser pointer. It took 40 minutes. They are closer now.', fx: { energy: -6, social: 6 } }) }
+      ] },
+    { id: 'gus-controller', w: 1.2, kicker: 'Gus', title: 'Gus sat on the controller',
+      text: () => 'Mid-match, Gus lay down directly on the controller and started purring. Carlos\'s character is walking off the stage.',
+      choices: [
+        { label: 'Let him stay', hint: () => 'Social +8, Energy +4. The match is lost.',
+          run: () => ({ msg: 'Carlos lost the match and gained a warm cat. Fair trade.', fx: { social: 8, energy: 4 } }) },
+        { label: 'Move him', hint: () => 'Smash xp +5. Gus will remember this.',
+          run: () => ({ msg: 'Carlos moved Gus and won the match. Gus knocked a cup off the desk as a formal complaint.', fx: { water: -4 }, xp: { smash: 5 } }) }
+      ] },
+    { id: 'gus-gift', w: 1.2, kicker: 'Gus', title: 'Gus brought a gift',
+      text: s => lvl(s, 'stank') >= 2 ? 'Gus dropped a pigeon on the bed. Carlos recognizes it. It is the pigeon that once bowed to him.' : 'Gus dropped something on Carlos\'s pillow. It was alive this morning. It is not anymore.',
+      choices: [
+        { label: 'Praise him', hint: () => 'Social +10',
+          run: () => ({ msg: 'Carlos told Gus he was a good boy and a great hunter. Gus accepted this as fact.', fx: { social: 10 } }) },
+        { label: 'Scream', hint: () => 'Energy -4, Stank xp +4',
+          run: () => ({ msg: 'Carlos screamed. Gus looked disappointed in him and went to bring a second gift.', fx: { energy: -4 }, xp: { stank: 4 } }) }
+      ] },
+    { id: 'gus-vet', neg: true, w: 1.0, kicker: 'Gus', title: 'Gus ate a hair tie',
+      text: () => 'Gus ate a hair tie and is now making a noise like a broken accordion.',
+      choices: [
+        { label: 'Take him to the vet', cost: 45, hint: () => 'Social +4. Costs $45.',
+          run: () => ({ msg: 'The vet removed the hair tie and charged $45. Gus bit the vet. Everyone agreed it was earned.', fx: { social: 4 } }) },
+        { label: 'Wait it out', hint: () => '50% he is fine. 50% an emergency vet bill of $80.',
+          run: (s, rng) => rng() < 0.5
+            ? { msg: 'Gus coughed the hair tie up onto Carlos\'s shoe and walked away like nothing happened.', fx: { energy: -2 } }
+            : { msg: 'It got worse. The emergency vet charged $80 and gave Gus a cone. Gus has never been more humiliated.', fx: { money: -80, energy: -6 } } }
+      ] },
+    { id: 'gus-lap', w: 1.3, kicker: 'Gus', title: 'Gus fell asleep on Carlos',
+      text: () => 'Gus is asleep on Carlos\'s lap. Moving is now illegal. The water bottle is across the room.',
+      choices: [
+        { label: 'Never move again', hint: () => 'Energy +10, Social +8, Food -6, Water -6',
+          run: () => ({ msg: 'Carlos stayed perfectly still for two hours. He is thirsty and at peace.', fx: { energy: 10, social: 8, food: -6, water: -6 } }) },
+        { label: 'Slide out carefully', hint: () => 'Social -4',
+          run: () => ({ msg: 'Carlos slid out from under Gus. Gus woke up and looked at him like he had committed a betrayal.', fx: { social: -4 } }) }
+      ] },
+    { id: 'gus-food', neg: true, w: 1.1, kicker: 'Gus', title: 'Gus is out of food',
+      text: () => 'The food bowl is empty. Gus is sitting next to it, staring at Carlos, and yelling one long continuous meow.',
+      choices: [
+        { label: 'Buy cat food', cost: 15, hint: () => 'Social +4. Costs $15.',
+          run: () => ({ msg: 'Carlos bought the fancy cat food. Gus ate two bites and then wanted the cheap stuff.', fx: { social: 4 } }) },
+        { label: 'Share your tuna', hint: () => 'Food -12, Social +4',
+          run: () => ({ msg: 'Carlos gave Gus his own tuna. Gus ate it all and then sat on Carlos\'s plate.', fx: { food: -12, social: 4 } }) }
+      ] },
+    { id: 'gus-discord', w: 1.2, kicker: 'Gus, on Discord', title: 'Gus joins the voice chat',
+      text: () => 'Gus walked across the keyboard and unmuted Carlos mid-call. The boys can hear him meowing. They are thrilled.',
+      choices: [
+        { label: 'Let Gus talk to the boys', hint: () => 'Social +12',
+          run: () => ({ msg: 'Gus held the floor for ten minutes. Baker asked if Gus can join the group chat. Wilson asked if Gus eats enough protein.', fx: { social: 12 } }) },
+        { label: 'Mute him', hint: () => 'Social +3',
+          run: () => ({ msg: 'Carlos muted. The boys typed "BRING BACK GUS" eleven times.', fx: { social: 3 } }) }
+      ] },
+
+    /* Gus, once he has learned some tricks */
+    { id: 'gus-cash', w: 1.4, when: s => gusLvl(s) >= 2, kicker: 'Gus', title: 'Gus fetched something',
+      text: () => 'Gus trotted in with a $20 bill in his mouth. Carlos has no idea where it came from. Gus is not telling.',
+      choices: [
+        { label: 'Keep it', hint: () => 'Cash +$20',
+          run: () => ({ msg: 'Carlos pocketed the $20. Gus expects a cut.', fx: { money: 20 } }) },
+        { label: 'Return it to the neighbor', hint: () => 'Social +8, Gus xp +6',
+          run: () => ({ msg: 'The neighbor was so impressed with Gus that she gave him a treat and Carlos a hug.', fx: { social: 8 }, gusXp: 6 }) }
+      ] },
+    { id: 'gus-busk', w: 1.4, when: s => gusLvl(s) >= 4, kicker: 'Gus', title: 'Gus wants to perform',
+      text: () => 'Gus is sitting by the door with a tiny hat. He wants to do his tricks downtown for money.',
+      choices: [
+        { label: 'Perform together', hint: () => 'Cash +$40, Social +10, Energy -8, Gus xp +5',
+          run: () => ({ msg: 'Gus did his tricks while Carlos played a kazoo. A crowd formed. The hat filled up.', fx: { money: 40, social: 10, energy: -8 }, gusXp: 5 }) },
+        { label: 'Let Gus go solo', hint: () => 'Cash +$25, Gus xp +10',
+          run: () => ({ msg: 'Gus went alone and came home with $25 and a fan club. Carlos was not invited.', fx: { money: 25 }, gusXp: 10 }) }
+      ] },
+    { id: 'gus-sandwich', w: 1.4, when: s => gusLvl(s) >= 5, kicker: 'Gus', title: 'Gus made Carlos a sandwich',
+      text: () => 'Gus opened the fridge, assembled a sandwich, and pushed it across the counter. It is mostly tuna. It is mostly good.',
+      choices: [
+        { label: 'Eat the whole thing', hint: () => 'Food +28',
+          run: () => ({ msg: 'Best sandwich Carlos has ever had. He is not going to think about how Gus washed his paws.', fx: { food: 28 } }) },
+        { label: 'Split it with Gus', hint: () => 'Food +14, Social +8, Gus xp +6',
+          run: () => ({ msg: 'They ate in silence, as equals.', fx: { food: 14, social: 8 }, gusXp: 6 }) }
+      ] },
+    { id: 'gus-sparring', w: 1.4, when: s => gusLvl(s) >= 6, kicker: 'Gus', title: 'Gus wants a Smash match',
+      text: () => 'Gus is holding the second controller with both paws. He mains Kirby. Of course he does.',
+      choices: [
+        { label: 'Play Gus', hint: () => 'Smash xp +16, Energy -4',
+          run: () => ({ msg: 'Gus three-stocked Carlos and then groomed himself on the controller. Carlos learned a lot.', fx: { energy: -4 }, xp: { smash: 16 } }) },
+        { label: 'Let Gus play ranked for you', hint: () => 'Smash xp +8, Gus xp +8',
+          run: () => ({ msg: 'Gus climbed two ranks on Carlos\'s account overnight. Strangers are now afraid of Carlos.', xp: { smash: 8 }, gusXp: 8 }) }
+      ] },
+    { id: 'gus-stocks', w: 1.4, when: s => gusLvl(s) >= 7, kicker: 'Gus', title: 'Gus is day trading',
+      text: () => 'Gus walked across the laptop and bought shares in a tuna company. He seems confident. The chart is going up.',
+      choices: [
+        { label: 'Let it ride', hint: () => '65% Cash +$120. 35% Cash -$40.',
+          run: (s, rng) => rng() < 0.65
+            ? { msg: 'Tuna stocks soared. Gus cashed out at the top and Carlos got $120.', fx: { money: 120 }, gusXp: 5 }
+            : { msg: 'Tuna crashed. Gus stared at the chart and then at Carlos, as if this was Carlos\'s fault. Down $40.', fx: { money: -40 } } },
+        { label: 'Sell now', hint: () => 'Cash +$40',
+          run: () => ({ msg: 'Carlos sold early for $40. Gus walked away in disgust.', fx: { money: 40 } }) }
+      ] },
+    { id: 'gus-viral', w: 1.4, when: s => gusLvl(s) >= 8, kicker: 'Gus', title: 'Gus went viral',
+      text: () => 'A video of Gus doing his trick routine has eight million views. Brands are in the DMs. One of them is a cat food company.',
+      choices: [
+        { label: 'Run his account', hint: () => 'Cash +$100, Social +10, Energy -6',
+          run: () => ({ msg: 'Carlos signed a sponsorship deal for $100 and a lifetime supply of cat food. Gus did not read the contract. Gus is the brand.', fx: { money: 100, social: 10, energy: -6 } }) },
+        { label: 'Let Gus stay humble', hint: () => 'Social +6, Gus xp +12',
+          run: () => ({ msg: 'Gus declined every deal. Somehow this made him more famous. His influence grows.', fx: { social: 6 }, gusXp: 12 }) }
+      ] },
+    { id: 'gus-council', w: 1.5, when: s => gusLvl(s) >= 9, kicker: 'Gus', title: 'Gus was elected to city council',
+      text: () => 'Nobody remembers voting for him, but Gus is now on city council. He has an office. He has a tiny gavel.',
+      choices: [
+        { label: 'Ask for a favor', hint: () => 'Cash +$120',
+          run: () => ({ msg: 'Gus found $120 in the budget for "community cat programs". The community is Carlos.', fx: { money: 120 } }) },
+        { label: 'Ask for nothing', hint: () => 'Gus xp +20. Gus has bigger plans.',
+          run: () => ({ msg: 'Gus respected that Carlos asked for nothing. He looked out the window at the city for a long time. His ambitions grow.', gusXp: 20 }) }
+      ] },
+
+    /* Wilson Krom: ARAM, kickboxing, protein */
+    { id: 'wilson-aram', w: 1.3, kicker: 'Wilson Krom, on Discord', title: 'Wilson wants "just one" ARAM',
+      text: () => 'Wilson Krom queued up before he even asked. He swears it is just one ARAM. It is never just one ARAM.',
+      choices: [
+        { label: 'Just one game', hint: () => 'Social +14, Energy -8. Odds it stays one game: low.',
+          run: (s, rng) => rng() < 0.25
+            ? { msg: 'It really was one game. Wilson seemed confused by this.', fx: { social: 14, energy: -8 } }
+            : { msg: 'One ARAM became six. Wilson blamed the team comp every single time. Carlos has seen things.', fx: { social: 18, energy: -20, food: -6 }, xp: { stank: 6 } } },
+        { label: 'Say you have to eat', hint: () => 'Social -4',
+          run: () => ({ msg: 'Carlos said he had to eat. Wilson said "eat protein" and queued without him.', fx: { social: -4 } }) }
+      ] },
+    { id: 'wilson-kickbox', w: 1.2, kicker: 'Wilson Krom', title: 'Wilson drags Carlos to kickboxing',
+      text: () => 'Wilson Krom showed up with two pairs of gloves and a look that says this was never a question.',
+      choices: [
+        { label: 'Throw some kicks', hint: () => 'Fitness xp +16, Social +8, Energy -16, Water -8',
+          run: () => ({ msg: 'Carlos kicked the bag, and somehow the bag kicked back. Wilson called it "a great first step".', fx: { social: 8, energy: -16, water: -8 }, xp: { fit: 16 } }) },
+        { label: 'Hold the pads for him', hint: () => 'Fitness xp +6, Energy -8',
+          run: () => ({ msg: 'Carlos held the pads. Wilson hits like a vending machine falling down the stairs.', fx: { energy: -8 }, xp: { fit: 6 } }) }
+      ] },
+    { id: 'wilson-protein', w: 1.2, kicker: 'Wilson Krom', title: 'Wilson has nutrition advice',
+      text: () => '"Carbs are a myth, bro." Wilson Krom explains that Carlos should only eat protein. Chicken, eggs, protein bars, and then more chicken.',
+      choices: [
+        { label: 'Try the all-protein life', hint: () => 'Food +22, Fitness xp +6, Water -10',
+          run: () => ({ msg: 'Carlos ate four chicken breasts and a protein bar for dessert. He feels powerful and extremely thirsty.', fx: { food: 22, water: -10 }, xp: { fit: 6 } }) },
+        { label: 'Eat a vegetable at him', hint: () => 'Food +8, Social -3',
+          run: () => ({ msg: 'Carlos ate a carrot in front of Wilson. Wilson looked away like he had witnessed a crime.', fx: { food: 8, social: -3 } }) }
+      ] },
+    { id: 'wilson-shake', w: 1.1, kicker: 'Wilson Krom', title: 'Wilson made Carlos a shake',
+      text: () => 'It is beige. It is thick. Wilson says it has six scoops of protein and "a raw egg for vibes".',
+      choices: [
+        { label: 'Chug it', hint: () => 'Food +18, Water +6. Might not stay down.',
+          run: (s, rng) => rng() < 0.7
+            ? { msg: 'Carlos chugged it. He can hear his muscles now.', fx: { food: 18, water: 6 }, xp: { fit: 4 } }
+            : { msg: 'The shake came back up. Wilson said that means it is working.', fx: { food: -6, energy: -10 } } },
+        { label: 'Feed it to a plant', hint: () => 'Nothing changes. The plant gets jacked.',
+          run: () => ({ msg: 'Carlos poured it into the houseplant while Wilson was not looking. The houseplant now has abs.' }) }
+      ] },
+    { id: 'wilson-midnight', w: 1.4, kicker: 'Wilson Krom, on Discord', title: 'Wilson pings at 2am', when: s => isNight(s.slot),
+      text: () => '"ARAM?" That is the whole message. It is the middle of the night. Wilson is wide awake and has just eaten a whole chicken.',
+      choices: [
+        { label: 'One game', hint: () => 'Social +12, Energy -14',
+          run: () => ({ msg: 'Carlos played. Wilson went 22 and 3 and talked about macros the entire time.', fx: { social: 12, energy: -14 } }) },
+        { label: 'Pretend to be asleep', hint: () => 'Energy +4',
+          run: () => ({ msg: 'Carlos pretended to be asleep, then actually fell asleep. A win for everyone.', fx: { energy: 4 } }) }
+      ] },
+
+    /* Dustin: Star Wars racing, beats, freestyle */
+    { id: 'dustin-racer', w: 1.3, kicker: 'Dustin', title: 'Dustin found the old podracing game',
+      text: () => 'Dustin booted up the old Star Wars racing game and already picked the fastest racer. Loser buys snacks.',
+      choices: [
+        { label: 'Race him', hint: () => 'Social +12, Food +10, Energy -6. 50% Carlos buys the snacks ($8).',
+          run: (s, rng) => rng() < 0.5
+            ? { msg: 'Carlos won on the last lap and did a victory lap around the living room. Dustin bought the snacks.', fx: { social: 12, energy: -6, food: 10 } }
+            : { msg: 'Dustin won and narrated his own victory like a sports announcer. Carlos bought the snacks.', fx: { social: 12, energy: -6, food: 10, money: -8 } } },
+        { label: 'Watch him race', hint: () => 'Social +6',
+          run: () => ({ msg: 'Carlos watched Dustin race for an hour. Dustin made the engine noises with his mouth the entire time.', fx: { social: 6 } }) }
+      ] },
+    { id: 'dustin-beat', w: 1.3, kicker: 'Dustin', title: 'Dustin made a beat',
+      text: () => 'Dustin sent a 40-second beat with the caption "this one hits different". It does, a little.',
+      choices: [
+        { label: 'Lay down some bars', hint: () => 'Social +12, Stank xp +8, Energy -6',
+          run: () => ({ msg: 'Carlos wrote eight bars about energy drinks. Dustin said it was "raw". Carlos is choosing to believe him.', fx: { social: 12, energy: -6 }, xp: { stank: 8 } }) },
+        { label: 'Send fire emojis', hint: () => 'Social +4',
+          run: () => ({ msg: 'Carlos sent three fire emojis. Dustin sent back a fourth, just to have the last word.', fx: { social: 4 } }) }
+      ] },
+    { id: 'dustin-freestyle', w: 1.2, kicker: 'Dustin', title: 'Dustin starts a freestyle',
+      text: () => 'Dustin is beatboxing into his phone and pointing at Carlos. It is Carlos\'s turn. Everyone is watching.',
+      choices: [
+        { label: 'Spit something', hint: () => '60% Social +16. 40% Carlos rhymes "orange" with "orange".',
+          run: (s, rng) => rng() < 0.6
+            ? { msg: 'Carlos rhymed "Rotmax" with "lots of snacks" and the room went wild. Dustin fell off his chair.', fx: { social: 16, energy: -4 } }
+            : { msg: 'Carlos rhymed "orange" with "orange", then said "yeah" four times. Dustin respected the confidence.', fx: { social: 4, energy: -4 } } },
+        { label: 'Beatbox instead', hint: () => 'Social +8, Water -6',
+          run: () => ({ msg: 'Carlos beatboxed until he ran out of spit. Dustin called it "experimental".', fx: { social: 8, water: -6 } }) }
+      ] },
+    { id: 'dustin-studio', w: 1.1, kicker: 'Dustin', title: 'Dustin needs studio money',
+      text: () => 'Dustin booked studio time for his mixtape and wants Carlos to chip in $20. He promises a feature and "points on the record".',
+      choices: [
+        { label: 'Chip in $20', cost: 20, hint: () => 'Social +8. 35% the mixtape pays Carlos back $50.',
+          run: (s, rng) => rng() < 0.35
+            ? { msg: 'A car commercial picked up the mixtape. Dustin sent Carlos $50 and a voice memo of himself screaming.', fx: { money: 50, social: 8 } }
+            : { msg: 'The mixtape has 37 plays. Carlos is all 37 of them.', fx: { social: 8 } } },
+        { label: 'Wish him luck', hint: () => 'Social -2',
+          run: () => ({ msg: 'Carlos wished him luck. Dustin wrote a bar about people who did not believe. It was about Carlos.', fx: { social: -2 } }) }
+      ] },
+    { id: 'dustin-ragequit', neg: true, w: 1.1, kicker: 'Dustin', title: 'Dustin rage-quits',
+      text: () => 'Dustin lost a podrace to a twelve-year-old online and threw the controller. It hit Carlos in the face.',
+      choices: [
+        { label: 'Walk it off', hint: () => 'Energy -10',
+          run: () => ({ msg: 'Carlos walked it off. There is a controller-shaped mark on his forehead.', fx: { energy: -10 } }) },
+        { label: 'Ice it', hint: () => 'Energy -4, Water -4, Social -2',
+          run: () => ({ msg: 'Carlos iced his face with a bag of frozen peas. Dustin apologized in rhyme, which made it worse.', fx: { energy: -4, water: -4, social: -2 } }) }
+      ] },
+
+    /* shown when a monthly hard event starts; never picked at random */
+    { id: 'crisis', w: 0, when: () => false, kicker: () => 'Hard event', title: ev => crisisDef(ev.c).title,
+      text: (s, ev) => crisisText(s, crisisDef(ev.c)),
+      choices: [
+        { label: 'Bring it on', hint: (s, ev) => { const d = crisisDef(ev.c); return `Win: ${d.reward}. Fail: ${d.penalty}.`; },
+          run: (s, rng, ev) => ({ msg: `Hard event: ${crisisDef(ev.c).title}. Carlos has until the end of Day ${s.crisis ? s.crisis.deadline : s.day}.` }) }
+      ] },
+
     /* his girlfriend */
     { id: 'gf-dinner', w: 1.3, kicker: 'His girlfriend', title: 'She texts: "dinner tonight?"',
       text: () => 'A simple question. Carlos is in the middle of something very important.',
       choices: [
-        { label: 'Reply "sure"', hint: () => 'Carlos means well. Odds are poor.',
+        { label: 'Reply "sure"', hint: s => gfHint(s),
           run: gf({ msg: 'Carlos replied "sure" and actually went. It was nice. He will not discuss it.', fx: { social: 10, food: 14, energy: -4 } },
                   { msg: 'Carlos replied "sure", got pulled into a match, and forgot. She ate alone.', fx: { energy: -4 }, xp: { smash: 6 } }) },
         { label: 'Leave her on read', hint: () => 'Energy +2',
@@ -1294,7 +1773,7 @@ const Engine = (() => {
     { id: 'gf-call', w: 1.3, kicker: 'His girlfriend', title: 'She is calling',
       text: () => 'The screen shows her name. Carlos is mid-combo.',
       choices: [
-        { label: 'Answer', hint: () => 'Carlos means well. Odds are poor.',
+        { label: 'Answer', hint: s => gfHint(s),
           run: gf({ msg: 'He answered and listened for twenty whole minutes. He is a changed man for about a day.', fx: { social: 12, energy: -4 } },
                   { msg: 'He answered, said "yeah" eleven times, and watched a clip. She could tell.', fx: { social: 3 } }) },
         { label: 'Let it ring', hint: () => 'Smash xp +5',
@@ -1303,7 +1782,7 @@ const Engine = (() => {
     { id: 'gf-movie', w: 1.2, kicker: 'His girlfriend', title: 'She wants to watch a movie',
       text: () => 'A whole movie. Together. No phones.',
       choices: [
-        { label: 'Say yes', hint: () => 'Carlos means well. Odds are poor.',
+        { label: 'Say yes', hint: s => gfHint(s),
           run: gf({ msg: 'They watched the whole thing. Carlos cried at the end and denies it.', fx: { social: 14, energy: 6 } },
                   { msg: 'Carlos fell asleep ten minutes in. She finished it alone.', fx: { energy: 10 } }) },
         { label: 'Say "after this match"', hint: () => 'Smash xp +8, Energy -5',
@@ -1312,7 +1791,7 @@ const Engine = (() => {
     { id: 'gf-paragraph', w: 1.1, kicker: 'His girlfriend', title: 'She sent a very long text',
       text: () => 'It has paragraphs. It has feelings. It has a sad face at the end.',
       choices: [
-        { label: 'Read the whole thing', hint: () => 'Carlos means well. Odds are poor.',
+        { label: 'Read the whole thing', hint: s => gfHint(s),
           run: gf({ msg: 'He read every word and replied thoughtfully. She sent a heart. Carlos felt something.', fx: { social: 10 } },
                   { msg: 'Carlos read the first line, then Tim sent a meme. Both were important.', fx: { social: 2 } }) },
         { label: 'Send a thumbs up', hint: () => 'Nothing changes.',
@@ -1321,8 +1800,8 @@ const Engine = (() => {
     { id: 'gf-door', w: 1.1, kicker: 'His girlfriend', title: 'She is at the door',
       text: () => 'She came over without warning. Carlos is mid-match with the boys.',
       choices: [
-        { label: 'Pause and talk', hint: () => 'Carlos means well. Odds are poor.',
-          run: (s, rng) => rng() < 0.3
+        { label: 'Pause and talk', hint: s => gfHint(s),
+          run: (s, rng) => rng() < (trait(s).gfWin || 0.3)
             ? { msg: 'He paused the game and talked for a full half hour. A personal record.', fx: { social: 12, energy: -4 } }
             : { msg: 'He said "one sec." The sec lasted forty minutes. The door closed quietly.', fx: { social: 4 }, ignored: 1 } },
         { label: 'One more round', hint: () => 'Social +6, Smash xp +8',
@@ -1332,7 +1811,10 @@ const Engine = (() => {
   const pickEvent = (s, rng) => {
     const pool = EVENTS.filter(e => e.id !== s.lastEvent && (!e.when || e.when(s)));
     if (!pool.length) return null;
-    const w = e => e.w * (e.neg ? negScale(s) : 1);
+    /* a smarter Gus causes less trouble */
+    const T = trait(s);
+    const w = e => e.w * (e.neg ? negScale(s) * (T.negMult || 1) : 1) * (e.neg && e.id.startsWith('gus-') ? Math.max(0.2, 1 - 0.09 * gusLvl(s)) : 1)
+      * (e.id.startsWith('gf-') ? T.gfWeight || 1 : 1) * (e.id.startsWith('gus-') ? T.gusWeight || 1 : 1);
     let r = rng() * pool.reduce((n, e) => n + w(e), 0);
     for (const e of pool) { r -= w(e); if (r <= 0) return e; }
     return pool[pool.length - 1];
@@ -1353,21 +1835,30 @@ const Engine = (() => {
     const night = isNight(s.slot);
     const sim = simulate(s, a);
     const gain = xpGain(s, a);
-    let line, promoted = null, extra = 0;
+    let line, promoted = null, extra = 0, cupWon = -1, gusGainPending = 0;
     if (a.special === 'cup') {
       const t = opts.played && opts.played.results && opts.played.results.length ? playedCup(opts.played) : runCup(s, rng);
       const parts = t.rounds.map(x => x.win ? `beat ${x.opp} ${x.score}` : `lost to ${x.opp} ${x.score}`);
       for (let i = 0; i < t.won; i++) gain.smash += scaleXp(s, 8);
       extra = t.prize;
+      cupWon = t.won;
       if (t.won === 3) s.trophies += 1;
       line = `Carlos ${parts.join(', ')}. ${t.place}${t.prize ? `, prize $${t.prize}` : ''}${t.won === 3 ? `, plus trophy number ${s.trophies}` : ''}.`;
       s.lastCup = { rounds: t.rounds, place: t.place, prize: t.prize, won: t.won, day: s.day, slot: s.slot };
+      if ((s.cupWeek || 0) < weekOf(s.day)) s.cupWeek = weekOf(s.day);
+      else if (s.crisis && s.crisis.id === 'major') s.crisis.entered = true;
     } else if (a.special === 'marathon') line = pick(MARATHON, rng);
+    else if (a.special === 'trick') {
+      const next = TRICKS[Math.min(gusLvl(s) + 1, GUS_MAX)];
+      if (rng() < 0.2) { line = pick(GUS_REFUSE, rng); gusGainPending = scaleXp(s, 4); }
+      else { line = `Carlos worked on "${next}" with Gus. ${pick(GUS_PROGRESS, rng)}`; gusGainPending = scaleXp(s, 10); }
+    }
     else if (a.special === 'work') {
       const before = rankOf(s);
       const perf = PERF[opts.perf] ? opts.perf : 'ok';
-      const pay = Math.round(before.pay * PERF[perf].pay);
-      extra = pay - before.pay;
+      const base = a.pay(s);
+      const pay = Math.round(base * PERF[perf].pay);
+      extra = pay - base;
       line = `${pick(perf === 'ok' ? a.msgs : WORK_MSGS[perf], rng)} Paid $${pay}.`;
       s.shifts += 1;
       s.promo = Math.max(before.at, (s.promo || 0) + PERF[perf].promo);
@@ -1379,14 +1870,17 @@ const Engine = (() => {
     addLog(s, `${a.name}. ${line}`, stamp);
     if (promoted) addLog(s, `Promoted to ${promoted.name}. Shifts now pay $${promoted.pay}.`, stamp);
     const ups = grantXp(s, gain, stamp);
+    crisisTick(s, a.id, { cupWon }, stamp);
+    if (gusGainPending) gusGain(s, gusGainPending, stamp, rng);
     if (a.asleep && night) s.nightSleeps += 1;
     for (let i = 0; i < a.slots; i++) s.plan.push(a.id);
     s.slot += a.slots;
     const died = checkDeath(s, rng);
     let event = null;
     if (!died) {
-      if (s.slot >= SLOTS) rollover(s, rng);
-      if (!s.over && rng() < eventChance(s)) { const e = pickEvent(s, rng); if (e) { s.event = makeCtx(e, rng); event = e.id; } }
+      if (s.slot >= SLOTS) { rollover(s, rng); if (!s.over) checkDeath(s, rng); }
+      if (!s.over && !s.event && rng() < eventChance(s)) { const e = pickEvent(s, rng); if (e) { s.event = makeCtx(e, rng); event = e.id; } }
+      else if (s.event) event = s.event.id;
     }
     return { ok: true, died: !!s.over, event, ups };
   };
@@ -1410,6 +1904,8 @@ const Engine = (() => {
     addLog(s, res.msg);
     const ups = grantXp(s, res.xp || {});
     s.lastEvent = def.id; s.event = null;
+    if (res.gusXp) gusGain(s, res.gusXp, null, rng);
+    if (s.over) return { ok: true, died: false, ups };
     const died = checkDeath(s, rng);
     return { ok: true, died, ups };
   };
@@ -1436,9 +1932,10 @@ const Engine = (() => {
     return { ok: true, fee };
   };
 
-  const won = s => !!s.over && s.over.cause === 'win';
-  const score = s => (s.day - 1) * 100 + s.slot * 8 + totalLevels(s) * 40 + s.trophies * 50 + Math.floor(s.money / 10) + (won(s) ? 1500 : 0);
+  const won = s => !!s.over && (s.over.cause === 'win' || s.over.cause === 'emperor');
+  const score = s => (s.day - 1) * 100 + s.slot * 8 + totalLevels(s) * 40 + s.trophies * 50 + Math.floor(s.money / 10) + (s.crisesWon || 0) * 150 + (won(s) ? 1500 : 0);
   const titleOf = s => {
+    if (s.over && s.over.cause === 'emperor') return 'Servant of Emperor Gus';
     if (won(s)) return 'Lord of Carlos Manor';
     const l = SKILL_KEYS.map(k => lvl(s, k));
     if (l[0] + l[1] + l[2] < 2) return 'Barely a Carlos';
@@ -1450,14 +1947,16 @@ const Engine = (() => {
     HOMES, MOVE_DOWN, WIN_DAYS, GEAR_TOTAL, PERF,
     newState, levelOf, progress, lvl, gearLv, unlocked, available, preview, act, choose, buy, move, drainPreview,
     effMult, dayMult, stankLuck, negScale, eventChance, rivalWin, cupOdds, cupParams, cupDraw, isNight, score, titleOf, totalLevels,
-    rentInfo, rankOf, rentFor, dailyRent, weekOf, lonely, homePerks, gearCount, allGear, won };
+    rentInfo, rankOf, rentFor, dailyRent, weekOf, lonely, homePerks, gearCount, allGear, won,
+    CRISES, crisisDef, crisisText, gusLvl, gusProgress, GUS_MAX, TRICKS, GUS_TITLES, cupOpen,
+    TRAITS, applyTrait, traitName };
 })();
 // ==ENGINE END==
 
 (() => {
   const E = Engine;
   const SAVE = 'carlos.save.v4', OLD_SAVE = 'carlos.save.v3', BEST = 'carlos.best.v1';
-  const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-'];
+  const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='];
   const $ = id => document.getElementById(id);
   const readJSON = k => { try { const t = localStorage.getItem(k); return t ? JSON.parse(t) : null; } catch (e) { return null; } };
   const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
@@ -1526,6 +2025,18 @@ const Engine = (() => {
     ['Carlos stood on the stairs of his townhouse for no reason. It felt important.', 'The boys have claimed the garage. Carlos is a guest in his own garage.'],
     ['Carlos got lost on the way to his own kitchen.', 'Carlos hears an echo when he says "bro". He says it a lot now.', 'Carlos has a room he calls "the Smash wing". It has one beanbag.']
   ];
+  const GUS_LINES = [
+    'Gus is staring at Carlos from across the room. Nobody knows why. Not even Gus.',
+    'Gus is sitting in the exact spot Carlos was about to sit in.',
+    'Carlos talks to Gus more than he talks to his girlfriend. Gus is aware of this.',
+    'Gus knocked a pen off the desk to see what would happen. It fell. Gus is satisfied.'
+  ];
+  const CRISIS_LINES = [
+    'Carlos is in crisis mode. He made a to-do list. It has one item: panic.',
+    'Carlos keeps checking the calendar like it might blink first.',
+    'Carlos told the boys he is "locked in". He is mostly locked in the bathroom.',
+    s => `Carlos has a deadline at the end of Day ${s.crisis.deadline}. He has named it "Gary".`
+  ];
   function lowest(s) { return E.NEEDS.map(k => [k, s[k]]).sort((a, b) => a[1] - b[1])[0]; }
   function moodKey(s) {
     if (s.over) return 'dead';
@@ -1556,7 +2067,8 @@ const Engine = (() => {
     if (s.shifts > 0) pool.push(...THEATER);
     if (s.ignored >= 2) pool.push(...GIRLFRIEND);
     for (const k in GEAR) if (E.gearLv(s, k) > 0) pool.push(...GEAR[k]);
-    pool.push(...HOME_LINES[s.home || 0]);
+    pool.push(...HOME_LINES[s.home || 0], ...GUS_LINES);
+    if (s.crisis) pool.push(...CRISIS_LINES, ...CRISIS_LINES);
     return txt(pool[h % pool.length]);
   }
 
@@ -1626,7 +2138,8 @@ const Engine = (() => {
     st.textContent = 'Posting...';
     try {
       try { localStorage.setItem(NAME_KEY, name); } catch (e) {}
-      await lbPostRow({ name, score: E.score(S), days: S.over.day - 1, title: E.titleOf(S) });
+      const tn = E.traitName(S);
+      await lbPostRow({ name, score: E.score(S), days: S.over.day - 1, title: (E.titleOf(S) + (tn ? ' · ' + tn : '')).slice(0, 40) });
       posted = true;
       st.textContent = 'Posted. See where you landed below.';
       $('lbPost').hidden = true;
@@ -1643,13 +2156,156 @@ const Engine = (() => {
   const R = { meters: {}, skills: {}, acts: {}, shop: {}, cash: null };
   const timers = {};
 
+  /* ---------- sound: everything is synthesized with Web Audio, no files ---------- */
+  const Sfx = (() => {
+    const KEY = 'carlos.sound';
+    let ctx = null, master = null, musicBus = null, noiseBuf = null;
+    let on = true;
+    try { on = localStorage.getItem(KEY) !== 'off'; } catch (e) {}
+    function ensure() {
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        ctx = new AC();
+        master = ctx.createGain(); master.gain.value = 0.55; master.connect(ctx.destination);
+        musicBus = ctx.createGain(); musicBus.gain.value = 0.38; musicBus.connect(master);
+      }
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    }
+    /* one oscillator note. o.time is an absolute audio time; o.at is seconds from now */
+    function tone(freq, dur, o = {}) {
+      const t = o.time != null ? o.time : ctx.currentTime + (o.at || 0);
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = o.type || 'square';
+      osc.frequency.setValueAtTime(freq, t);
+      if (o.glide) osc.frequency.exponentialRampToValueAtTime(o.glide, t + dur);
+      const vol = o.vol || 0.15, atk = o.attack || 0.005;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + atk);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g); g.connect(o.dest || master);
+      osc.start(t); osc.stop(t + dur + 0.03);
+      return osc;
+    }
+    function noise(dur, o = {}) {
+      if (!noiseBuf) {
+        noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      }
+      const t = o.time != null ? o.time : ctx.currentTime + (o.at || 0);
+      const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = ctx.createBiquadFilter(); f.type = o.filter || 'bandpass'; f.frequency.value = o.freq || 2000; f.Q.value = o.q || 1;
+      const g = ctx.createGain(), vol = o.vol || 0.15, atk = o.attack || 0.004;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + atk);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(f); f.connect(g); g.connect(o.dest || master);
+      src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.03);
+    }
+    function meow() {
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(560, t);
+      osc.frequency.linearRampToValueAtTime(940, t + 0.16);
+      osc.frequency.linearRampToValueAtTime(600, t + 0.5);
+      f.type = 'bandpass'; f.Q.value = 3;
+      f.frequency.setValueAtTime(900, t); f.frequency.linearRampToValueAtTime(1800, t + 0.18); f.frequency.linearRampToValueAtTime(1000, t + 0.5);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.06); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+      osc.connect(f); f.connect(g); g.connect(master);
+      osc.start(t); osc.stop(t + 0.6);
+    }
+    const SOUNDS = {
+      click: () => tone(520, 0.06, { vol: 0.07 }),
+      eat: () => { for (let i = 0; i < 3; i++) noise(0.07, { at: i * 0.11, freq: 900, q: 2, vol: 0.28 }); },
+      drink: () => { for (let i = 0; i < 3; i++) tone(520 - i * 60, 0.09, { type: 'sine', at: i * 0.12, glide: 260 - i * 30, vol: 0.25 }); },
+      sleep: () => { tone(240, 0.7, { type: 'sine', glide: 150, vol: 0.16, attack: 0.2 }); tone(180, 0.7, { type: 'sine', at: 0.75, glide: 120, vol: 0.12, attack: 0.2 }); },
+      chat: () => { tone(880, 0.07, { type: 'triangle', vol: 0.14 }); tone(1175, 0.1, { type: 'triangle', at: 0.08, vol: 0.14 }); tone(988, 0.08, { type: 'triangle', at: 0.2, vol: 0.1 }); },
+      lift: () => { noise(0.16, { freq: 260, q: 0.8, vol: 0.35 }); tone(98, 0.18, { type: 'sawtooth', vol: 0.1 }); },
+      game: () => { tone(660, 0.05, { vol: 0.08 }); tone(990, 0.05, { at: 0.06, vol: 0.08 }); tone(1320, 0.08, { at: 0.12, vol: 0.08 }); },
+      rot: () => tone(300, 0.35, { type: 'sawtooth', glide: 600, vol: 0.06 }),
+      coin: () => { tone(988, 0.08, { vol: 0.1 }); tone(1319, 0.28, { at: 0.08, vol: 0.1 }); },
+      level: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, { at: i * 0.09, vol: 0.1 })),
+      event: () => { tone(784, 0.12, { type: 'triangle', vol: 0.18 }); tone(1047, 0.22, { type: 'triangle', at: 0.1, vol: 0.18 }); },
+      bad: () => { tone(392, 0.18, { type: 'sawtooth', vol: 0.09 }); tone(311, 0.18, { type: 'sawtooth', at: 0.17, vol: 0.09 }); tone(233, 0.4, { type: 'sawtooth', at: 0.34, vol: 0.09, glide: 175 }); },
+      phone: () => { for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) tone(i % 2 ? 1320 : 1100, 0.045, { type: 'sine', at: r * 0.6 + i * 0.045, vol: 0.12 }); },
+      meow,
+      alarm: () => { for (let i = 0; i < 6; i++) tone(i % 2 ? 620 : 880, 0.17, { at: i * 0.18, vol: 0.08 }); },
+      tearPerfect: () => { noise(0.12, { filter: 'highpass', freq: 2600, vol: 0.3 }); tone(1568, 0.14, { type: 'triangle', at: 0.03, vol: 0.09 }); },
+      tear: () => noise(0.12, { filter: 'highpass', freq: 2200, vol: 0.26 }),
+      miss: () => tone(150, 0.22, { type: 'sawtooth', vol: 0.1, glide: 85 }),
+      hit: (lane, perfect) => tone([523, 587, 659, 784][lane] * (perfect ? 2 : 1), 0.1, { type: 'triangle', vol: 0.16 }),
+      stray: () => noise(0.06, { freq: 380, q: 1, vol: 0.12 }),
+      cheer: () => {
+        noise(1.8, { freq: 1700, q: 0.4, vol: 0.16, attack: 0.25 });
+        for (let i = 0; i < 14; i++) noise(0.04, { at: 0.1 + Math.random() * 1.4, freq: 2400, q: 1.2, vol: 0.22 });
+      },
+      fanfare: () => [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i === 5 ? 0.5 : 0.13, { at: i * 0.11, vol: 0.11 })),
+      win: () => { SOUNDS.fanfare(); setTimeout(() => SOUNDS.cheer(), 300); },
+      die: () => { tone(440, 1.1, { type: 'triangle', glide: 65, vol: 0.2 }); tone(220, 1.1, { type: 'sine', at: 0.05, glide: 40, vol: 0.12 }); }
+    };
+    function play(name, ...args) {
+      if (!on || !SOUNDS[name]) return;
+      try { if (ensure()) SOUNDS[name](...args); } catch (e) {}
+    }
+    const later = (name, ms) => setTimeout(() => play(name), ms);
+
+    /* Original tournament loop: 150 bpm, A minor, i - VI - VII - v. One step is an eighth note (0.2s). */
+    const STEP = 0.2;
+    const CHORDS = [[220, 261.63, 329.63, 440], [174.61, 220, 261.63, 349.23], [196, 246.94, 293.66, 392], [164.81, 196, 246.94, 329.63]];
+    const ROOTS = [110, 87.31, 98, 82.41];
+    const ARP = [0, 1, 2, 3, 2, 1, 2, 3];
+    const LEAD = [[4, 3, 2, -1, 3, -1, 2, 1], [2, -1, 1, 2, 3, -1, 2, -1], [3, 2, 3, -1, 1, 2, 3, -1], [2, 1, 0, -1, 1, -1, 3, -1]];
+    let timer = null, step = 0, nextT = 0, layer = 0;
+    function playStep(i, t) {
+      const bar = (i >> 3) & 3, e = i & 7, ch = CHORDS[bar], dest = musicBus;
+      tone(e % 2 ? ROOTS[bar] * 2 : ROOTS[bar], 0.18, { type: 'triangle', vol: 0.32, time: t, dest });
+      tone(ch[ARP[e]] * 2, 0.14, { type: 'square', vol: 0.045, time: t, dest });
+      if (e === 0 || e === 4) tone(150, 0.16, { type: 'sine', glide: 45, vol: 0.55, time: t, dest });
+      if (e === 2 || e === 6) noise(0.12, { freq: 1800, q: 0.7, vol: 0.22, time: t, dest });
+      noise(0.035, { filter: 'highpass', freq: 7000, vol: 0.07, time: t, dest });
+      if (layer >= 1) { const n = LEAD[bar][e]; if (n >= 0) tone((n === 4 ? ch[0] * 2 : ch[n]) * 2, 0.17, { type: 'square', vol: 0.06, time: t, dest }); }
+      if (layer >= 2) noise(0.03, { filter: 'highpass', freq: 8000, vol: 0.05, time: t + STEP / 2, dest });
+    }
+    function tick() {
+      while (nextT < ctx.currentTime + 0.15) { playStep(step, nextT); step++; nextT += STEP; }
+    }
+    /* starts the loop; returns the page-clock time (performance.now) of the first beat, or null if silent */
+    function musicStart(lvl) {
+      musicStop();
+      if (!on || !ensure()) return null;
+      layer = lvl || 0; step = 0;
+      nextT = ctx.currentTime + 0.08;
+      const pageT = performance.now() + 80;
+      tick();
+      timer = setInterval(tick, 25);
+      return pageT;
+    }
+    function musicStop() { if (timer) clearInterval(timer); timer = null; }
+    function setOn(v) {
+      on = !!v;
+      try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch (e) {}
+      if (!on) musicStop();
+    }
+    return { play, later, musicStart, musicStop, setOn, isOn: () => on, STEP };
+  })();
+  const ACT_SOUND = { trick: 'meow', eat: 'eat', drink: 'drink', sleep: 'sleep', discord: 'chat', lift: 'lift', run: 'lift', smash: 'game', rot: 'rot', marathon: 'rot',
+    clean: 'eat', bail: 'drink', search: 'meow', record: 'chat', date: 'level' };
+
   /* ---------- the boys, drawn like Carlos ---------- */
   const FRIEND_LOOK = {
     Baker: { skin: '#E2AE84', hair: '#5A3A22', shirt: '#F28C28' },
     Monty: { skin: '#8A5636', hair: '#17141C', shirt: '#8E5CF7' },
     Luke: { skin: '#F2CBA6', hair: '#D9AE3F', shirt: '#2FAE6A' },
-    Tim: { skin: '#BF8358', hair: '#9B3E25', shirt: '#D23B3B' }
+    Tim: { skin: '#BF8358', hair: '#9B3E25', shirt: '#D23B3B' },
+    Wilson: { skin: '#D9A27A', hair: '#6E5228', shirt: '#2B2F3A', arm: 16 },
+    Dustin: { skin: '#C9875B', hair: '#2A1C14', shirt: '#F5C31E' }
   };
+  const CAST = ['Baker', 'Monty', 'Luke', 'Tim', 'Wilson', 'Dustin'];
+  const FULL_NAME = { Wilson: 'Wilson Krom' };
+  const fullName = n => FULL_NAME[n] || n;
   function friendSVG(name) {
     const L = FRIEND_LOOK[name] || FRIEND_LOOK.Baker;
     const ink = '#1D1A22';
@@ -1675,10 +2331,21 @@ const Engine = (() => {
       /* buzz cut, theater bow tie and name tag */
       hair = `<path fill="${L.hair}" d="M42 64 C40 22 120 22 118 64 C112 46 100 40 80 40 C60 40 48 46 42 64 Z"/>`;
       body = `<path fill="#151A33" d="M68 118 l12 6 l12 -6 v14 l-12 -6 l-12 6 z"/><rect fill="#fff" stroke="#151A33" stroke-width="1.5" x="88" y="144" width="20" height="10" rx="2"/>`;
+    } else if (name === 'Wilson') {
+      /* flat top, sweatband, tank top, boxing gloves */
+      hair = `<path fill="${L.hair}" d="M44 60 L46 30 L114 30 L116 60 C110 46 100 42 80 42 C60 42 50 46 44 60 Z"/><rect fill="#F5C31E" x="42" y="50" width="76" height="9" rx="2"/>`;
+      body = `<path fill="${L.skin}" d="M46 122 L58 114 L58 132 Z M114 122 L102 114 L102 132 Z"/><circle fill="#D23B3B" cx="31" cy="160" r="12"/><circle fill="#D23B3B" cx="129" cy="160" r="12"/>`;
+      mouth = smile('M66 102 Q80 108 94 102');
+      over = `<path d="M54 68 l16 4 M106 68 l-16 4" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`;
+    } else if (name === 'Dustin') {
+      /* beanie, headphones round the neck, a gold chain, mid-verse */
+      hair = `<path fill="#2E5E4E" d="M40 62 C36 8 124 8 120 62 Z"/><rect fill="#244A3E" x="38" y="52" width="84" height="12" rx="5"/><circle fill="#2E5E4E" cx="80" cy="14" r="7"/>`;
+      body = `<path d="M54 118 C56 134 104 134 106 118" fill="none" stroke="#2A2F45" stroke-width="6"/><rect fill="#2A2F45" x="46" y="112" width="14" height="16" rx="5"/><rect fill="#2A2F45" x="100" y="112" width="14" height="16" rx="5"/><path d="M64 122 Q80 150 96 122" fill="none" stroke="#E8B931" stroke-width="3.5"/><circle fill="#E8B931" cx="80" cy="140" r="5"/>`;
+      mouth = `<ellipse fill="${ink}" cx="80" cy="104" rx="9" ry="7"/><rect fill="#fff" x="73" y="98" width="14" height="4" rx="1"/>`;
     }
     return `<svg viewBox="0 0 160 184" aria-hidden="true">
-      <line x1="52" y1="128" x2="32" y2="158" stroke="${L.skin}" stroke-width="11" stroke-linecap="round"/>
-      <line x1="108" y1="128" x2="128" y2="158" stroke="${L.skin}" stroke-width="11" stroke-linecap="round"/>
+      <line x1="52" y1="128" x2="32" y2="158" stroke="${L.skin}" stroke-width="${L.arm || 11}" stroke-linecap="round"/>
+      <line x1="108" y1="128" x2="128" y2="158" stroke="${L.skin}" stroke-width="${L.arm || 11}" stroke-linecap="round"/>
       <rect fill="${L.skin}" x="70" y="104" width="20" height="16" rx="4"/>
       <rect fill="${L.shirt}" x="46" y="114" width="68" height="70" rx="16"/>
       ${body}
@@ -1697,13 +2364,46 @@ const Engine = (() => {
     <path d="M80 122 C62 108 58 96 66 90 C72 86 78 89 80 94 C82 89 88 86 94 90 C102 96 98 108 80 122 Z" fill="#E8457D"/>
     <circle cx="114" cy="24" r="15" fill="#C62828"/><text x="114" y="29.5" text-anchor="middle" font-family="Figtree, sans-serif" font-weight="800" font-size="15" fill="#fff">9+</text>
   </svg>`;
+  /* Gus: an orange tabby with strong opinions */
+  const GUS_SHAPES = `
+    <path d="M112 162 C152 152 150 108 126 104" stroke="#E8913A" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <ellipse cx="80" cy="140" rx="40" ry="38" fill="#E8913A"/>
+    <path d="M50 128 q10 -4 14 4 M48 146 q10 -4 14 4 M110 128 q-10 -4 -14 4 M112 146 q-10 -4 -14 4" stroke="#B9651F" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="80" cy="150" rx="19" ry="24" fill="#F7E3C8"/>
+    <ellipse cx="62" cy="176" rx="11" ry="7" fill="#F7E3C8"/><ellipse cx="98" cy="176" rx="11" ry="7" fill="#F7E3C8"/>
+    <path d="M48 66 L52 30 L76 52 Z M112 66 L108 30 L84 52 Z" fill="#E8913A"/>
+    <path d="M54 58 L56 40 L68 52 Z M106 58 L104 40 L92 52 Z" fill="#F4A6B8"/>
+    <circle cx="80" cy="80" r="36" fill="#E8913A"/>
+    <path d="M72 48 l4 12 M80 46 v14 M88 48 l-4 12" stroke="#B9651F" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="80" cy="95" rx="17" ry="11" fill="#F7E3C8"/>
+    <ellipse cx="65" cy="78" rx="7.5" ry="8.5" fill="#9BD15A"/><ellipse cx="95" cy="78" rx="7.5" ry="8.5" fill="#9BD15A"/>
+    <ellipse cx="65" cy="78" rx="2.4" ry="7" fill="#1D1A22"/><ellipse cx="95" cy="78" rx="2.4" ry="7" fill="#1D1A22"/>
+    <path d="M76 89 h8 l-4 5 z" fill="#E8457D"/>
+    <path d="M80 94 q-5 6 -10 2 M80 94 q5 6 10 2" stroke="#1D1A22" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M62 96 h-20 M62 100 l-18 5 M98 96 h20 M98 100 l18 5" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>`;
+  /* Gus picks up gear as he levels: a collar, then sunglasses, then a crown */
+  const GUS_COLLAR = '<path d="M54 106 Q80 122 106 106" stroke="#C62828" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="80" cy="117" r="5.5" fill="#F5C31E" stroke="#B9651F" stroke-width="1.5"/>';
+  const GUS_SHADES = '<g fill="#1D1A22"><rect x="53" y="69" width="23" height="16" rx="5"/><rect x="84" y="69" width="23" height="16" rx="5"/><rect x="74" y="73" width="12" height="3"/></g><path d="M57 72 l6 0" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/>';
+  const GUS_CROWN = '<path d="M58 50 L62 26 L72 40 L80 18 L88 40 L98 26 L102 50 Z" fill="#F5C31E" stroke="#B9651F" stroke-width="2" stroke-linejoin="round"/><circle cx="80" cy="40" r="3.5" fill="#C62828"/>';
+  const gusGear = lv => (lv >= 3 ? GUS_COLLAR : '') + (lv >= 6 ? GUS_SHADES : '') + (lv >= 9 ? GUS_CROWN : '');
+  const gusSVG = lv => `<svg viewBox="0 0 160 184" aria-hidden="true">${GUS_SHAPES}${gusGear(lv)}</svg>`;
+  const gusMini = lv => `<g transform="translate(118 138) scale(0.26)">${GUS_SHAPES}${gusGear(lv)}</g>`;
   const CLOUD_SVG = `<svg viewBox="0 0 160 184" aria-hidden="true">
     <path d="M44 100 C26 100 22 74 42 70 C42 48 70 40 82 58 C92 40 124 46 120 72 C140 74 138 100 118 100 Z" fill="#8A93AD"/>
     <path d="M84 100 L70 126 H84 L74 154 L104 118 H89 L99 100 Z" fill="#F5C31E"/>
     <path d="M50 112 l-6 14 M60 120 l-6 14 M114 112 l-6 14 M126 106 l-6 14" stroke="#2C8DF5" stroke-width="4" stroke-linecap="round"/>
   </svg>`;
+  const whoFrom = w => w === 'phone' || w === 'cloud' || w === 'gus' ? { kind: w } : { kind: 'friend', name: w };
+  const ART = { phone: () => PHONE_SVG, cloud: () => CLOUD_SVG, gus: () => gusSVG(S ? E.gusLvl(S) : 0) };
+  const ART_NAME = { phone: 'His girlfriend', cloud: 'Bad luck', gus: 'Gus' };
+  function whoArt(who) {
+    return (who.kind === 'friend' ? friendSVG(who.name) : ART[who.kind]())
+      + `<span class="who-name">${who.kind === 'friend' ? fullName(who.name) : ART_NAME[who.kind]}</span>`;
+  }
   function whoOf(def, ev) {
-    for (const f of E.FRIENDS) if (def.id.startsWith(f.toLowerCase() + '-')) return { kind: 'friend', name: f };
+    if (def.id === 'crisis') return whoFrom(E.crisisDef(ev.c).who);
+    if (def.id.startsWith('gus-')) return { kind: 'gus' };
+    for (const f of CAST) if (def.id.startsWith(f.toLowerCase() + '-')) return { kind: 'friend', name: f };
     if (def.id.startsWith('f-')) return { kind: 'friend', name: ev.f };
     if (def.id.startsWith('gf-')) return { kind: 'phone' };
     if (def.neg) return { kind: 'cloud' };
@@ -1712,7 +2412,34 @@ const Engine = (() => {
 
   /* ---------- pop-up menus ---------- */
   let modalReturn = null;
-  const MODALS = ['store', 'work', 'cupg'];
+  const MODALS = ['store', 'work', 'cupg', 'traits'];
+  /* ---------- starting trait picker ---------- */
+  let TRAIT_OPTS = [];
+  function buildTraits() {
+    const list = $('traitList');
+    TRAIT_OPTS = Object.entries(E.TRAITS).map(([id, t]) => Object.assign({ id }, t))
+      .concat([{ id: 'none', name: 'Just Carlos', tag: 'No gimmicks. The classic experience.', good: 'Nothing changes.', bad: 'Nothing changes.' }]);
+    TRAIT_OPTS.forEach((t, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'act';
+      b.innerHTML = `<span class="act-name">${i < 9 ? `<kbd class="key">${i + 1}</kbd>` : ''}${t.name}</span><span class="act-flavor">${t.tag}</span><span class="trait-good">+ ${t.good}</span><span class="trait-bad">− ${t.bad}</span>`;
+      b.addEventListener('click', () => pickTrait(t.id));
+      list.appendChild(b);
+    });
+  }
+  function pickTrait(id) {
+    if (!S || $('traits').hidden) return;
+    E.applyTrait(S, id);
+    writeJSON(SAVE, S);
+    $('traits').hidden = true;
+    modalReturn = null;
+    render();
+    Sfx.play('level');
+  }
+  function maybeAskTrait() {
+    if (S && S.trait === undefined && S.day === 1 && S.slot === 0 && !S.log.length && !S.over) openModal('traits');
+  }
   const modalOpen = () => MODALS.some(id => !$(id).hidden);
   function openModal(id, focusEl) {
     if (!modalOpen()) modalReturn = document.activeElement;
@@ -1809,9 +2536,9 @@ const Engine = (() => {
     wkJudge(t, d <= WKC.perfect ? 'perfect' : d <= WKC.good ? 'good' : 'miss');
   }
   function wkJudge(t, kind) {
-    if (kind === 'perfect') { wk.P++; wk.pts += 3; }
-    else if (kind === 'good') { wk.G++; wk.pts += 2; }
-    else wk.M++;
+    if (kind === 'perfect') { wk.P++; wk.pts += 3; Sfx.play('tearPerfect'); }
+    else if (kind === 'good') { wk.G++; wk.pts += 2; Sfx.play('tear'); }
+    else { wk.M++; Sfx.play('miss'); }
     wk.shown = false;
     wk.nextAt = t + WKC.gap;
     $('wkFeed').textContent = pickOne(WK_FEED[kind]);
@@ -1823,6 +2550,7 @@ const Engine = (() => {
     $('wkZone').style.visibility = 'hidden';
     $('wkTear').hidden = true;
     const g = WK_GRADES.find(x => wk.pts >= x.min);
+    Sfx.play(g.id === 'great' ? 'cheer' : g.id === 'good' ? 'coin' : g.id === 'ok' ? 'click' : 'bad');
     const before = snap(), promo0 = S.promo, rank0 = E.rankOf(S).name;
     const r = E.act(S, 'work', Math.random, { perf: g.id });
     if (!r.ok) { closeModal('work'); return; }
@@ -1873,13 +2601,15 @@ const Engine = (() => {
     const p = cg.params;
     cgClear();
     cg.round = r; cg.phase = 'play'; cg.P = 0; cg.G = 0; cg.M = 0; cg.stray = 0;
-    let t = p.travel + 0.2, last = -1, run = 0;
+    /* notes land on eighth-note beats of the music */
+    const Q = Sfx.STEP;
+    let t = Math.ceil((p.travel + 0.2) / Q) * Q, last = -1, run = 0;
     while (t < ROUND_LEN - 0.7) {
       let lane = Math.floor(Math.random() * 4);
       if (lane === last) { run++; if (run >= 2) { lane = (lane + 1 + Math.floor(Math.random() * 3)) % 4; run = 0; } } else run = 0;
       cg.notes.push({ t, lane, el: null, done: false });
       last = lane;
-      t += Math.max(0.2, (1 / p.nps[r]) * pickOne([0.5, 1, 1, 1, 1.5]));
+      t += Math.max(1, Math.round((1 / p.nps[r]) * pickOne([0.5, 1, 1, 1, 1.5]) / Q)) * Q;
     }
     cg.H = $('cgLanes').clientHeight || 300;
     $('cgTitle').textContent = `${E.ROUND_NAMES[r]} vs ${cg.opps[r]}`;
@@ -1888,7 +2618,8 @@ const Engine = (() => {
     $('cgAcc').style.width = '0%';
     $('cgAccTxt').textContent = `Target ${pct(p.need[r])}`;
     $('cgFeed').textContent = 'Go!';
-    cg.t0 = performance.now();
+    const mt = Sfx.musicStart(r);
+    cg.t0 = mt != null ? mt : performance.now();
     requestAnimationFrame(cgLoop);
   }
   function cgAcc(final) {
@@ -1936,15 +2667,17 @@ const Engine = (() => {
     if (best && bd <= p.good) {
       best.done = true;
       if (best.el) { best.el.remove(); best.el = null; }
-      if (bd <= p.perfect) { cg.P++; $('cgFeed').textContent = 'Perfect!'; }
-      else { cg.G++; $('cgFeed').textContent = 'Good'; }
-    } else { cg.stray++; $('cgFeed').textContent = 'Off beat'; }
+      if (bd <= p.perfect) { cg.P++; $('cgFeed').textContent = 'Perfect!'; Sfx.play('hit', lane, true); }
+      else { cg.G++; $('cgFeed').textContent = 'Good'; Sfx.play('hit', lane, false); }
+    } else { cg.stray++; $('cgFeed').textContent = 'Off beat'; Sfx.play('stray'); }
   }
   function cgEndRound() {
     const p = cg.params, r = cg.round;
     const acc = cgAcc(true), need = p.need[r], win = acc >= need;
     cg.results.push({ acc, need, win });
     cgClear();
+    Sfx.musicStop();
+    if (!(win && r === 2)) Sfx.play(win ? 'level' : 'bad');
     if (win && r < 2) {
       cg.phase = 'between';
       $('cgFeed').textContent = `Won the ${E.ROUND_NAMES[r].toLowerCase()}: ${pct(acc)} against a ${pct(need)} target. Next up, ${cg.opps[r + 1]}.`;
@@ -1959,6 +2692,7 @@ const Engine = (() => {
     commit(before);
     if (S.over) { $('cupg').hidden = true; modalReturn = null; return; }
     const c = S.lastCup, last = cg.results[cg.results.length - 1];
+    if (c.won === 3) Sfx.play('win');
     $('cgTitle').textContent = c.place;
     $('cgRound').textContent = '';
     $('cgTime').textContent = '';
@@ -1971,6 +2705,7 @@ const Engine = (() => {
     if (cg.phase === 'play' || cg.phase === 'between') return;
     const done = cg.phase === 'done';
     cg.phase = 'idle';
+    Sfx.musicStop();
     cgClear();
     closeModal('cupg');
     if (done) focusNext();
@@ -1999,9 +2734,11 @@ const Engine = (() => {
       R.skills[k] = { lv: row.querySelector('.skill-lv'), bar: row.querySelector('.bar'), fill: row.querySelector('i'), note: row.querySelector('.skill-note') };
     }
     const aWrap = $('actions');
-    for (const [cat, title] of [['survive', 'Stay alive'], ['life', 'Daily life'], ['train', 'Get better'], ['unlock', 'Level 3 unlocks']]) {
+    R.groups = {};
+    for (const [cat, title] of [['crisis', 'Hard event'], ['survive', 'Stay alive'], ['life', 'Daily life'], ['train', 'Get better'], ['unlock', 'Level 3 unlocks']]) {
       const g = document.createElement('div');
-      g.className = 'group';
+      g.className = 'group' + (cat === 'crisis' ? ' crisis-group' : '');
+      R.groups[cat] = g;
       g.innerHTML = `<h3 class="group-title">${title}</h3><div class="acts"></div>`;
       const box = g.querySelector('.acts');
       E.ACTIONS.forEach((a, idx) => {
@@ -2010,7 +2747,7 @@ const Engine = (() => {
         b.type = 'button';
         b.className = 'act';
         b.style.setProperty('--c', `var(--${a.tint})`);
-        b.innerHTML = `<span class="act-top"><span class="act-name"><kbd class="key">${KEYS[idx]}</kbd>${a.name}</span><span class="act-cost">${a.slots} block${a.slots > 1 ? 's' : ''}</span></span><span class="act-flavor">${a.flavor}</span><span class="chips"></span>`;
+        b.innerHTML = `<span class="act-top"><span class="act-name">${KEYS[idx] ? `<kbd class="key">${KEYS[idx]}</kbd>` : ''}${a.name}</span><span class="act-cost">${a.slots} block${a.slots > 1 ? 's' : ''}</span></span><span class="act-flavor">${a.flavor}</span><span class="chips"></span>`;
         b.addEventListener('click', () => doAct(a.id));
         box.appendChild(b);
         R.acts[a.id] = { btn: b, chips: b.querySelector('.chips') };
@@ -2085,7 +2822,7 @@ const Engine = (() => {
     }
     const band = M >= 3 ? '<rect class="bd" x="41" y="56" width="78" height="9" rx="2"/><path class="bd" d="M41 60 l-13 -7 l2 14z"/>' : '';
     return `<svg viewBox="0 0 160 184" role="img" aria-label="Carlos">
-      ${wisps}${flies}
+      ${wisps}${flies}${gusMini(E.gusLvl(s))}
       <line class="arm" x1="52" y1="128" x2="32" y2="158" style="stroke-width:${armW}"/>
       <line class="arm" x1="108" y1="128" x2="128" y2="158" style="stroke-width:${armW}"/>
       <rect class="sk" x="70" y="104" width="20" height="16" rx="4"/>
@@ -2105,6 +2842,10 @@ const Engine = (() => {
     $('clockSub').textContent = S.over ? 'Lights out' : `Week ${E.weekOf(S.day)}, ${PERIOD[slot]}`;
     $('restedPill').hidden = !S.rested;
     $('lonelyPill').hidden = !E.lonely(S) || !!S.over;
+    const tn = E.traitName(S), tp = $('traitPill'), note = $('traitNote');
+    tp.hidden = !tn; tp.textContent = tn || '';
+    note.hidden = !tn;
+    if (tn) { const t = E.TRAITS[S.trait]; note.innerHTML = `<b>${t.name}.</b> + ${t.good} − ${t.bad}`; }
     const b = readJSON(BEST);
     $('best').textContent = b ? `Best run: ${b.score} pts, ${b.days} day${b.days === 1 ? '' : 's'}` : 'Best run: none yet';
   }
@@ -2139,6 +2880,20 @@ const Engine = (() => {
     c.rank.textContent = `Theater: ${rk.name}, $${rk.pay} a normal shift. ` + (next ? `Promotion to ${next.name}: ${S.promo - rk.at}/${next.at - rk.at}.` : 'Top of the ladder.');
     c.promo.style.width = Math.round(frac * 100) + '%';
     c.promoBar.setAttribute('aria-valuenow', Math.round(frac * 100));
+  }
+  function renderGus() {
+    const p = E.gusProgress(S), lv = p.lv;
+    const pic = $('gusPic');
+    if (pic.dataset.lv !== String(lv)) { pic.innerHTML = gusSVG(lv); pic.dataset.lv = String(lv); }
+    $('gusTitle').textContent = `Level ${lv}: ${E.GUS_TITLES[lv]}`;
+    const finalNext = lv + 1 >= E.GUS_MAX;
+    $('gusLv').textContent = lv >= E.GUS_MAX ? 'Max' : `${p.cur}/${p.need} xp`;
+    $('gusBar').style.width = Math.round(p.frac * 100) + '%';
+    $('gusBarWrap').setAttribute('aria-valuenow', Math.round(p.frac * 100));
+    const known = E.TRICKS.slice(1, lv + 1);
+    $('gusNote').textContent = (known.length ? `Knows: ${known.join(', ')}. ` : 'Knows: nothing yet. He is a cat. ')
+      + (lv >= E.GUS_MAX ? '' : `Next trick: ${finalNext ? '???' : E.TRICKS[lv + 1]}. `)
+      + 'A smarter Gus causes less trouble and has better surprises.';
   }
   function renderSkills() {
     for (const k of E.SKILL_KEYS) {
@@ -2199,10 +2954,31 @@ const Engine = (() => {
         r.btn.classList.remove('fatal');
       } else {
         const c = chipsFor(a);
-        r.chips.innerHTML = (av ? '' : `<span class="lock-note">${a.whenNote}</span>`) + c.html;
+        const why = a.cost && S.money < a.cost ? `Needs $${a.cost}.` : typeof a.whenNote === 'function' ? a.whenNote(S) : a.whenNote || '';
+        r.chips.innerHTML = (av ? '' : `<span class="lock-note">${why}</span>`) + c.html;
         r.btn.classList.toggle('fatal', c.fatal);
       }
+      if (a.crisis) r.btn.hidden = !S.crisis || S.crisis.id !== a.crisis;
     }
+    R.groups.crisis.hidden = !E.ACTIONS.some(a => a.crisis && !R.acts[a.id].btn.hidden);
+  }
+  function renderCrisis() {
+    const box = $('crisis'), c = S.crisis;
+    if (!c || S.over) { box.hidden = true; return; }
+    const d = E.crisisDef(c.id);
+    box.hidden = false;
+    $('crTitle').textContent = 'Hard event: ' + d.title;
+    const left = c.deadline - S.day;
+    $('crDue').textContent = left <= 0 ? 'Due tonight' : left === 1 ? 'Due tomorrow night' : `${left + 1} days left`;
+    const wb = $('crWho');
+    const key = c.id;
+    if (wb.dataset.key !== key) { wb.innerHTML = whoArt(whoFrom(d.who)); wb.dataset.key = key; }
+    $('crText').textContent = E.crisisText(S, d);
+    $('crGoals').innerHTML = d.goals.map((g, i) => {
+      const p = c.prog[i] || 0;
+      return `<div><div class="skill-head"><span class="skill-name">${g.label}</span><span class="skill-lv">${p}/${g.need}</span></div><div class="bar slim" style="--c:var(--bad)"><i style="width:${Math.round(p / g.need * 100)}%"></i></div></div>`;
+    }).join('');
+    $('crStakes').innerHTML = `<b>Win:</b> ${d.reward}. <b>Fail:</b> ${d.penalty}. Deadline: end of Day ${c.deadline}.`;
   }
   function renderCup() {
     const box = $('cup'), c = S.lastCup;
@@ -2296,13 +3072,12 @@ const Engine = (() => {
     evKey = key;
     const ev = S.event;
     const def = E.EVENTS.find(e => e.id === ev.id);
-    box.classList.toggle('bad', !!def.neg);
+    box.classList.toggle('bad', !!def.neg || def.id === 'crisis');
     const who = whoOf(def, ev), wb = $('evWho');
     $('evWrap').classList.toggle('solo', !who);
     if (who) {
       wb.hidden = false;
-      wb.innerHTML = (who.kind === 'friend' ? friendSVG(who.name) : who.kind === 'phone' ? PHONE_SVG : CLOUD_SVG)
-        + `<span class="who-name">${who.kind === 'friend' ? who.name : who.kind === 'phone' ? 'His girlfriend' : 'Bad luck'}</span>`;
+      wb.innerHTML = whoArt(who);
     } else { wb.hidden = true; wb.innerHTML = ''; }
     $('evKicker').textContent = kickerOf(def, ev);
     $('evTitle').textContent = typeof def.title === 'function' ? def.title(ev) : def.title;
@@ -2344,16 +3119,18 @@ const Engine = (() => {
     const o = $('over');
     if (!S.over) { o.hidden = true; wasOver = false; return; }
     const days = S.over.day - 1;
-    const win = S.over.cause === 'win';
-    $('overKicker').textContent = win ? 'You beat the game' : 'Carlos is gone';
+    const win = S.over.cause === 'win' || S.over.cause === 'emperor';
+    $('overKicker').textContent = S.over.cause === 'emperor' ? 'Secret ending unlocked' : win ? 'You beat the game' : 'Carlos is gone';
     $('overKicker').classList.toggle('win', win);
     $('overTitle').textContent = E.CAUSE_TITLE[S.over.cause];
     $('overMsg').textContent = S.over.msg;
     const rows = [
-      ['Days survived', days], ['Time of death', `Day ${S.over.day}, ${longH(hourOf(Math.min(S.over.slot, 11)))}`],
+      ['Days survived', days], [win ? 'Victory at' : 'Time of death', `Day ${S.over.day}, ${longH(hourOf(Math.min(S.over.slot, 11)))}`],
       ['Skill levels', E.totalLevels(S)], ['Trophies', S.trophies],
       ['Days in Carlos Manor', S.bigDays], ['Upgrades owned', `${E.gearCount(S)}/${E.GEAR_TOTAL}`],
+      ['Hard events beaten', `${S.crisesWon || 0} of ${(S.crisesWon || 0) + (S.crisesLost || 0)}`],
       ['Theater shifts', S.shifts], ['Girlfriend ignored', S.ignored + (S.ignored === 1 ? ' time' : ' times')],
+      ['Trait', E.traitName(S) || 'Just Carlos'],
       ['Score', E.score(S)], ['Best score', (readJSON(BEST) || { score: E.score(S) }).score]
     ];
     $('overStats').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
@@ -2361,10 +3138,29 @@ const Engine = (() => {
     if (!wasOver) { o.hidden = false; wasOver = true; lbSetup(); (lbOn && !posted ? $('lbName') : $('again')).focus(); }
   }
   function render() {
-    renderClock(); renderMeters(); renderCash(); renderGoal(); renderSkills(); renderBlocks(); renderActions(); renderCup(); renderStore(); renderEvent(); renderLog(); renderOver();
+    renderClock(); renderMeters(); renderCash(); renderGoal(); renderSkills(); renderGus(); renderBlocks(); renderCrisis(); renderActions(); renderCup(); renderStore(); renderEvent(); renderLog(); renderOver();
   }
 
-  function snap() { return { food: S.food, water: S.water, energy: S.energy, social: S.social, money: S.money }; }
+  function snap() {
+    return { food: S.food, water: S.water, energy: S.energy, social: S.social, money: S.money,
+      ev: S.event ? S.event.id + ':' + (S.event.c || '') : null, lv: E.totalLevels(S), rank: E.rankOf(S).name,
+      cw: S.crisesWon || 0, cl: S.crisesLost || 0, over: !!S.over, gl: E.gusLvl(S) };
+  }
+  /* the follow-up sound after something happened: death, win, a new event, a hard event result, a level up */
+  function soundFor(before) {
+    if (S.over && !before.over) { Sfx.later(E.won(S) ? 'win' : 'die', 150); return; }
+    if (E.gusLvl(S) > before.gl) { Sfx.later('level', 250); return; }
+    const evNow = S.event ? S.event.id + ':' + (S.event.c || '') : null;
+    if (evNow && evNow !== before.ev) {
+      const def = E.EVENTS.find(e => e.id === S.event.id) || {};
+      const id = def.id || '';
+      Sfx.later(id === 'crisis' ? 'alarm' : id.startsWith('gf-') ? 'phone' : id.startsWith('gus-') ? 'meow' : def.neg ? 'bad' : 'event', 180);
+      return;
+    }
+    if ((S.crisesWon || 0) > before.cw) { Sfx.later('fanfare', 150); return; }
+    if ((S.crisesLost || 0) > before.cl) { Sfx.later('bad', 150); return; }
+    if (E.totalLevels(S) > before.lv || E.rankOf(S).name !== before.rank) Sfx.later('level', 200);
+  }
   function flash(before) {
     for (const k of ['food', 'water', 'energy', 'social', 'money']) {
       const d = S[k] - before[k];
@@ -2386,6 +3182,7 @@ const Engine = (() => {
     if (S.over) finishRun(); else writeJSON(SAVE, S);
     render();
     flash(before);
+    soundFor(before);
   }
   function after(before) { commit(before); focusNext(); }
   function focusNext() {
@@ -2408,6 +3205,7 @@ const Engine = (() => {
     const before = snap();
     const r = E.act(S, id);
     if (!r.ok) return;
+    Sfx.play(ACT_SOUND[id] || 'click');
     lastAct = id;
     after(before);
   }
@@ -2416,6 +3214,7 @@ const Engine = (() => {
     const before = snap();
     const r = E.move(S, i);
     if (!r.ok) return;
+    Sfx.play('coin');
     writeJSON(SAVE, S);
     render();
     flash(before);
@@ -2426,6 +3225,7 @@ const Engine = (() => {
     const before = snap();
     const r = E.choose(S, i);
     if (!r.ok) return;
+    Sfx.play('click');
     after(before);
   }
   function doBuy(id) {
@@ -2433,6 +3233,7 @@ const Engine = (() => {
     const before = snap();
     const r = E.buy(S, id);
     if (!r.ok) return;
+    Sfx.play('coin');
     if (S.over) { $('store').hidden = true; modalReturn = null; commit(before); return; }
     writeJSON(SAVE, S);
     render();
@@ -2443,13 +3244,14 @@ const Engine = (() => {
   function newRun() {
     S = E.newState();
     lastAct = null; evKey = ''; wasOver = false; posted = false; mineId = null;
-    wk.running = false; clearTimeout(cg.timer); cg.phase = 'idle';
+    wk.running = false; clearTimeout(cg.timer); cg.phase = 'idle'; Sfx.musicStop();
     for (const id of MODALS) $(id).hidden = true;
     modalReturn = null;
     $('lbOver').hidden = true;
     writeJSON(SAVE, S);
     $('how').open = true;
     render();
+    maybeAskTrait();
   }
 
   document.addEventListener('keydown', e => {
@@ -2465,9 +3267,15 @@ const Engine = (() => {
       if (e.key === 'Escape' && (cg.phase === 'ready' || cg.phase === 'done')) { e.preventDefault(); cgClose(); }
       return;
     }
+    if (!$('traits').hidden) {
+      const i = '123456789'.indexOf(e.key);
+      if (i >= 0 && TRAIT_OPTS[i]) { e.preventDefault(); pickTrait(TRAIT_OPTS[i].id); }
+      return;
+    }
     if (!$('store').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeModal('store'); } return; }
-    if (!S || S.over) return;
     if (e.target && e.target.tagName === 'INPUT') return;
+    if (e.key === 'm' || e.key === 'M') { toggleSound(); return; }
+    if (!S || S.over) return;
     const i = KEYS.indexOf(e.key);
     if (i < 0) return;
     if (S.event) { doChoose(i); return; }
@@ -2476,6 +3284,14 @@ const Engine = (() => {
   });
   $('again').addEventListener('click', newRun);
   $('lbSend').addEventListener('click', lbSubmit);
+  function renderSound() {
+    const b = $('soundBtn');
+    b.textContent = Sfx.isOn() ? 'Sound on' : 'Sound off';
+    b.setAttribute('aria-pressed', String(Sfx.isOn()));
+  }
+  function toggleSound() { Sfx.setOn(!Sfx.isOn()); renderSound(); Sfx.play('click'); }
+  $('soundBtn').addEventListener('click', toggleSound);
+  renderSound();
   $('openShop').addEventListener('click', () => openStore('gear'));
   $('openHome').addEventListener('click', () => openStore('home'));
   $('storeClose').addEventListener('click', () => closeModal('store'));
@@ -2512,8 +3328,10 @@ const Engine = (() => {
     if (!isState(saved)) saved = migrate(readJSON(OLD_SAVE));
     S = isState(saved) && !saved.over ? saved : E.newState();
     $('how').open = S.day === 1 && S.log.length === 0;
+    buildTraits();
     render();
     lbRefresh();
+    maybeAskTrait();
   }
   try { if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => S); } catch (e) {}
   const hot = window.claude && window.claude.hot;
